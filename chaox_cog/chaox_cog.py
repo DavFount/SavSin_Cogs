@@ -146,6 +146,11 @@ class ChaoxCog(commands.Cog):
         """See current settings."""
         data = await self.config.guild(ctx.guild).all()
 
+        if data["password"]:
+            password = 'Set'
+        else:
+            password = 'Not Set'
+
         embed = discord.Embed(
             colour=await ctx.embed_colour(), timestamp=datetime.now()
         )
@@ -157,6 +162,6 @@ class ChaoxCog(commands.Cog):
         embed.add_field(name='Port*:', value=data["port"])
         embed.add_field(name='Database*:', value=data["db"])
         embed.add_field(name='Username*:', value=data["user"])
-        embed.add_field(name='Password*:', value='Nice Try!!')
+        embed.add_field(name='Password*:', value=password)
 
         await ctx.send(embed=embed)

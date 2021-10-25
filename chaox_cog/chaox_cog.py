@@ -1,6 +1,7 @@
 import discord
 import json
 from redbot.core import Config, checks, commands
+from datetime import datetime
 
 sample_data = """
 {
@@ -38,7 +39,7 @@ class ChaoxCog(commands.Cog):
             self, identifier=56456541165165, force_registration=True
             )
 
-        self.config.register_guild(moderator=None, everyone=True, ignore=[])
+        self.config.register_guild(host=None, port=None, db=None, user=None, password=None)
 
     async def red_delete_data_for_user(self, *, requester, user_id):
         return
@@ -49,17 +50,17 @@ class ChaoxCog(commands.Cog):
 
     @commands.group(autohelp=True)
     @commands.guild_only()
-    @checks.admin()
     async def chx(self, ctx: commands.Context):
         """Various ChX Commands."""
     
     @chx.command(name="top")
-    async def chx_top(self, ctx, count: int):
+    async def chx_top(self, ctx: commands.Context, count: int):
         """ Displays embed with top runners """
         if count > 25:
             count = 25
         data = json.loads(sample_data)
-        embed = discord.Embed(color=0x00ff00)
+        embed = discord.Embed(color=0xff0000)
+        embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
         embed.title = f'Top {count} Runners'
         count = 1
         for (k,v) in data.items():
@@ -73,10 +74,89 @@ class ChaoxCog(commands.Cog):
         await ctx.send(embed=embed)
 
     @chx.command(name="career")
-    async def chx_career(self, ctx):
+    async def chx_career(self, ctx: commands.Context):
         """ Display Embed with Career Stats """
         data = json.loads(sample_data)
         embed = discord.Embed(color=0xff0000)
+        embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
         embed.title = 'Your Career'
         embed.description = f'You have run {data["Steve"]["Run Count"]} games with an average time of {data["Steve"]["Avg Time"]} seconds!'
+        await ctx.send(embed=embed)
+
+    # Admin Setup Commands
+    @commands.group(autohelp=True)
+    @commands.guild_only()
+    @checks.admin()
+    async def chx_admin(self, ctx: commands.Context):
+        """Various ChX Admin Settings."""
+
+    @chx_admin.command(name="set_host")
+    async def chx_admin_set_host(self, ctx: commands.Context, host: str):
+        """Set Hostname"""
+        if self.config.guild(ctx.guild).host != host:
+            await self.config.guild(ctx.guild).host.set(host)
+            await ctx.send('Host Updated.')
+            await ctx.message.delete()
+        else:
+            await ctx.send('This host is already set!')
+            await ctx.message.delete()
+
+    @chx_admin.command(name="set_port")
+    async def chx_admin_set_port(self, ctx: commands.Context, port: int):
+        """Set Database Port"""
+        if self.config.guild(ctx.guild).port != port:
+            await self.config.guild(ctx.guild).port(port)
+            await ctx.send('Port Updated.')
+            await ctx.message.delete()
+        else:
+            await ctx.send(f'Port is already set to {port}.')
+            await ctx.message.delete()
+
+    @chx_admin.command(name="set_db")
+    async def chx_admin_set_db(self, ctx: commands.Context, db: str):
+        """Set Database Name"""
+        if self.config.guild(ctx.guild).db != db:
+            await self.config.guild(ctx.guild).db.set(db)
+            await ctx.send('Database Selected.')
+            await ctx.message.delete()
+        else:
+            await ctx.send('This database is already selected.')
+            await ctx.message.delete()
+
+    @chx_admin.command(name="set_user")
+    async def chx_admin_set_user(self, ctx: commands.Context, user: str):
+        """Set Database User"""
+        if self.config.guild(ctx.guild).user != user:
+            await self.config.guild(ctx.guild).user.set(user)
+            await ctx.send('Updated Database User.')
+            await ctx.message.delete()
+        else:
+            await ctx.send('This user is already set.')
+            await ctx.message.delete()
+
+    @chx_admin.command(name="set_password")
+    async def chx_admin_set_password(self, ctx: commands.Context, password: str):
+        """Set Database Password"""
+        await self.config.guild(ctx.guild).password.set(password)
+        await ctx.send('Password Updated')
+        await ctx.message.delete()
+
+    @chx_admin.command(name="settings")
+    async def chx_admin_settings(self, ctx: commands.Context):
+        """See current settings."""
+        data = await self.config.guild(ctx.guild).all()
+
+        embed = discord.Embed(
+            colour=await ctx.embed_colour(), timestamp=datetime.now()
+        )
+        embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
+        embed.title = '**__Unique Name settings:__**'
+        embed.set_footer(text='*required to function properly')
+
+        embed.add_field(name='Hostname*:', value=data["host"])
+        embed.add_field(name='Port*:', value=data["port"])
+        embed.add_field(name='Database*:', value=data["db"])
+        embed.add_field(name='Username*:', value=data["user"])
+        embed.add_field(name='Password*:', value='Nice Try!!')
+
         await ctx.send(embed=embed)

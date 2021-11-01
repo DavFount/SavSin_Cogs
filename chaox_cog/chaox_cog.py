@@ -304,7 +304,7 @@ class ChaoxCog(commands.Cog):
     @chx_admin.command(name="set_message_dur")
     async def chx_message_delay(self, ctx: commands.Context, delay: int):
         """Sets the duration of the message displayed for new games"""
-        await self.config.guild(ctx.guild).message_delay.set(delay)
+        await self.config.guild(ctx.guild).message_wait_time.set(delay)
         await ctx.send(f'The duration of the new game message is now {delay} seconds')
 
     @chx_admin.command(name="settings")
@@ -373,6 +373,9 @@ class ChaoxCog(commands.Cog):
                     removed = self.games.pop(runner)
                     await self.update_channel(message.guild)
                     return
+
+        if game_name.lower() == 'logout':
+            return
 
         game = {
             runner: {

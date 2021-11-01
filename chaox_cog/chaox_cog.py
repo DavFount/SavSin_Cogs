@@ -18,6 +18,7 @@ class ChaoxCog(commands.Cog):
         self.bot = bot
         self.games = {}
         self.game_announce.start()
+        self.guild = None
         self.config = Config.get_conf(
             self, identifier=56456541165165, force_registration=True
         )

@@ -12,7 +12,7 @@ from redbot.core.commands.context import Context
 class ChaoxCog(commands.Cog):
     """ Chaox Cog for Game Spamming, career stats and top runners """
 
-    __version__ = '1.0.0'
+    __version__ = '1.1.0'
 
     def __init__(self, bot):
         self.bot = bot

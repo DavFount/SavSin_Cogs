@@ -24,7 +24,8 @@ class ChaoxCog(commands.Cog):
 
         self.config.register_guild(
             host=None, port=3306, db=None, user=None, password=None, min_game_time=0, max_game_time=999,
-            annouce_channel=None, log_channels=[], game_msg=None, leader_msg=None, chaos_role=None, baal_role=None)
+            annouce_channel=None, log_channels=None, game_msg=None, chaos_role=None, baal_role=None,
+            message_wait_time=15)
 
     def cog_unload(self):
         self.game_announce.cancel()
@@ -35,7 +36,9 @@ class ChaoxCog(commands.Cog):
         self.guild = self.bot.get_guild(901951195667644477)
         curtime = int(time.time())
         for(k, v) in self.games.items():
-            if curtime - v["timestamp"] > 600:
+            duration = curtime - v["timestamp"]
+            if duration > 600:
+                print('Duration is longer than 600 seconds')
                 remove = self.games.pop(k)
 
         await self.update_channel(self.guild)
@@ -50,6 +53,10 @@ class ChaoxCog(commands.Cog):
     def format_help_for_context(self, ctx: commands.Context) -> str:
         context = super().format_help_for_context(ctx)
         return f'{context}\n\nVersion: {self.__version__}'
+
+    @commands.command()
+    async def whoami(self, ctx: commands.Context):
+        await ctx.send(f'Your userid is: {ctx.author.id}')
 
     @commands.group(autohelp=True)
     @commands.guild_only()
@@ -164,7 +171,8 @@ class ChaoxCog(commands.Cog):
                 name='Baal',
                 value=f'Total Runs: {career["baal"][2]} [Average Time: {avg_time}s]'
             )
-
+        cursor_chaos.close()
+        cursor_baal.close()
         db.close()
         await ctx.send(embed=embed)
 
@@ -177,7 +185,7 @@ class ChaoxCog(commands.Cog):
 
     @chx_admin.command(name="stop")
     async def chx_admin_stop(self, ctx: commands.Context, user: discord.Member):
-        self.games.pop(f'{user.name}#{user.discriminator}')
+        removed = self.games.pop(f'{user.name}#{user.discriminator}')
         await self.update_channel(ctx.guild)
 
     @chx_admin.command(name="set_host")
@@ -257,11 +265,10 @@ class ChaoxCog(commands.Cog):
 
     @chx_admin.command(name="game_log_ch")
     async def chx_admin_set_game_log_ch(self, ctx: commands.Context, channel: discord.TextChannel):
-        if channel.id not in await self.config.guild(ctx.guild).log_channels():
-            async with self.config.guild(ctx.guild).log_channels() as channels:
-                channels.append(channel.id)
+        if not channel.id == await self.config.guild(ctx.guild).log_channels():
+            await self.config.guild(ctx.guild).log_channels.set(channel.id)
             await ctx.send(
-                f'{channel.mention} has been added!'
+                f'{channel.mention} is now the logging channel!'
             )
         else:
             await ctx.send(
@@ -270,10 +277,10 @@ class ChaoxCog(commands.Cog):
 
     @chx_admin.command(name="game_announce_ch")
     async def chx_admin_set_game_announce_ch(self, ctx: commands.Context, channel: discord.TextChannel):
-        if channel.id != await self.config.guild(ctx.guild).annouce_channel():
+        if not channel.id == await self.config.guild(ctx.guild).annouce_channel():
             await self.config.guild(ctx.guild).annouce_channel.set(channel.id)
             await ctx.send(
-                f'{channel.mention} has been added!'
+                f'{channel.mention} is now the announcement channel!'
             )
         else:
             await ctx.send(
@@ -282,6 +289,7 @@ class ChaoxCog(commands.Cog):
 
     @chx_admin.command(name="set_chaos_role")
     async def chx_admin_set_chaos_role(self, ctx: commands.Context, role: discord.Role):
+        """Set the chaos leecher role."""
         if role.id != await self.config.guild(ctx.guild).chaos_role():
             await self.config.guild(ctx.guild).chaos_role.set(role.id)
             await ctx.send(f'{role.mention} has been set!')
@@ -292,6 +300,7 @@ class ChaoxCog(commands.Cog):
 
     @chx_admin.command(name="set_baal_role")
     async def chx_admin_set_baal_role(self, ctx: commands.Context, role: discord.Role):
+        """Set the baal leecher role."""
         if role.id != await self.config.guild(ctx.guild).baal_role():
             await self.config.guild(ctx.guild).baal_role.set(role.id)
             await ctx.send(f'{role.mention} has been set!')
@@ -299,6 +308,12 @@ class ChaoxCog(commands.Cog):
             await ctx.send(
                 f'{role.mention} is already the current role.'
             )
+
+    @chx_admin.command(name="set_message_dur")
+    async def chx_message_delay(self, ctx: commands.Context, delay: int):
+        """Sets the duration of the message displayed for new games"""
+        await self.config.guild(ctx.guild).message_delay.set(delay)
+        await ctx.send(f'The duration of the new game message is now {delay} seconds')
 
     @chx_admin.command(name="settings")
     async def chx_admin_settings(self, ctx: commands.Context):
@@ -325,6 +340,8 @@ class ChaoxCog(commands.Cog):
 
         embed.add_field(name='Min Game Time*:', value=data["min_game_time"])
         embed.add_field(name='Max Game Time*:', value=data["max_game_time"])
+        embed.add_field(name='Game Message Duration*',
+                        value=data["message_wait_time"])
 
         await ctx.send(embed=embed)
 
@@ -348,67 +365,22 @@ class ChaoxCog(commands.Cog):
         password = run_data.group(3)
         region = run_data.group(4)
         game_type = run_data.group(5).lower()
-
-        # await message.delete()
-
-        last_game = None
         cur_time = int(time.time())
 
-        duration = 0
         if runner in self.games:
-            last_game = self.games[runner]["timestamp"]
-            duration = cur_time - last_game
-
-        # Game Counts add to DB
-        if last_game and (duration > await self.config.guild(message.guild).min_game_time()
-                          and duration < await self.config.guild(message.guild).max_game_time()):
-            db = await self.connect_sql()
-            if game_type == 'chaos':
-                cursor = db.cursor()
-                cursor.execute(
-                    f"SELECT * FROM `chaos_tracker` WHERE `username`='{runner}' LIMIT 1;")
-                result = cursor.fetchall()
-                if len(result):
-                    update_runs = result[0][2] + 1
-                    update_time = result[0][3] + (duration)
-                    cursor.execute(
-                        f"UPDATE `chaos_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `username`='{runner}' LIMIT 1;")
-                    db.commit()
-                else:
-                    run_time = duration
-                    sql = "INSERT INTO chaos_tracker (`username`,`total_runs`,`total_time`) VALUES (%s, %s, %s);"
-                    val = (runner, 1, run_time)
-                    cursor.execute(sql, val)
-                    db.commit()
-                cursor.close()
-            elif game_type == 'baal':
-                cursor = db.cursor()
-                cursor.execute(
-                    f"SELECT * FROM `baal_tracker` WHERE `username`='{runner}' LIMIT 1;")
-                result = cursor.fetchall()
-                if len(result):
-                    update_runs = result[0][2] + 1
-                    update_time = result[0][3] + (duration)
-                    cursor.execute(
-                        f"UPDATE `baal_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `username`='{runner}' LIMIT 1;")
-                    db.commit()
-                else:
-                    run_time = duration
-                    sql = "INSERT INTO baal_tracker (`username`,`total_runs`,`total_time`) VALUES (%s, %s, %s);"
-                    val = (runner, 1, run_time)
-                    cursor.execute(sql, val)
-                    db.commit()
-                cursor.close()
-            db.close()
-
-        if game_name.lower() == 'logout':
-            if runner in self.games:
+            duration = cur_time - self.games[runner]["timestamp"]
+            if game_name.lower() == 'logout':
+                await self.persist_data(game_type, runner, duration)
                 removed = self.games.pop(runner)
                 await self.update_channel(message.guild)
-            return
-
-        if runner in self.games:
-            removed = self.games.pop(runner)
+                return
+            elif game_name.lower() == 'game over':
+                if (duration > await self.config.guild(message.guild).min_game_time()
+                        and duration < await self.config.guild(message.guild).max_game_time()):
+                    await self.persist_data(game_type, runner, duration)
+                    removed = self.games.pop(runner)
+                    await self.update_channel(message.guild)
+                    return
 
         game = {
             runner: {
@@ -422,10 +394,11 @@ class ChaoxCog(commands.Cog):
 
         self.games.update(game)
         channel = message.guild.get_channel(await self.config.guild(message.guild).annouce_channel())
+        msg_duration = await self.config.guild(self.guild).message_wait_time()
         if password:
-            text_password = f' (Password: {password})'
+            text_password = {password}
         else:
-            text_password = ''
+            text_password = 'None'
 
         if game_type == 'chaos' and await self.config.guild(message.guild).chaos_role():
             role = message.guild.get_role(await self.config.guild(message.guild).chaos_role())
@@ -433,7 +406,7 @@ class ChaoxCog(commands.Cog):
             role = message.guild.get_role(await self.config.guild(message.guild).baal_role())
 
         if await self.config.guild(message.guild).chaos_role() or await self.config.guild(message.guild).baal_role():
-            await channel.send(f'{role.mention} New Game: {game_name} [Hosted by {runner}] (Password: {text_password})', delete_after=15)
+            await channel.send(f'{role.mention} New Game: {game_name} [Hosted by {runner}] (Password: {text_password})', delete_after=msg_duration)
         else:
             await channel.send('You must first configure your role settings !chx_admin set_chaos_role and set_baal_role!')
 
@@ -450,32 +423,33 @@ class ChaoxCog(commands.Cog):
 
     def format_games(self):
         cur_games = {"americas": [], "europe": [], "asia": []}
-        # cur_time = int(time.time())
+        cur_time = int(time.time())
         for(k, v) in self.games.items():
-            password = ''
             if v["password"]:
-                password = f' (Password: {v["password"]})'
-
+                password = v["password"]
+            else:
+                password = 'None'
+            user = self.get_user(k)
             if v["region"] == 'Americas':
                 cur_games["americas"].append(
-                    f'{v["game_name"]} [{k}]{password} <t:{v["timestamp"]}:R>')
+                    f'{v["game_name"]} [{user.mention}] (Password: {password}) <t:{v["timestamp"]}:R>')
             elif v["region"] == 'Europe':
                 cur_games["europe"].append(
-                    f'{v["game_name"]} [{k}]{password} <t:{v["timestamp"]}:R>')
+                    f'{v["game_name"]} [{user.mention}] (Password: {password}) <t:{v["timestamp"]}:R>')
             elif v["region"] == 'Asia':
                 cur_games["asia"].append(
-                    f'{v["game_name"]} [{k}]{password} <t:{v["timestamp"]}:R>')
+                    f'{v["game_name"]} [{user.mention}] (Password: {password}) <t:{v["timestamp"]}:R>')
 
         embed = discord.Embed(
-            color=0xff0000, timestamp=dt.now()
+            color=0xff0000
         )
 
         embed.title = 'Current Games'
-        embed.set_footer(text='')
+        # embed.set_footer(text=f'<t:{cur_time}:f>')
 
         if(not len(cur_games["americas"]) and not len(cur_games["europe"]) and not len(cur_games["asia"])):
             embed.add_field(
-                name='Status',
+                name=f'<t:{cur_time}:f>',
                 value='Currently there are no games going!',
                 inline=False
             )
@@ -500,7 +474,6 @@ class ChaoxCog(commands.Cog):
                 value='\n\n'.join(cur_games["asia"]),
                 inline=False
             )
-
         return embed
 
     async def is_db_configured(self):
@@ -527,3 +500,46 @@ class ChaoxCog(commands.Cog):
             password=password,
             database=database
         )
+
+    def get_user(self, name: str):
+        return self.guild.get_member_named(name)
+
+    async def persist_data(self, game_type, runner, duration):
+        db = await self.connect_sql()
+        if game_type == 'chaos':
+            cursor = db.cursor()
+            cursor.execute(
+                f"SELECT * FROM `chaos_tracker` WHERE `username`='{runner}' LIMIT 1;")
+            result = cursor.fetchall()
+            if len(result):
+                update_runs = result[0][2] + 1
+                update_time = result[0][3] + (duration)
+                cursor.execute(
+                    f"UPDATE `chaos_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `username`='{runner}' LIMIT 1;")
+                db.commit()
+            else:
+                run_time = duration
+                sql = "INSERT INTO chaos_tracker (`username`,`total_runs`,`total_time`) VALUES (%s, %s, %s);"
+                val = (runner, 1, run_time)
+                cursor.execute(sql, val)
+                db.commit()
+            cursor.close()
+        elif game_type == 'baal':
+            cursor = db.cursor()
+            cursor.execute(
+                f"SELECT * FROM `baal_tracker` WHERE `username`='{runner}' LIMIT 1;")
+            result = cursor.fetchall()
+            if len(result):
+                update_runs = result[0][2] + 1
+                update_time = result[0][3] + (duration)
+                cursor.execute(
+                    f"UPDATE `baal_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `username`='{runner}' LIMIT 1;")
+                db.commit()
+            else:
+                run_time = duration
+                sql = "INSERT INTO baal_tracker (`username`,`total_runs`,`total_time`) VALUES (%s, %s, %s);"
+                val = (runner, 1, run_time)
+                cursor.execute(sql, val)
+                db.commit()
+            cursor.close()
+        db.close()

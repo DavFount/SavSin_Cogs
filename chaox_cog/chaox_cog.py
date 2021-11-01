@@ -12,7 +12,7 @@ from redbot.core.commands.context import Context
 class ChaoxCog(commands.Cog):
     """ Chaox Cog for Game Spamming, career stats and top runners """
 
-    __version__ = '1.1.0'
+    __version__ = '1.1.1'
 
     def __init__(self, bot):
         self.bot = bot
@@ -352,7 +352,7 @@ class ChaoxCog(commands.Cog):
         if not message.guild:
             return
 
-        if message.channel.id not in await self.config.guild(message.guild).log_channels():
+        if not message.channel.id == await self.config.guild(message.guild).log_channels():
             return
 
         run_data = re.search(

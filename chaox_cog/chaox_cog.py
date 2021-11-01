@@ -197,8 +197,6 @@ class ChaoxCog(commands.Cog):
             await self.config.guild(ctx.guild).host.set(host)
             await ctx.send('Host Updated.')
             await ctx.message.delete()
-            if await self.is_db_configured():
-                await self.setup_sql()
         else:
             await ctx.send('This host is already set!')
             await ctx.message.delete()
@@ -210,8 +208,6 @@ class ChaoxCog(commands.Cog):
             await self.config.guild(ctx.guild).port(port)
             await ctx.send('Port Updated.')
             await ctx.message.delete()
-            if await self.is_db_configured():
-                await self.setup_sql()
         else:
             await ctx.send(f'Port is already set to {port}.')
             await ctx.message.delete()
@@ -223,8 +219,6 @@ class ChaoxCog(commands.Cog):
             await self.config.guild(ctx.guild).db.set(db)
             await ctx.send('Database Selected.')
             await ctx.message.delete()
-            if await self.is_db_configured():
-                await self.setup_sql()
         else:
             await ctx.send('This database is already selected.')
             await ctx.message.delete()
@@ -236,8 +230,6 @@ class ChaoxCog(commands.Cog):
             await self.config.guild(ctx.guild).user.set(user)
             await ctx.send('Updated Database User.')
             await ctx.message.delete()
-            if await self.is_db_configured():
-                await self.setup_sql()
         else:
             await ctx.send('This user is already set.')
             await ctx.message.delete()
@@ -248,8 +240,6 @@ class ChaoxCog(commands.Cog):
         await self.config.guild(ctx.guild).password.set(password)
         await ctx.send('Password Updated')
         await ctx.message.delete()
-        if await self.is_db_configured():
-            await self.setup_sql()
 
     @chx_admin.command(name="set_min_game_time")
     async def chx_admin_set_min_game_time(self, ctx: commands.Context, min: int):

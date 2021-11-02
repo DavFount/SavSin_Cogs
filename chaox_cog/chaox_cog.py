@@ -25,8 +25,8 @@ class ChaoxCog(commands.Cog):
 
         self.config.register_guild(
             host=None, port=3306, db=None, user=None, password=None, min_game_time=0, max_game_time=999,
-            annouce_channel=None, log_channels=None, game_msg=None, chaos_role=None, baal_role=None,
-            message_wait_time=15)
+            annouce_channel=None, log_channels=None, game_msg=None, inst_msg=None, top_msg=None, chaos_role=None,
+            baal_role=None, message_wait_time=15)
 
     def cog_unload(self):
         self.game_announce.cancel()
@@ -36,6 +36,7 @@ class ChaoxCog(commands.Cog):
     async def game_announce(self):
         if not self.guild:
             self.guild = self.bot.get_guild(772664928627851275)
+            self.config.guild(self.guild).game_msg.set(None)
         curtime = int(time.time())
         for(k, v) in self.games.items():
             duration = curtime - v["timestamp"]
@@ -413,12 +414,93 @@ class ChaoxCog(commands.Cog):
 
     async def update_channel(self, guild: discord.Guild):
         channel = guild.get_channel(await self.config.guild(guild).annouce_channel())
+        if(not await self.config.guild(guild).inst_msg()):
+            message = await channel.send(embed=self.format_instructions())
+            await self.config.guild(guild).inst_msg.set(message.id)
+
+        if(not await self.config.guild(guild).top_msg()):
+            message = await channel.send(embed=await self.format_top())
+            await self.config.guild(guild).top_msg.set(message.id)
+
         if(not await self.config.guild(guild).game_msg()):
             message = await channel.send(embed=self.format_games())
             await self.config.guild(guild).game_msg.set(message.id)
         else:
             message = await channel.fetch_message(await self.config.guild(guild).game_msg())
             await message.edit(embed=self.format_games())
+
+    def format_instructions(self):
+        embed = discord.Embed(color=0xff0000)
+        embed.title = 'Instructions'
+        embed.add_field(
+            name="1.",
+            value="Some future instructions"
+        )
+        embed.add_field(
+            name="2.",
+            value="Some future instructions"
+        )
+        embed.add_field(
+            name="3.",
+            value="Some future instructions"
+        )
+        embed.add_field(
+            name="4.",
+            value="Some future instructions"
+        )
+        return embed
+
+    async def format_top(self):
+        db = await self.connect_sql()
+        top_count = 5
+        cursor_chaos = db.cursor()
+        # Chaos
+        cursor_chaos.execute(
+            f"SELECT * FROM `chaos_tracker` ORDER BY total_runs DESC LIMIT {top_count}")
+        result_chaos = cursor_chaos.fetchall()
+
+        # Baal
+        cursor_baal = db.cursor()
+        cursor_baal.execute(
+            f"SELECT * FROM `baal_tracker` ORDER BY total_runs DESC LIMIT {top_count}")
+        result_baal = cursor_baal.fetchall()
+
+        embed = discord.Embed(color=0xffffff)
+        embed.title = f'Top {top_count} Runners'
+        count = 1
+
+        top = {"chaos": [], "baal": []}
+        for row in result_chaos:
+            user = row[1].split('#')[0]
+            avg_time = int(row[3] / row[2])
+            top["chaos"].append(
+                f'{count}. {user} - {row[2]} runs - {avg_time} sec avg'
+            )
+            count += 1
+
+        count = 1
+        for row in result_baal:
+            user = row[1].split('#')[0]
+            top["baal"].append(
+                f'{count}. {user} - {row[2]} runs - {avg_time} sec avg'
+            )
+            count += 1
+
+        embed.add_field(
+            name=f'Chaos',
+            value='\n'.join(top["chaos"]) if len(top["chaos"]) else 'No Data',
+            inline=True
+        )
+
+        embed.add_field(
+            name=f'Baal',
+            value='\n'.join(top["baal"]) if len(top["baal"]) else 'No Data',
+            inline=True
+        )
+        cursor_baal.close()
+        cursor_chaos.close()
+        db.close()
+        return embed
 
     def format_games(self):
         cur_games = {"americas": [], "europe": [], "asia": []}
@@ -441,7 +523,7 @@ class ChaoxCog(commands.Cog):
                     f'{v["game_name"]}{password} [{user.mention}] <t:{v["timestamp"]}:R>')
 
         embed = discord.Embed(
-            color=0xff0000
+            color=0x0000ff
         )
 
         embed.title = 'Current Games'

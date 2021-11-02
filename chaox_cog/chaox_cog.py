@@ -374,7 +374,7 @@ class ChaoxCog(commands.Cog):
             elif game_name.lower() == 'game over':
                 if (duration > await self.config.guild(message.guild).min_game_time()
                         and duration < await self.config.guild(message.guild).max_game_time()):
-                    await self.persist_data(game_type, runner, duration)
+                    await self.persist_data(self.games[runner]["game_type"], runner, duration)
                     removed = self.games.pop(runner)
                     await self.update_channel(message.guild)
                     return

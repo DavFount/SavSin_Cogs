@@ -187,7 +187,9 @@ class ChaoxCog(commands.Cog):
 
     @chx_admin.command(name="reset")
     async def chx_admin_reset(self, ctx: commands.Context):
-        await self.config.guild(ctx.guild).game_msg.set('')
+        await self.config.guild(ctx.guild).game_msg.set(None)
+        await self.config.guild(ctx.guild).inst_msg.set(None)
+        await self.config.guild(ctx.guild).top_msg.set(None)
 
     @chx_admin.command(name="stop")
     async def chx_admin_stop(self, ctx: commands.Context, user: discord.Member):

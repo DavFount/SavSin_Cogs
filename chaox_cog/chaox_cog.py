@@ -424,7 +424,7 @@ class ChaoxCog(commands.Cog):
             await self.config.guild(guild).top_msg.set(message.id)
         else:
             message = await channel.fetch_message(await self.config.guild(guild).top_msg())
-            await message.edit(embed=self.format_top)
+            await message.edit(embed=self.format_top())
 
         if(not await self.config.guild(guild).game_msg()):
             message = await channel.send(embed=self.format_games())
@@ -440,18 +440,7 @@ class ChaoxCog(commands.Cog):
             name="1.",
             value="Some future instructions"
         )
-        embed.add_field(
-            name="2.",
-            value="Some future instructions"
-        )
-        embed.add_field(
-            name="3.",
-            value="Some future instructions"
-        )
-        embed.add_field(
-            name="4.",
-            value="Some future instructions"
-        )
+
         return embed
 
     async def format_top(self):

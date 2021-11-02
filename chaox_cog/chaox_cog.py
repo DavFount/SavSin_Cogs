@@ -185,6 +185,10 @@ class ChaoxCog(commands.Cog):
     async def chx_admin(self, ctx: commands.Context):
         """Various ChX Admin Settings."""
 
+    @chx_admin.command(name="reset")
+    async def chx_admin_stop(self, ctx: commands.Context):
+        await self.config.guild(ctx.guild).game_msg.set('')
+
     @chx_admin.command(name="stop")
     async def chx_admin_stop(self, ctx: commands.Context, user: discord.Member):
         removed = self.games.pop(f'{user.name}#{user.discriminator}')
@@ -421,19 +425,20 @@ class ChaoxCog(commands.Cog):
         cur_time = int(time.time())
         for(k, v) in self.games.items():
             if v["password"]:
-                password = v["password"]
+                password = f'///{v["password"]}'
             else:
-                password = 'None'
+                password = '(No PW)'
+
             user = self.get_user(k)
             if v["region"] == 'Americas':
                 cur_games["americas"].append(
-                    f'{v["game_name"]} [{user.mention}] (Password: {password}) <t:{v["timestamp"]}:R>')
+                    f'{v["game_name"]}{password} [{user.mention}] <t:{v["timestamp"]}:R>')
             elif v["region"] == 'Europe':
                 cur_games["europe"].append(
-                    f'{v["game_name"]} [{user.mention}] (Password: {password}) <t:{v["timestamp"]}:R>')
+                    f'{v["game_name"]}{password} [{user.mention}] <t:{v["timestamp"]}:R>')
             elif v["region"] == 'Asia':
                 cur_games["asia"].append(
-                    f'{v["game_name"]} [{user.mention}] (Password: {password}) <t:{v["timestamp"]}:R>')
+                    f'{v["game_name"]}{password} [{user.mention}] <t:{v["timestamp"]}:R>')
 
         embed = discord.Embed(
             color=0xff0000

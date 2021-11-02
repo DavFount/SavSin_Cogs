@@ -368,7 +368,7 @@ class ChaoxCog(commands.Cog):
         if runner in self.games:
             duration = cur_time - self.games[runner]["timestamp"]
             if game_name.lower() == 'logout':
-                await self.persist_data(game_type, runner, duration)
+                await self.persist_data(self.games[runner]["game_type"], runner, duration)
                 removed = self.games.pop(runner)
                 await self.update_channel(message.guild)
                 return

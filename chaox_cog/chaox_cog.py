@@ -36,7 +36,6 @@ class ChaoxCog(commands.Cog):
     async def game_announce(self):
         if not self.guild:
             self.guild = self.bot.get_guild(772664928627851275)
-            self.config.guild(self.guild).game_msg.set(None)
         curtime = int(time.time())
         for(k, v) in self.games.items():
             duration = curtime - v["timestamp"]
@@ -187,7 +186,7 @@ class ChaoxCog(commands.Cog):
         """Various ChX Admin Settings."""
 
     @chx_admin.command(name="reset")
-    async def chx_admin_stop(self, ctx: commands.Context):
+    async def chx_admin_reset(self, ctx: commands.Context):
         await self.config.guild(ctx.guild).game_msg.set('')
 
     @chx_admin.command(name="stop")
@@ -421,6 +420,9 @@ class ChaoxCog(commands.Cog):
         if(not await self.config.guild(guild).top_msg()):
             message = await channel.send(embed=await self.format_top())
             await self.config.guild(guild).top_msg.set(message.id)
+        else:
+            message = await channel.fetch_message(await self.config.guild(guild).top_msg())
+            await message.edit(embed=self.format_top)
 
         if(not await self.config.guild(guild).game_msg()):
             message = await channel.send(embed=self.format_games())

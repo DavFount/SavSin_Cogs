@@ -40,7 +40,6 @@ class ChaoxCog(commands.Cog):
         for(k, v) in self.games.items():
             duration = curtime - v["timestamp"]
             if duration > 600:
-                print('Duration is longer than 600 seconds')
                 remove = self.games.pop(k)
 
         await self.update_channel(self.guild)
@@ -375,7 +374,6 @@ class ChaoxCog(commands.Cog):
             elif game_name.lower() == 'game over':
                 if (duration > await self.config.guild(message.guild).min_game_time()
                         and duration < await self.config.guild(message.guild).max_game_time()):
-                    print(f'Persisting Data for {runner}')
                     await self.persist_data(game_type, runner, duration)
                     removed = self.games.pop(runner)
                     await self.update_channel(message.guild)
@@ -475,6 +473,7 @@ class ChaoxCog(commands.Cog):
         count = 1
         for row in result_baal:
             user = row[1].split('#')[0]
+            avg_time = int(row[3] / row[2])
             top["baal"].append(
                 f'{count}. {user} - {row[2]} runs - {avg_time} sec avg'
             )

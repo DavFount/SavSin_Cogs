@@ -17,6 +17,7 @@ class ChaoxCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.games = {}
+        self.prev_games = {}
         self.manual_games = {}
         self.game_announce.start()
         self.guild = None
@@ -380,10 +381,10 @@ class ChaoxCog(commands.Cog):
     async def on_message(self, message):
         if not message.guild:
             game_string = message.content.split('/', 2)
-            print(len(game_string))
+            print(game_string)
             return
 
-        if message.channel.id == await self.config.guild(message.guild).announce_channel():
+        if message.channel.id == await self.config.guild(message.guild).announce_channel() and not message.author.bot:
             await message.delete()
 
         if not message.channel.id == await self.config.guild(message.guild).log_channels():
@@ -407,10 +408,12 @@ class ChaoxCog(commands.Cog):
             duration = cur_time - self.games[runner]["timestamp"]
             if game_name.lower() == 'logout':
                 await self.persist_data(self.games[runner]["game_type"], runner, duration)
+                await self.send_thankyou_message(runner, self.games[runner]["game_name"])
                 removed = self.games.pop(runner)
                 await self.update_channel(message.guild)
                 return
             elif game_name.lower() == 'game over':
+                self.prev_games[runner].append(duration)
                 if (duration > await self.config.guild(message.guild).min_game_time()
                         and duration < await self.config.guild(message.guild).max_game_time()):
                     await self.persist_data(self.games[runner]["game_type"], runner, duration)
@@ -432,6 +435,9 @@ class ChaoxCog(commands.Cog):
         }
 
         self.games.update(game)
+        if not self.prev_games[runner]:
+            self.prev_games[runner] = []
+
         channel = message.guild.get_channel(await self.config.guild(message.guild).annouce_channel())
         msg_duration = await self.config.guild(self.guild).message_wait_time()
         if password:
@@ -589,6 +595,41 @@ class ChaoxCog(commands.Cog):
                 inline=False
             )
         return embed
+
+    async def send_thankyou_message(self, runner, game_name):
+        db = await self.connect_sql()
+        cursor = db.cursor()
+        cursor.execute(
+            f'SELECT SUM(chaos_tracker.total_runs + baal_tracker.total_runs) from chaos_tracker INNER JOIN baal_tracker ON chaos_tracker.username=baal_tracker.username WHERE username=\'{runner}\'')
+        result = cursor.fetchall()
+        cursor.close()
+        db.close()
+        channel = self.guild.get_channel(await self.config.guild(self.guild).annouce_channel())
+        user = self.get_user(runner)
+        self.prev_games[runner].sort()
+
+        embed = discord.Embed(color=0xffffff)
+        embed.title = f'{user.mention} Stats'
+        embed.description(
+            f'Thank you for joining {game_name}. These games have come to an end.\n{user.mention} has supported Clan ChX with a total of {result[0]} runs'
+        )
+        embed.add_field(
+            name="Runs",
+            value=len(self.prev_games[runner]),
+            inline=False
+        )
+        embed.add_field(
+            name="Fastest Time",
+            value=self.prev_games[runner][0],
+            inline=False
+        )
+        embed.add_field(
+            name="Loggest Time",
+            value=self.prev_games[runner][-1],
+            inline=False
+        )
+        await channel.send(embed=embed, delete_after=25)
+        removed = self.prev_games[runner].pop()
 
     async def is_db_configured(self):
         host = await self.config.guild(self.guild).host()

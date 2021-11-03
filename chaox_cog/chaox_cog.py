@@ -27,7 +27,7 @@ class ChaoxCog(commands.Cog):
 
         self.config.register_guild(
             host=None, port=3306, db=None, user=None, password=None, min_game_time=0, max_game_time=999,
-            annouce_channel=None, log_channels=None, game_msg=None, inst_msg=None, top_msg=None, chaos_role=None,
+            annouce_channel=None, log_channel=None, game_msg=None, inst_msg=None, top_msg=None, chaos_role=None,
             baal_role=None, message_wait_time=15)
 
     def cog_unload(self):
@@ -296,8 +296,8 @@ class ChaoxCog(commands.Cog):
 
     @chx_admin.command(name="game_log_ch")
     async def chx_admin_set_game_log_ch(self, ctx: commands.Context, channel: discord.TextChannel):
-        if not channel.id == await self.config.guild(ctx.guild).log_channels():
-            await self.config.guild(ctx.guild).log_channels.set(channel.id)
+        if not channel.id == await self.config.guild(ctx.guild).log_channel():
+            await self.config.guild(ctx.guild).log_channel.set(channel.id)
             await ctx.send(
                 f'{channel.mention} is now the logging channel!'
             )
@@ -400,7 +400,7 @@ class ChaoxCog(commands.Cog):
             await message.delete()
             return
 
-        if not message.channel.id == await self.config.guild(message.guild).log_channels():
+        if not message.channel.id == await self.config.guild(message.guild).log_channel():
             return
 
         run_data = re.search(

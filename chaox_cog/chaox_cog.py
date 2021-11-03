@@ -27,7 +27,7 @@ class ChaoxCog(commands.Cog):
 
         self.config.register_guild(
             host=None, port=3306, db=None, user=None, password=None, min_game_time=0, max_game_time=999,
-            annouce_channel=None, log_channel=None, game_msg=None, inst_msg=None, top_msg=None, chaos_role=None,
+            announce_channel=None, log_channel=None, game_msg=None, inst_msg=None, top_msg=None, chaos_role=None,
             baal_role=None, message_wait_time=15)
 
     def cog_unload(self):
@@ -308,8 +308,8 @@ class ChaoxCog(commands.Cog):
 
     @chx_admin.command(name="game_announce_ch")
     async def chx_admin_set_game_announce_ch(self, ctx: commands.Context, channel: discord.TextChannel):
-        if not channel.id == await self.config.guild(ctx.guild).annouce_channel():
-            await self.config.guild(ctx.guild).annouce_channel.set(channel.id)
+        if not channel.id == await self.config.guild(ctx.guild).announce_channel():
+            await self.config.guild(ctx.guild).announce_channel.set(channel.id)
             await ctx.send(
                 f'{channel.mention} is now the announcement channel!'
             )
@@ -451,7 +451,7 @@ class ChaoxCog(commands.Cog):
         if not self.prev_games[runner]:
             self.prev_games[runner] = []
 
-        channel = message.guild.get_channel(await self.config.guild(message.guild).annouce_channel())
+        channel = message.guild.get_channel(await self.config.guild(message.guild).announce_channel())
         msg_duration = await self.config.guild(self.guild).message_wait_time()
         if password:
             text_password = {password}
@@ -471,7 +471,7 @@ class ChaoxCog(commands.Cog):
         await self.update_channel(message.guild)
 
     async def update_channel(self, guild: discord.Guild):
-        channel = guild.get_channel(await self.config.guild(guild).annouce_channel())
+        channel = guild.get_channel(await self.config.guild(guild).announce_channel())
         if(not await self.config.guild(guild).inst_msg()):
             message = await channel.send(embed=self.format_instructions())
             await self.config.guild(guild).inst_msg.set(message.id)
@@ -617,7 +617,7 @@ class ChaoxCog(commands.Cog):
         result = cursor.fetchall()
         cursor.close()
         db.close()
-        channel = self.guild.get_channel(await self.config.guild(self.guild).annouce_channel())
+        channel = self.guild.get_channel(await self.config.guild(self.guild).announce_channel())
         user = self.get_user(runner)
         self.prev_games[runner].sort()
 

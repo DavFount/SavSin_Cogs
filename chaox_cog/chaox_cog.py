@@ -380,8 +380,10 @@ class ChaoxCog(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         if not message.guild:
-            game_string = message.content.split('/', 2)
-            print(game_string)
+            game_string = message.content.split('/', 1)
+            if len(game_string) > 1:
+                print(
+                    f"Game Name: {game_string[0].replace('/', '')} Password: {game_string[1].replace('/', '')}")
             return
 
         if message.channel.id == await self.config.guild(message.guild).announce_channel() and not message.author.bot:

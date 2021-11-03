@@ -76,13 +76,12 @@ class ChaoxCog(commands.Cog):
             await ctx.reply('Invalid Type. [Chaos / Baal]')
             return
         else:
+            self.manual_games[username] = {
+                "region": region,
+                "game_type": game_type
+            }
             await ctx.reply(f'You are now logged in running {game_type} games in the {region} region.')
             await ctx.reply('What is the game name and password? Format: ***chx chaos-1///1*** will create the game chx chaos-1 with a password of 1')
-
-        self.manual_games[username] = {
-            "region": region,
-            "game_type": game_type
-        }
 
     @commands.command()
     async def logout(self, ctx: commands.Context):

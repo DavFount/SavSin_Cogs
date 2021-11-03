@@ -17,6 +17,7 @@ class ChaoxCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.games = {}
+        self.manual_games = {}
         self.game_announce.start()
         self.guild = None
         self.config = Config.get_conf(
@@ -54,6 +55,33 @@ class ChaoxCog(commands.Cog):
     def format_help_for_context(self, ctx: commands.Context) -> str:
         context = super().format_help_for_context(ctx)
         return f'{context}\n\nVersion: {self.__version__}'
+
+    @commands.command()
+    async def login(self, ctx: commands.Context, region: str, game_type: str):
+        """ Login to start running games. Use $login <americas/europe/asia> <chaos/baal> """
+        username = f'{ctx.author.name}#{ctx.author.discriminator}'
+
+        if username in self.manual_games:
+            ctx.reply('You\'re already logged in.')
+
+        regions = ["americas", "europe", "asia"]
+        game_types = ["chaos", "baal"]
+
+        if region not in regions:
+            ctx.reply('Invalid Region.')
+        elif game_type not in game_types:
+            ctx.reply('Invalid Type')
+
+        self.manual_games[username] = {
+            "region": region,
+            "game_type": game_type
+        }
+
+    @commands.command()
+    async def logout(self, ctx: commands.Context):
+        username = f'{ctx.author.name}#{ctx.author.discriminator}'
+        if username in self.manual_games:
+            removed = self.manual_games.pop(username)
 
     @commands.command()
     async def whoami(self, ctx: commands.Context):
@@ -345,7 +373,12 @@ class ChaoxCog(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         if not message.guild:
+            game_string = message.content.split('/', 2)
+            print(len(game_string))
             return
+
+        if message.channel.id == await self.config.guild(message.guild).announce_channel():
+            await message.delete()
 
         if not message.channel.id == await self.config.guild(message.guild).log_channels():
             return

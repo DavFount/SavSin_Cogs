@@ -62,15 +62,15 @@ class ChaoxCog(commands.Cog):
         username = f'{ctx.author.name}#{ctx.author.discriminator}'
 
         if username in self.manual_games:
-            ctx.reply('You\'re already logged in.')
+            await ctx.reply('You\'re already logged in.')
 
         regions = ["americas", "europe", "asia"]
         game_types = ["chaos", "baal"]
 
         if region not in regions:
-            ctx.reply('Invalid Region.')
+            await ctx.reply('Invalid Region.')
         elif game_type not in game_types:
-            ctx.reply('Invalid Type')
+            await ctx.reply('Invalid Type')
 
         self.manual_games[username] = {
             "region": region,

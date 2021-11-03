@@ -70,10 +70,10 @@ class ChaoxCog(commands.Cog):
         game_types = ["chaos", "baal"]
 
         if region not in regions:
-            await ctx.reply('Invalid Region.')
+            await ctx.reply('Invalid Region. [Americas / Europe / Asia]')
             return
         elif game_type not in game_types:
-            await ctx.reply('Invalid Type')
+            await ctx.reply('Invalid Type. [Chaos / Baal]')
             return
         else:
             await ctx.reply(f'You are now logged in running {game_type} games in the {region} region.')
@@ -381,6 +381,8 @@ class ChaoxCog(commands.Cog):
     async def on_message(self, message):
         if not message.guild:
             username = f'{message.author.name}#{message.author.discriminator}'
+            print(username)
+            print(self.prev_games)
             if username not in self.prev_games:
                 return
             game_string = message.content.split('/', 1)

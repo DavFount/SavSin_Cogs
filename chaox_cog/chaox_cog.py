@@ -380,14 +380,20 @@ class ChaoxCog(commands.Cog):
     async def on_message(self, message):
         if not message.guild:
             username = f'{message.author.name}#{message.author.discriminator}'
-            print(username)
-            print(self.manual_games)
             if username not in self.manual_games:
                 return
             game_string = message.content.split('/', 1)
             if len(game_string) > 1:
-                print(
-                    f"Game Name: {game_string[0].replace('/', '')} Password: {game_string[1].replace('/', '')}")
+                game_name = game_string[0].replace('/', '')
+                password = game_string[1].replace('/', '')
+                region = self.manual_games[username]["region"]
+                game_type = self.manual_games[username]["game_type"]
+                channel = self.guild.fetch_channel(await self.config.guild(self.guild).log_channel())
+
+                if username in self.games:
+                    await channel.send(f'|{username}|Game Over||{region}|{game_type}|')
+
+                await channel.send(f'|{username}|{game_name}|{password}|{region}|{game_type}|')
             return
 
         if message.channel.id == await self.config.guild(message.guild).announce_channel() and not message.author.bot:

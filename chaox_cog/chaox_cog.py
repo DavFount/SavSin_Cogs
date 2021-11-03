@@ -388,7 +388,7 @@ class ChaoxCog(commands.Cog):
                 password = game_string[1].replace('/', '')
                 region = self.manual_games[username]["region"]
                 game_type = self.manual_games[username]["game_type"]
-                channel = self.guild.fetch_channel(await self.config.guild(self.guild).log_channel())
+                channel = self.guild.get_channel(await self.config.guild(self.guild).log_channel())
 
                 if username in self.games:
                     await channel.send(f'|{username}|Game Over||{region}|{game_type}|')

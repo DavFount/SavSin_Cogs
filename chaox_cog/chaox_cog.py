@@ -380,6 +380,9 @@ class ChaoxCog(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         if not message.guild:
+            username = f'{message.author.name}#{message.author.discriminator}'
+            if username not in self.prev_games:
+                return
             game_string = message.content.split('/', 1)
             if len(game_string) > 1:
                 print(

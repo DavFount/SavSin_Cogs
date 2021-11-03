@@ -39,7 +39,7 @@ class ChaoxCog(commands.Cog):
         if not self.guild:
             self.guild = self.bot.get_guild(772664928627851275)
         curtime = int(time.time())
-        for(k, v) in self.games.items():
+        for(k, v) in list(self.games.items()):
             duration = curtime - v["timestamp"]
             if duration > 600:
                 remove = self.games.pop(k)
@@ -508,6 +508,7 @@ class ChaoxCog(commands.Cog):
         return embed
 
     async def format_top(self):
+        cur_time = time.time()
         db = await self.connect_sql()
         top_count = 5
         cursor_chaos = db.cursor()
@@ -524,6 +525,7 @@ class ChaoxCog(commands.Cog):
 
         embed = discord.Embed(color=0xffffff)
         embed.title = f'Top {top_count} Runners'
+        embed.description = f'Updated <t:{cur_time}:f>'
         count = 1
 
         top = {"chaos": [], "baal": []}

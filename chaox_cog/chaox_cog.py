@@ -386,6 +386,7 @@ class ChaoxCog(commands.Cog):
 
         if message.channel.id == await self.config.guild(message.guild).announce_channel() and not message.author.bot:
             await message.delete()
+            return
 
         if not message.channel.id == await self.config.guild(message.guild).log_channels():
             return

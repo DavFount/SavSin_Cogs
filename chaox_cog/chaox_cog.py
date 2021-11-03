@@ -86,8 +86,14 @@ class ChaoxCog(commands.Cog):
     @commands.command()
     async def logout(self, ctx: commands.Context):
         username = f'{ctx.author.name}#{ctx.author.discriminator}'
+        cur_time = time.time()
+        duration = cur_time - self.games[username]["timestamp"]
         if username in self.manual_games:
-            removed = self.manual_games.pop(username)
+            await self.persist_data(self.games[username]["game_type"], username, duration)
+            await self.send_thankyou_message(username, self.games[username]["game_name"])
+            removed = self.games.pop(username)
+            removed = self.prev_games.pop(username)
+            await self.update_channel(self.guild)
 
     @commands.command()
     async def whoami(self, ctx: commands.Context):
@@ -423,6 +429,7 @@ class ChaoxCog(commands.Cog):
                 await self.persist_data(self.games[runner]["game_type"], runner, duration)
                 await self.send_thankyou_message(runner, self.games[runner]["game_name"])
                 removed = self.games.pop(runner)
+                removed = self.prev_games.pop(runner)
                 await self.update_channel(message.guild)
                 return
             elif game_name.lower() == 'game over':
@@ -448,7 +455,7 @@ class ChaoxCog(commands.Cog):
         }
 
         self.games.update(game)
-        if not self.prev_games[runner]:
+        if runner not in self.prev_games:
             self.prev_games[runner] = []
 
         channel = message.guild.get_channel(await self.config.guild(message.guild).announce_channel())

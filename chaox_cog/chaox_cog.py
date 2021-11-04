@@ -448,14 +448,17 @@ class ChaoxCog(commands.Cog):
             duration = cur_time - self.games[runner]["timestamp"]
             if game_name.lower() == 'logout':
                 await self.persist_data(self.games[runner]["game_type"], runner, duration)
+                print('Persisting Data')
                 await self.send_thankyou_message(runner, self.games[runner]["game_name"])
+                print(
+                    f'Sending Thank you from {runner} in {self.games[runner]["game_name"]}')
                 removed = self.games.pop(runner)
                 removed = self.prev_games.pop(runner)
                 await self.update_channel(message.guild)
                 return
             elif game_name.lower() == 'game over':
                 self.prev_games[runner].append(duration)
-                print(f'{runner}\'s games {self.prev_games[runner]}')
+                # print(f'{runner}\'s games {self.prev_games[runner]}')
                 if (duration > await self.config.guild(message.guild).min_game_time()
                         and duration < await self.config.guild(message.guild).max_game_time()):
                     await self.persist_data(self.games[runner]["game_type"], runner, duration)
@@ -674,7 +677,7 @@ class ChaoxCog(commands.Cog):
         embed = discord.Embed(color=0xffffff)
         embed.title = f'{user.mention} Stats'
         embed.description(
-            f'Thank you for joining {game_name}. These games have come to an end.\n{user.mention} has supported Clan ChX with a total of {result[0]} runs'
+            f'Thank you for joining {game_name}. These games have come to an end.\n{user.mention} has supported Clan ChX with a total of {result[0]} Baal & Chaos runs'
         )
         embed.add_field(
             name="Runs",

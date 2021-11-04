@@ -28,7 +28,7 @@ class ChaoxCog(commands.Cog):
         self.config.register_guild(
             host=None, port=3306, db=None, user=None, password=None, min_game_time=0, max_game_time=999,
             announce_channel=None, log_channel=None, game_msg=None, inst_msg=None, top_msg=None, chaos_role=None,
-            baal_role=None, message_wait_time=15)
+            baal_role=None, message_wait_time=15, instructions=[])
 
     def cog_unload(self):
         self.game_announce.cancel()
@@ -87,7 +87,7 @@ class ChaoxCog(commands.Cog):
     @commands.command()
     async def logout(self, ctx: commands.Context):
         username = f'{ctx.author.name}#{ctx.author.discriminator}'
-        cur_time = time.time()
+        cur_time = int(time.time())
         duration = cur_time - self.games[username]["timestamp"]
         if username in self.manual_games:
             await self.persist_data(self.games[username]["game_type"], username, duration)
@@ -353,6 +353,20 @@ class ChaoxCog(commands.Cog):
         await self.config.guild(ctx.guild).message_wait_time.set(delay)
         await ctx.send(f'The duration of the new game message is now {delay} seconds')
 
+    @chx_admin.command(name="add_inst")
+    async def chx_add_isnt(self, ctx: commands.Context, instruction: str):
+        async with self.config.guild(ctx.guild).instructions() as instructions:
+            instructions.append(instruction)
+
+        await self.update_instructions()
+
+    @chx_admin.command(name="reset_inst")
+    async def chx_reset_isnt(self, ctx: commands.Context, instruction: str):
+        async with self.config.guild(ctx.guild).instructions() as instructions:
+            instructions.clear()
+
+        await self.update_instructions()
+
     @chx_admin.command(name="settings")
     async def chx_admin_settings(self, ctx: commands.Context):
         """See current settings."""
@@ -515,18 +529,34 @@ class ChaoxCog(commands.Cog):
             message = await channel.fetch_message(await self.config.guild(guild).game_msg())
             await message.edit(embed=self.format_games())
 
-    def format_instructions(self):
+    async def update_instructions(self):
+        channel = self.guild.get_channel(await self.config.guild(self.guild).announce_channel())
+        message = await channel.fetch_message(await self.config.guild(self.guild).inst_msg())
+        await message.edit(embed=self.format_games())
+
+    async def format_instructions(self):
+        cur_time = int(time.time())
         embed = discord.Embed(color=0xff0000)
         embed.title = 'Instructions'
         embed.add_field(
-            name="1.",
-            value="Some future instructions"
+            name=f'Updated',
+            value=f'<t:{cur_time}:t>'
         )
+        instructions = await self.config.guild(self.guild).instructions()
+
+        count = 1
+        for instruction in instructions:
+            embed.add_field(
+                name="1.",
+                value=f"{count}. {instruction}",
+                inline=False
+            )
+            count += 1
 
         return embed
 
     async def format_top(self):
-        cur_time = time.time()
+        cur_time = int(time.time())
         db = await self.connect_sql()
         top_count = 5
         cursor_chaos = db.cursor()
@@ -543,6 +573,10 @@ class ChaoxCog(commands.Cog):
 
         embed = discord.Embed(color=0xffffff)
         embed.title = f'Top {top_count} Runners'
+        embed.add_field(
+            name=f'Updated',
+            value=f'<t:{cur_time}:R>'
+        )
         count = 1
 
         top = {"chaos": [], "baal": []}

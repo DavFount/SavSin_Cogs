@@ -42,7 +42,7 @@ class ChaoxCog(commands.Cog):
         for(k, v) in list(self.games.items()):
             duration = curtime - v["timestamp"]
             if duration > 600:
-                print(f'{runner}\'s game ran to long. {duration} seconds')
+                print(f'{k}\'s game ran to long. {duration} seconds')
                 remove = self.games.pop(k)
 
         await self.update_channel(self.guild)
@@ -639,7 +639,7 @@ class ChaoxCog(commands.Cog):
         db = await self.connect_sql()
         cursor = db.cursor()
         cursor.execute(
-            f'SELECT SUM(chaos_tracker.total_runs + baal_tracker.total_runs) from chaos_tracker INNER JOIN baal_tracker ON chaos_tracker.username=baal_tracker.username WHERE username=\'{runner}\'')
+            f'SELECT SUM(chaos_tracker.total_runs + baal_tracker.total_runs) from chaos_tracker INNER JOIN baal_tracker ON chaos_tracker.username=baal_tracker.username WHERE chaos_tracker.username=\'{runner}\'')
         result = cursor.fetchall()
         cursor.close()
         db.close()

@@ -388,33 +388,33 @@ class ChaoxCog(commands.Cog):
             if "$" in message.content:
                 return
             username = f'{message.author.name}#{message.author.discriminator}'
-            print(username)
+            # print(username)
             if username not in self.manual_games:
-                print('User not logged in!')
+                # print('User not logged in!')
                 return
             game_string = message.content.split('/', 1)
-            print(f'Game String Length: {len(game_string)}')
+            # print(f'Game String Length: {len(game_string)}')
 
             if len(game_string) > 1:
-                print('Game and Password set')
+                # print('Game and Password set')
                 game_name = game_string[0].replace('/', '')
                 password = game_string[1].replace('/', '')
             else:
-                print('Game Only')
+                # print('Game Only')
                 game_name = message.content
                 password = ''
-            print('Set Region')
+            # print('Set Region')
             region = self.manual_games[username]["region"]
-            print('Print game_type')
+            # print('Print game_type')
             game_type = self.manual_games[username]["game_type"]
-            print('Channel selected')
+            # print('Channel selected')
             channel = self.guild.get_channel(await self.config.guild(self.guild).log_channel())
 
             if username in self.games:
-                print('Send Game Over to clear and count game.')
+                # print('Send Game Over to clear and count game.')
                 await channel.send(f'|{username}|Game Over||{region}|{game_type}|')
 
-            print('Sending Game to Game Log')
+            # print('Sending Game to Game Log')
             await channel.send(f'|{username}|{game_name}|{password}|{region}|{game_type}|')
             return
 
@@ -477,7 +477,7 @@ class ChaoxCog(commands.Cog):
         channel = message.guild.get_channel(await self.config.guild(message.guild).announce_channel())
         msg_duration = await self.config.guild(self.guild).message_wait_time()
         if password:
-            text_password = {password}
+            text_password = password
         else:
             text_password = 'None'
 
@@ -546,19 +546,21 @@ class ChaoxCog(commands.Cog):
 
         top = {"chaos": [], "baal": []}
         for row in result_chaos:
-            user = row[1].split('#')[0]
+            user = self.get_user()
+            # user = row[1].split('#')[0]
             avg_time = int(row[3] / row[2])
             top["chaos"].append(
-                f'{count}. {user} - {row[2]} runs - {avg_time} sec avg'
+                f'{count}. {user.mention} - {row[2]} runs - {avg_time} sec avg'
             )
             count += 1
 
         count = 1
         for row in result_baal:
-            user = row[1].split('#')[0]
+            user = self.get_user()
+            # user = row[1].split('#')[0]
             avg_time = int(row[3] / row[2])
             top["baal"].append(
-                f'{count}. {user} - {row[2]} runs - {avg_time} sec avg'
+                f'{count}. {user.mention} - {row[2]} runs - {avg_time} sec avg'
             )
             count += 1
 

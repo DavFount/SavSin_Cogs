@@ -458,7 +458,7 @@ class ChaoxCog(commands.Cog):
                 return
             elif game_name.lower() == 'game over':
                 self.prev_games[runner].append(duration)
-                # print(f'{runner}\'s games {self.prev_games[runner]}')
+                print(f'{runner}\'s games {self.prev_games[runner]}')
                 if (duration > await self.config.guild(message.guild).min_game_time()
                         and duration < await self.config.guild(message.guild).max_game_time()):
                     await self.persist_data(self.games[runner]["game_type"], runner, duration)

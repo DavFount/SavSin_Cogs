@@ -403,33 +403,23 @@ class ChaoxCog(commands.Cog):
             if "$" in message.content:
                 return
             username = f'{message.author.name}#{message.author.discriminator}'
-            # print(username)
             if username not in self.manual_games:
-                # print('User not logged in!')
                 return
             game_string = message.content.split('/', 1)
-            # print(f'Game String Length: {len(game_string)}')
 
             if len(game_string) > 1:
-                # print('Game and Password set')
                 game_name = game_string[0].replace('/', '')
                 password = game_string[1].replace('/', '')
             else:
-                # print('Game Only')
                 game_name = message.content
                 password = ''
-            # print('Set Region')
             region = self.manual_games[username]["region"]
-            # print('Print game_type')
             game_type = self.manual_games[username]["game_type"]
-            # print('Channel selected')
             channel = self.guild.get_channel(await self.config.guild(self.guild).log_channel())
 
             if username in self.games:
-                # print('Send Game Over to clear and count game.')
                 await channel.send(f'|{username}|Game Over||{region}|{game_type}|')
 
-            # print('Sending Game to Game Log')
             await channel.send(f'|{username}|{game_name}|{password}|{region}|{game_type}|')
             return
 
@@ -532,7 +522,7 @@ class ChaoxCog(commands.Cog):
     async def update_instructions(self):
         channel = self.guild.get_channel(await self.config.guild(self.guild).announce_channel())
         message = await channel.fetch_message(await self.config.guild(self.guild).inst_msg())
-        await message.edit(embed=self.format_instructions())
+        await message.edit(embed=await self.format_instructions())
 
     async def format_instructions(self):
         cur_time = int(time.time())
@@ -543,16 +533,14 @@ class ChaoxCog(commands.Cog):
             value=f'<t:{cur_time}:t>'
         )
         instructions = await self.config.guild(self.guild).instructions()
-        print(type(instructions))
-        print(type(await instructions))
         count = 1
-        # for instruction in list(await instructions):
-        #     embed.add_field(
-        #         name="1.",
-        #         value=f"{count}. {instruction}",
-        #         inline=False
-        #     )
-        #     count += 1
+        for instruction in instructions:
+            embed.add_field(
+                name="1.",
+                value=f"{count}. {instruction}",
+                inline=False
+            )
+            count += 1
 
         return embed
 

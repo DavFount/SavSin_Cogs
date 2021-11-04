@@ -542,15 +542,17 @@ class ChaoxCog(commands.Cog):
             name=f'Updated',
             value=f'<t:{cur_time}:t>'
         )
-        async with self.config.guild(self.guild).instructions() as instructions:
-            count = 1
-            for instruction in instructions:
-                embed.add_field(
-                    name="1.",
-                    value=f"{count}. {instruction}",
-                    inline=False
-                )
-                count += 1
+        instructions = await self.config.guild(self.guild).instructions()
+        print(type(instructions))
+        print(type(await instructions))
+        count = 1
+        for instruction in list(await instructions):
+            embed.add_field(
+                name="1.",
+                value=f"{count}. {instruction}",
+                inline=False
+            )
+            count += 1
 
         return embed
 

@@ -390,10 +390,11 @@ class ChaoxCog(commands.Cog):
                 return
             game_string = message.content.split('/', 1)
 
-            game_name = game_string[0].replace('/', '')
             if len(game_string) > 1:
+                game_name = game_string[0].replace('/', '')
                 password = game_string[1].replace('/', '')
             else:
+                game_name = game_string
                 password = ''
             region = self.manual_games[username]["region"]
             game_type = self.manual_games[username]["game_type"]

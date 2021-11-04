@@ -546,13 +546,13 @@ class ChaoxCog(commands.Cog):
         print(type(instructions))
         print(type(await instructions))
         count = 1
-        for instruction in list(await instructions):
-            embed.add_field(
-                name="1.",
-                value=f"{count}. {instruction}",
-                inline=False
-            )
-            count += 1
+        # for instruction in list(await instructions):
+        #     embed.add_field(
+        #         name="1.",
+        #         value=f"{count}. {instruction}",
+        #         inline=False
+        #     )
+        #     count += 1
 
         return embed
 

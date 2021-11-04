@@ -389,15 +389,18 @@ class ChaoxCog(commands.Cog):
             if username not in self.manual_games:
                 return
             game_string = message.content.split('/', 1)
-            if len(game_string) > 1:
-                game_name = game_string[0].replace('/', '')
-                password = game_string[1].replace('/', '')
-                region = self.manual_games[username]["region"]
-                game_type = self.manual_games[username]["game_type"]
-                channel = self.guild.get_channel(await self.config.guild(self.guild).log_channel())
 
-                if username in self.games:
-                    await channel.send(f'|{username}|Game Over||{region}|{game_type}|')
+            game_name = game_string[0].replace('/', '')
+            if len(game_string) > 1:
+                password = game_string[1].replace('/', '')
+            else:
+                password = ''
+            region = self.manual_games[username]["region"]
+            game_type = self.manual_games[username]["game_type"]
+            channel = self.guild.get_channel(await self.config.guild(self.guild).log_channel())
+
+            if username in self.games:
+                await channel.send(f'|{username}|Game Over||{region}|{game_type}|')
 
                 await channel.send(f'|{username}|{game_name}|{password}|{region}|{game_type}|')
             return

@@ -465,9 +465,9 @@ class ChaoxCog(commands.Cog):
         else:
             text_password = 'None'
 
-        if game_type == 'chaos' and await self.config.guild(message.guild).chaos_role():
+        if game_type.lower() == 'chaos' and await self.config.guild(message.guild).chaos_role():
             role = message.guild.get_role(await self.config.guild(message.guild).chaos_role())
-        elif game_type == 'baal' and await self.config.guild(message.guild).baal_role():
+        elif game_type.lower() == 'baal' and await self.config.guild(message.guild).baal_role():
             role = message.guild.get_role(await self.config.guild(message.guild).baal_role())
 
         if await self.config.guild(message.guild).chaos_role() or await self.config.guild(message.guild).baal_role():
@@ -572,13 +572,13 @@ class ChaoxCog(commands.Cog):
                 password = '(No PW)'
 
             user = self.get_user(k)
-            if v["region"] == 'Americas':
+            if v["region"].lower() == 'americas':
                 cur_games["americas"].append(
                     f'{v["game_name"]}{password} [{user.mention}] <t:{v["timestamp"]}:R>')
-            elif v["region"] == 'Europe':
+            elif v["region"].lower() == 'europe':
                 cur_games["europe"].append(
                     f'{v["game_name"]}{password} [{user.mention}] <t:{v["timestamp"]}:R>')
-            elif v["region"] == 'Asia':
+            elif v["region"].lower() == 'asia':
                 cur_games["asia"].append(
                     f'{v["game_name"]}{password} [{user.mention}] <t:{v["timestamp"]}:R>')
 

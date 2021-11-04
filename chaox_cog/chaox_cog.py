@@ -42,6 +42,7 @@ class ChaoxCog(commands.Cog):
         for(k, v) in list(self.games.items()):
             duration = curtime - v["timestamp"]
             if duration > 600:
+                print(f'{runner}\'s game ran to long. {duration} seconds')
                 remove = self.games.pop(k)
 
         await self.update_channel(self.guild)
@@ -450,6 +451,7 @@ class ChaoxCog(commands.Cog):
                 return
             elif game_name.lower() == 'game over':
                 self.prev_games[runner].append(duration)
+                print(f'{runner}\'s games {self.prev_games[runner]}')
                 if (duration > await self.config.guild(message.guild).min_game_time()
                         and duration < await self.config.guild(message.guild).max_game_time()):
                     await self.persist_data(self.games[runner]["game_type"], runner, duration)
@@ -541,13 +543,11 @@ class ChaoxCog(commands.Cog):
 
         embed = discord.Embed(color=0xffffff)
         embed.title = f'Top {top_count} Runners'
-        # embed.description = f'Updated <t:{cur_time}:f>'
         count = 1
 
         top = {"chaos": [], "baal": []}
         for row in result_chaos:
             user = self.get_user(row[1])
-            # user = row[1].split('#')[0]
             avg_time = int(row[3] / row[2])
             top["chaos"].append(
                 f'{count}. {user.mention} - {row[2]} runs - {avg_time} sec avg'
@@ -557,7 +557,6 @@ class ChaoxCog(commands.Cog):
         count = 1
         for row in result_baal:
             user = self.get_user(row[1])
-            # user = row[1].split('#')[0]
             avg_time = int(row[3] / row[2])
             top["baal"].append(
                 f'{count}. {user.mention} - {row[2]} runs - {avg_time} sec avg'

@@ -536,8 +536,8 @@ class ChaoxCog(commands.Cog):
         count = 1
         for instruction in instructions:
             embed.add_field(
-                name="1.",
-                value=f"{count}. {instruction}",
+                name=f"{count}.",
+                value=f"{instruction}",
                 inline=False
             )
             count += 1

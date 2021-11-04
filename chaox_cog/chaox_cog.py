@@ -530,7 +530,7 @@ class ChaoxCog(commands.Cog):
         embed.title = 'Instructions'
         embed.add_field(
             name=f'Updated',
-            value=f'<t:{cur_time}:t>'
+            value=f'<t:{cur_time}:f>'
         )
         instructions = await self.config.guild(self.guild).instructions()
         count = 1

@@ -532,7 +532,7 @@ class ChaoxCog(commands.Cog):
     async def update_instructions(self):
         channel = self.guild.get_channel(await self.config.guild(self.guild).announce_channel())
         message = await channel.fetch_message(await self.config.guild(self.guild).inst_msg())
-        await message.edit(embed=self.format_games())
+        await message.edit(embed=self.format_instructions())
 
     async def format_instructions(self):
         cur_time = int(time.time())
@@ -575,7 +575,8 @@ class ChaoxCog(commands.Cog):
         embed.title = f'Top {top_count} Runners'
         embed.add_field(
             name=f'Updated',
-            value=f'<t:{cur_time}:R>'
+            value=f'<t:{cur_time}:R>',
+            inline=False
         )
         count = 1
 

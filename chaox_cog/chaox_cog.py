@@ -385,6 +385,8 @@ class ChaoxCog(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         if not message.guild:
+            if message.content.contains("$"):
+                return
             username = f'{message.author.name}#{message.author.discriminator}'
             print(username)
             if username not in self.manual_games:

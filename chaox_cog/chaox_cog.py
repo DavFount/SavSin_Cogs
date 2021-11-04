@@ -361,7 +361,7 @@ class ChaoxCog(commands.Cog):
         await self.update_instructions()
 
     @chx_admin.command(name="reset_inst")
-    async def chx_reset_isnt(self, ctx: commands.Context, instruction: str):
+    async def chx_reset_isnt(self, ctx: commands.Context):
         async with self.config.guild(ctx.guild).instructions() as instructions:
             instructions.clear()
 

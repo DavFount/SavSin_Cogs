@@ -394,7 +394,7 @@ class ChaoxCog(commands.Cog):
                 game_name = game_string[0].replace('/', '')
                 password = game_string[1].replace('/', '')
             else:
-                game_name = game_string
+                game_name = message.content
                 password = ''
             region = self.manual_games[username]["region"]
             game_type = self.manual_games[username]["game_type"]
@@ -403,7 +403,7 @@ class ChaoxCog(commands.Cog):
             if username in self.games:
                 await channel.send(f'|{username}|Game Over||{region}|{game_type}|')
 
-                await channel.send(f'|{username}|{game_name}|{password}|{region}|{game_type}|')
+            await channel.send(f'|{username}|{game_name}|{password}|{region}|{game_type}|')
             return
 
         if message.channel.id == await self.config.guild(message.guild).announce_channel() and not message.author.bot:
@@ -529,7 +529,7 @@ class ChaoxCog(commands.Cog):
 
         embed = discord.Embed(color=0xffffff)
         embed.title = f'Top {top_count} Runners'
-        embed.description = f'Updated <t:{cur_time}:f>'
+        # embed.description = f'Updated <t:{cur_time}:f>'
         count = 1
 
         top = {"chaos": [], "baal": []}
@@ -573,7 +573,7 @@ class ChaoxCog(commands.Cog):
             if v["password"]:
                 password = f'///{v["password"]}'
             else:
-                password = '(No PW)'
+                password = ' (No PW)'
 
             user = self.get_user(k)
             if v["region"].lower() == 'americas':

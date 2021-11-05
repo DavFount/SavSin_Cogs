@@ -558,7 +558,7 @@ class ChaoxCog(commands.Cog):
             await self.config.guild(guild).inst_msg.set(message.id)
         else:
             message = await channel.fetch_message(await self.config.guild(guild).inst_msg())
-            await message.edit(embed=self.format_instructions)
+            await message.edit(embed=self.format_instructions())
 
         if(not await self.config.guild(guild).top_msg()):
             message = await channel.send(embed=await self.format_top())

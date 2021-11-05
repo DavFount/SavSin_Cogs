@@ -690,9 +690,8 @@ class ChaoxCog(commands.Cog):
 
         embed = discord.Embed(color=0xffffff)
         embed.title = f'{user.mention} Stats'
-        embed.description(
-            f'Thank you for joining {game_name}. These games have come to an end.\n{user.mention} has supported Clan ChX with a total of {result[0]} Baal & Chaos runs'
-        )
+        embed.description = f'Thank you for joining {game_name}. These games have come to an end.\n{user.mention} has supported Clan ChX with a total of {result[0]} Baal & Chaos runs'
+
         embed.add_field(
             name="Runs",
             value=len(self.prev_games[runner]),

@@ -590,7 +590,7 @@ class ChaoxCog(commands.Cog):
 
                                 2. To run without CRU: https://www.d2chaox.com/h78-no-cru
 
-                                Please report runners to <@&803366552303829042> and <@&822608935126564926>"""
+                                Please report all misconduct to <@&803366552303829042> and <@&822608935126564926>"""
 
         return embed
 

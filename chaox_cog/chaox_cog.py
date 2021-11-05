@@ -558,7 +558,7 @@ class ChaoxCog(commands.Cog):
             await self.config.guild(guild).inst_msg.set(message.id)
         else:
             message = await channel.fetch_message(await self.config.guild(guild).inst_msg())
-            await message.edit(embed=await self.format_instructions)
+            await message.edit(embed=self.format_instructions)
 
         if(not await self.config.guild(guild).top_msg()):
             message = await channel.send(embed=await self.format_top())
@@ -579,7 +579,7 @@ class ChaoxCog(commands.Cog):
         message = await channel.fetch_message(await self.config.guild(self.guild).inst_msg())
         await message.edit(embed=await self.format_instructions())
 
-    async def format_instructions(self):
+    def format_instructions(self):
         cur_time = int(time.time())
         embed = discord.Embed(color=0xff0000)
         embed.title = 'Instructions'

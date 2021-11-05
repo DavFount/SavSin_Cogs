@@ -61,20 +61,24 @@ class ChaoxCog(commands.Cog):
         return f'{context}\n\nVersion: {self.__version__}'
 
     # DEBUG CODE
-    @commands.command()
-    async def test(self, ctx: commands.Context):
-        username = f'{ctx.author.name}#{ctx.author.discriminator}'
-        self.prev_games[username] = []
-        for x in range(0, 25):
-            self.prev_games[username].append(int(random.random() * 1000))
-            print(self.prev_games[username])
+    # @commands.command()
+    # async def test(self, ctx: commands.Context):
+    #     username = f'{ctx.author.name}#{ctx.author.discriminator}'
+    #     self.prev_games[username] = []
+    #     for x in range(0, 25):
+    #         self.prev_games[username].append(int(random.random() * 1000))
+    #         print(self.prev_games[username])
 
-        await self.send_thankyou_message(username, 'ChX Baal-25')
+    #     await self.send_thankyou_message(username, 'ChX Baal-25')
     # DEBUG CODE
 
     @commands.command()
     async def login(self, ctx: commands.Context, region: str, game_type: str):
         """ Login to start running games. Use $login <americas/europe/asia> <chaos/baal> """
+
+        if ctx.guild:
+            return
+
         username = f'{ctx.author.name}#{ctx.author.discriminator}'
 
         if username in self.manual_games:
@@ -95,8 +99,37 @@ class ChaoxCog(commands.Cog):
                 "region": region,
                 "game_type": game_type
             }
-            await ctx.reply(f'You are now logged in running {game_type} games in the {region} region.')
-            await ctx.reply('What is the game name and password? Format: ***chx chaos-1///1*** will create the game chx chaos-1 with a password of 1')
+
+            embed = discord.Embed(color=0xff0000)
+            embed.set_author(name=self.guild.name,
+                             icon_url=self.guild.icon_url)
+            embed.title = f'You are now logged in! Game Type: {game_type} Region: {region}'
+            embed.add_field(
+                name='1.',
+                value='Tell me your game name.',
+                inline=False
+            )
+            embed.add_field(
+                name='a.',
+                value='For Private Games: ***priv chaos-1///1***',
+                inline=False
+            )
+            embed.add_field(
+                name='b.',
+                value='For Public Games: ***pub chaos-1***',
+                inline=False
+            )
+            embed.add_field(
+                name='2.',
+                value='Make sure to tell each new game to trigger the next game alert.',
+                inline=False
+            )
+            embed.add_field(
+                name='3.',
+                value='When you\'re done make sure to $logout.',
+                inline=False
+            )
+            await ctx.reply(embed=embed)
 
     @commands.command()
     async def logout(self, ctx: commands.Context):
@@ -104,10 +137,9 @@ class ChaoxCog(commands.Cog):
         cur_time = int(time.time())
         duration = cur_time - self.games[username]["timestamp"]
         if username in self.manual_games:
-            await self.persist_data(self.games[username]["game_type"], username, duration)
-            await self.send_thankyou_message(username, self.games[username]["game_name"])
-            removed = self.games.pop(username)
-            removed = self.prev_games.pop(username)
+            channel = self.guild.get_channel(await self.config.guild(self.guild).log_channel())
+            await channel.send(f'|{username}|Logout||Americas|Baal|')
+            removed = self.manual_games.pop(username)
             await self.update_channel(self.guild)
 
     @commands.command()
@@ -419,16 +451,23 @@ class ChaoxCog(commands.Cog):
             username = f'{message.author.name}#{message.author.discriminator}'
             if username not in self.manual_games:
                 return
-            game_string = message.content.split('/', 1)
 
-            if len(game_string) > 1:
-                game_name = game_string[0].replace('/', '')
-                password = game_string[1].replace('/', '')
-            else:
-                game_name = message.content
+            manual_run_data = re.search(
+                r"(?i)([a-zA-Z-= 0-9]{1,15})\/*([a-zA-Z0-9]{0,15})", message.content)
+
+            if not manual_run_data:
+                await message.reply('Invalid Game Name!')
+                return
+
+            game_name = manual_run_data.group(1)
+            password = manual_run_data.group(2)
+
+            if not password:
                 password = ''
+
             region = self.manual_games[username]["region"]
             game_type = self.manual_games[username]["game_type"]
+
             channel = self.guild.get_channel(await self.config.guild(self.guild).log_channel())
 
             if username in self.games:

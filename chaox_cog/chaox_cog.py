@@ -80,7 +80,7 @@ class ChaoxCog(commands.Cog):
         if region.lower() not in regions:
             await ctx.reply('Invalid Region. [Americas / Europe / Asia]')
             return
-        elif game_type not in game_types:
+        elif game_type.lower() not in game_types:
             await ctx.reply('Invalid Type. [Chaos / Baal]')
             return
         else:
@@ -579,16 +579,16 @@ class ChaoxCog(commands.Cog):
     async def format_instructions(self):
         cur_time = int(time.time())
         embed = discord.Embed(color=0xff0000)
-        embed.title = 'Instructions'
-        embed.add_field(
-            name=f'Updated',
-            value=f'<t:{cur_time}:f>'
-        )
+        # embed.title = 'Instructions'
+        # embed.add_field(
+        #     name=f'Updated',
+        #     value=f'<t:{cur_time}:f>'
+        # )
         instructions = await self.config.guild(self.guild).instructions()
         count = 1
         for instruction in instructions:
             embed.add_field(
-                name=f"{count}.",
+                name=f"Instructions",
                 value=f"{instruction}",
                 inline=False
             )

@@ -692,7 +692,7 @@ class ChaoxCog(commands.Cog):
         self.prev_games[runner].sort()
 
         embed = discord.Embed(color=0xff0000)
-        embed.title = f'{user.nick} Stats'
+        embed.title = f'{user.nick}\'s Stats'
         embed.description = f'Thank you for joining {game_name}. These games have come to an end.\n{user.mention} has supported Clan ChX with a total of {runs} Baal & Chaos runs'
 
         embed.add_field(

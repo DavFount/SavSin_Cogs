@@ -66,7 +66,7 @@ class ChaoxCog(commands.Cog):
         username = f'{ctx.author.name}#{ctx.author.discriminator}'
         self.prev_games[username] = []
         for x in range(0, 25):
-            self.prev_games[username].append(random.random() * 1000)
+            self.prev_games[username].append(int(random.random() * 1000))
             print(self.prev_games[username])
 
         await self.send_thankyou_message(username, 'ChX Baal-25')
@@ -693,7 +693,7 @@ class ChaoxCog(commands.Cog):
 
         embed = discord.Embed(color=0xff0000)
         embed.title = f'{user.nick}\'s Stats'
-        embed.description = f'Thank you for joining {game_name}. These games have come to an end.\n{user.mention} has supported Clan ChX with a total of {runs} Baal & Chaos runs'
+        embed.description = f'Thank you for joining ***{game_name}***. These games have come to an end.\n{user.mention} has supported Clan ChX with a total of {runs} Baal & Chaos runs'
 
         embed.add_field(
             name="Runs",

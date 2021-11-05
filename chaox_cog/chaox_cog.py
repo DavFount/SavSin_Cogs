@@ -1,10 +1,12 @@
 import discord
 import time
 import re
+from discord import user
 from redbot.core import Config, checks, commands
 from discord.ext import tasks
 from datetime import datetime as dt
 import mysql.connector
+import random
 
 from redbot.core.commands.context import Context
 
@@ -57,6 +59,18 @@ class ChaoxCog(commands.Cog):
     def format_help_for_context(self, ctx: commands.Context) -> str:
         context = super().format_help_for_context(ctx)
         return f'{context}\n\nVersion: {self.__version__}'
+
+    # DEBUG CODE
+    @commands.command()
+    async def test(self, ctx: commands.Context):
+        username = f'{ctx.author.name}#{ctx.author.discriminator}'
+        self.prev_games[username] = []
+        for x in range(0, 25):
+            self.prev_games[username].append(random.random() * 1000)
+            print(self.prev_games[username])
+
+        await self.send_thankyou_message(username, 'ChX Baal-25')
+    # DEBUG CODE
 
     @commands.command()
     async def login(self, ctx: commands.Context, region: str, game_type: str):

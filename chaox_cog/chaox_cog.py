@@ -592,30 +592,6 @@ class ChaoxCog(commands.Cog):
 
                                 Please report runners to <@&803366552303829042> and <@&822608935126564926>"""
 
-        embed.add_field(
-            name=discord.Embed.Empty,
-            value="To begin running for Clan ChX, you may run with or without the ChaoX Runner Utility (CRU).",
-            inline=False
-        )
-
-        embed.add_field(
-            name=discord.Embed.Empty,
-            value="1. To run with CRU: https://www.d2chaox.com/h77-cru",
-            inline=False
-        )
-
-        embed.add_field(
-            name=discord.Embed.Empty,
-            value="2. To run without CRU: https://www.d2chaox.com/h78-no-cru",
-            inline=False
-        )
-
-        embed.add_field(
-            name=discord.Embed.Empty,
-            value="Please report runners to <@&803366552303829042> and <@&822608935126564926>",
-            inline=False
-        )
-
         return embed
 
     async def format_top(self):

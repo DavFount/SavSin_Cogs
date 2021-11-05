@@ -77,6 +77,7 @@ class ChaoxCog(commands.Cog):
         """ Login to start running games. Use $login <americas/europe/asia> <chaos/baal> """
 
         if ctx.guild:
+            ctx.reply('$login and $logout must be used in DM\'s only')
             return
 
         username = f'{ctx.author.name}#{ctx.author.discriminator}'
@@ -133,6 +134,10 @@ class ChaoxCog(commands.Cog):
 
     @commands.command()
     async def logout(self, ctx: commands.Context):
+        """ Updates your run count with your last run. """
+        if ctx.guild:
+            ctx.reply('$login and $logout must be used in DM\'s only')
+            return
         username = f'{ctx.author.name}#{ctx.author.discriminator}'
         cur_time = int(time.time())
         duration = cur_time - self.games[username]["timestamp"]
@@ -459,6 +464,7 @@ class ChaoxCog(commands.Cog):
                 await message.reply('Invalid Game Name!')
                 return
 
+            await message.reply('Received. Send me your new game (and password) when game is over. Or $logout')
             game_name = manual_run_data.group(1)
             password = manual_run_data.group(2)
 

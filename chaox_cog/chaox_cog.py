@@ -70,7 +70,7 @@ class ChaoxCog(commands.Cog):
         regions = ["americas", "europe", "asia"]
         game_types = ["chaos", "baal"]
 
-        if region not in regions:
+        if region.lower() not in regions:
             await ctx.reply('Invalid Region. [Americas / Europe / Asia]')
             return
         elif game_type not in game_types:

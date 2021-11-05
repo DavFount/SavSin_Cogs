@@ -95,7 +95,7 @@ class ChaoxCog(commands.Cog):
             embed.title = f'You are now logged in! Game Type: {game_type} Region: {region}'
             embed.add_field(
                 name='1.',
-                value='Tell me your game name.',
+                value='Make a game and send it to me. See below for examples.',
                 inline=False
             )
             embed.add_field(
@@ -495,14 +495,14 @@ class ChaoxCog(commands.Cog):
         if runner in self.games:
             duration = cur_time - self.games[runner]["timestamp"]
             if game_name.lower() == 'logout':
-                if runner in self.manual_games:
-                    await self.persist_data(self.games[runner]["game_type"], runner, duration)
-                removed = self.games.pop(runner)
                 if runner in self.prev_games:
-                    print(
-                        f'Sending Thank you from {runner} in {self.games[runner]["game_name"]}')
                     await self.send_thankyou_message(runner, self.games[runner]["game_name"])
                     removed = self.prev_games.pop(runner)
+
+                if runner in self.manual_games:
+                    await self.persist_data(self.games[runner]["game_type"], runner, duration)
+
+                removed = self.games.pop(runner)
                 await self.update_channel(message.guild)
                 return
             elif game_name.lower() == 'game over':
@@ -556,6 +556,9 @@ class ChaoxCog(commands.Cog):
         if(not await self.config.guild(guild).inst_msg()):
             message = await channel.send(embed=self.format_instructions())
             await self.config.guild(guild).inst_msg.set(message.id)
+        else:
+            message = await channel.fetch_message(await self.config.guild(guild).inst_msg())
+            await message.edit(embed=await self.format_instructions)
 
         if(not await self.config.guild(guild).top_msg()):
             message = await channel.send(embed=await self.format_top())
@@ -579,20 +582,39 @@ class ChaoxCog(commands.Cog):
     async def format_instructions(self):
         cur_time = int(time.time())
         embed = discord.Embed(color=0xff0000)
-        # embed.title = 'Instructions'
-        # embed.add_field(
-        #     name=f'Updated',
-        #     value=f'<t:{cur_time}:f>'
-        # )
-        instructions = await self.config.guild(self.guild).instructions()
-        count = 1
-        for instruction in instructions:
-            embed.add_field(
-                name=f"Instructions",
-                value=f"{instruction}",
-                inline=False
-            )
-            count += 1
+        embed.title = 'Instructions'
+        embed.type = "rich"
+        embed.description = """To begin running for Clan ChX, you may run with or without the ChaoX Runner Utility (CRU).
+
+                                1. To run with CRU: https://www.d2chaox.com/h77-cru
+
+                                2. To run without CRU: https://www.d2chaox.com/h78-no-cru
+
+                                Please report runners to <@&803366552303829042> and <@&822608935126564926>"""
+
+        embed.add_field(
+            name=discord.Embed.Empty,
+            value="To begin running for Clan ChX, you may run with or without the ChaoX Runner Utility (CRU).",
+            inline=False
+        )
+
+        embed.add_field(
+            name=discord.Embed.Empty,
+            value="1. To run with CRU: https://www.d2chaox.com/h77-cru",
+            inline=False
+        )
+
+        embed.add_field(
+            name=discord.Embed.Empty,
+            value="2. To run without CRU: https://www.d2chaox.com/h78-no-cru",
+            inline=False
+        )
+
+        embed.add_field(
+            name=discord.Embed.Empty,
+            value="Please report runners to <@&803366552303829042> and <@&822608935126564926>",
+            inline=False
+        )
 
         return embed
 

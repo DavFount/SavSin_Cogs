@@ -682,15 +682,18 @@ class ChaoxCog(commands.Cog):
         cursor.execute(
             f'SELECT SUM(chaos_tracker.total_runs + baal_tracker.total_runs) from chaos_tracker INNER JOIN baal_tracker ON chaos_tracker.username=baal_tracker.username WHERE chaos_tracker.username=\'{runner}\'')
         result = cursor.fetchall()
+        runs = 0
+        for row in result:
+            runs = row[0]
         cursor.close()
         db.close()
         channel = self.guild.get_channel(await self.config.guild(self.guild).announce_channel())
         user = self.get_user(runner)
         self.prev_games[runner].sort()
 
-        embed = discord.Embed(color=0xffffff)
+        embed = discord.Embed(color=0xff0000)
         embed.title = f'{user.mention} Stats'
-        embed.description = f'Thank you for joining {game_name}. These games have come to an end.\n{user.mention} has supported Clan ChX with a total of {result[0]} Baal & Chaos runs'
+        embed.description = f'Thank you for joining {game_name}. These games have come to an end.\n{user.mention} has supported Clan ChX with a total of {runs} Baal & Chaos runs'
 
         embed.add_field(
             name="Runs",

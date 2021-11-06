@@ -731,24 +731,24 @@ class ChaoxCog(commands.Cog):
         embed.add_field(
             name="Runs",
             value=len(self.prev_games[runner]),
-            inline=False
+            inline=True
         )
         embed.add_field(
             name="Quickest Time",
             value=self.prev_games[runner][0],
-            inline=False
+            inline=True
         )
         embed.add_field(
             name="Slowest Time",
             value=self.prev_games[runner][-1],
-            inline=False
+            inline=True
         )
         average_time = sum(
             self.prev_games[runner]) / len(self.prev_games[runner])
         embed.add_field(
             name="Average Time",
             value=int(average_time),
-            inline=False
+            inline=True
         )
         await channel.send(embed=embed, delete_after=25)
         removed = self.prev_games[runner].pop()

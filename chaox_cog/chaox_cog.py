@@ -67,7 +67,7 @@ class ChaoxCog(commands.Cog):
             ctx.reply('$login and $logout must be used in DM\'s only')
             return
 
-        username = f'{ctx.author.name}#{ctx.author.discriminator}'
+        username = str(ctx.author.id)
 
         if username in self.manual_games:
             await ctx.reply('You\'re already logged in.')
@@ -125,7 +125,7 @@ class ChaoxCog(commands.Cog):
         if ctx.guild:
             ctx.reply('$login and $logout must be used in DM\'s only')
             return
-        username = f'{ctx.author.name}#{ctx.author.discriminator}'
+        username = str(ctx.author.id)
         cur_time = int(time.time())
         duration = cur_time - self.games[username]["timestamp"]
         if username in self.manual_games:
@@ -210,7 +210,7 @@ class ChaoxCog(commands.Cog):
         if not user:
             user = ctx.author
 
-        username = user.name + '#' + user.discriminator
+        username = user.id
         db = await self.connect_sql()
         career = {"chaos": [], "baal": []}
 
@@ -271,7 +271,7 @@ class ChaoxCog(commands.Cog):
 
     @chx_admin.command(name="stop")
     async def chx_admin_stop(self, ctx: commands.Context, user: discord.Member):
-        removed = self.games.pop(f'{user.name}#{user.discriminator}')
+        removed = self.games.pop(str(user.id))
         await self.update_channel(ctx.guild)
 
     # @chx_admin.command(name="set_host")
@@ -391,20 +391,6 @@ class ChaoxCog(commands.Cog):
         await self.config.guild(ctx.guild).message_wait_time.set(delay)
         await ctx.send(f'The duration of the new game message is now {delay} seconds')
 
-    @chx_admin.command(name="add_inst")
-    async def chx_add_isnt(self, ctx: commands.Context, instruction: str):
-        async with self.config.guild(ctx.guild).instructions() as instructions:
-            instructions.append(instruction)
-
-        await self.update_instructions()
-
-    @chx_admin.command(name="reset_inst")
-    async def chx_reset_isnt(self, ctx: commands.Context):
-        async with self.config.guild(ctx.guild).instructions() as instructions:
-            instructions.clear()
-
-        await self.update_instructions()
-
     @chx_admin.command(name="settings")
     async def chx_admin_settings(self, ctx: commands.Context):
         """See current settings."""
@@ -441,7 +427,7 @@ class ChaoxCog(commands.Cog):
         if not message.guild:
             if "$" in message.content:
                 return
-            username = f'{message.author.name}#{message.author.discriminator}'
+            username = message.author.id
             if username not in self.manual_games:
                 return
 
@@ -478,18 +464,20 @@ class ChaoxCog(commands.Cog):
             return
 
         run_data = re.search(
-            r"(?i)\|(.*\#.*)\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|", message.content)
+            r"(?i)\|(\d{18})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|", message.content)
 
         if not run_data:
             await message.delete()
             return
 
-        runner = run_data.group(1)
+        runner = str(run_data.group(1))
         game_name = run_data.group(2)
         password = run_data.group(3)
         region = run_data.group(4)
         game_type = run_data.group(5).lower()
         cur_time = int(time.time())
+
+        await message.edit(f'{message.content} ({message.author.name}#{message.author.discriminator})')
 
         if runner in self.games:
             duration = cur_time - self.games[runner]["timestamp"]
@@ -545,34 +533,34 @@ class ChaoxCog(commands.Cog):
         elif game_type.lower() == 'baal' and await self.config.guild(message.guild).baal_role():
             role = message.guild.get_role(await self.config.guild(message.guild).baal_role())
 
-        if await self.config.guild(message.guild).chaos_role() or await self.config.guild(message.guild).baal_role():
+        if await self.config.guild(message.guild).chaos_role() and await self.config.guild(message.guild).baal_role():
             await channel.send(f'{role.mention} New Game: {game_name} [Hosted by {runner}] (Password: {text_password})', delete_after=msg_duration)
         else:
             await channel.send('You must first configure your role settings !chx_admin set_chaos_role and set_baal_role!')
 
-        await self.update_channel(message.guild)
+        await self.update_channel()
 
-    async def update_channel(self, guild: discord.Guild):
-        channel = guild.get_channel(await self.config.guild(guild).announce_channel())
-        if(not await self.config.guild(guild).inst_msg()):
+    async def update_channel(self):
+        channel = self.guild.get_channel(await self.config.guild(self.guild).announce_channel())
+        if(not await self.config.guild(self.guild).inst_msg()):
             message = await channel.send(embed=self.format_instructions())
-            await self.config.guild(guild).inst_msg.set(message.id)
+            await self.config.guild(self.guild).inst_msg.set(message.id)
         else:
-            message = await channel.fetch_message(await self.config.guild(guild).inst_msg())
+            message = await channel.fetch_message(await self.config.guild(self.guild).inst_msg())
             await message.edit(embed=self.format_instructions())
 
-        if(not await self.config.guild(guild).top_msg()):
+        if(not await self.config.guild(self.guild).top_msg()):
             message = await channel.send(embed=await self.format_top())
-            await self.config.guild(guild).top_msg.set(message.id)
+            await self.config.guild(self.guild).top_msg.set(message.id)
         else:
-            message = await channel.fetch_message(await self.config.guild(guild).top_msg())
+            message = await channel.fetch_message(await self.config.guild(self.guild).top_msg())
             await message.edit(embed=await self.format_top())
 
-        if(not await self.config.guild(guild).game_msg()):
+        if(not await self.config.guild(self.guild).game_msg()):
             message = await channel.send(embed=self.format_games())
-            await self.config.guild(guild).game_msg.set(message.id)
+            await self.config.guild(self.guild).game_msg.set(message.id)
         else:
-            message = await channel.fetch_message(await self.config.guild(guild).game_msg())
+            message = await channel.fetch_message(await self.config.guild(self.guild).game_msg())
             await message.edit(embed=self.format_games())
 
     async def update_instructions(self):
@@ -584,7 +572,7 @@ class ChaoxCog(commands.Cog):
         cur_time = int(time.time())
         embed = discord.Embed(color=0xff0000)
         embed.title = 'Instructions'
-        embed.type = "rich"
+        # embed.type = "rich"
         embed.description = """To begin running for Clan ChX, you may run with or without the ChaoX Runner Utility (CRU).
 
                                 1. To run with CRU: https://www.d2chaox.com/h77-cru
@@ -596,7 +584,7 @@ class ChaoxCog(commands.Cog):
         return embed
 
     async def format_top(self):
-        cur_time = int(time.time())
+        # cur_time = int(time.time())
         db = await self.connect_sql()
         top_count = 5
         cursor_chaos = db.cursor()
@@ -622,8 +610,7 @@ class ChaoxCog(commands.Cog):
 
         top = {"chaos": [], "baal": []}
         for row in result_chaos:
-            print(f'Chaos: {row}')
-            user = self.get_user(row[1])
+            user = self.guild.get_member(row[1])
             avg_time = int(row[3] / row[2])
             top["chaos"].append(
                 f'{count}. {user.mention} - {row[2]} runs - {avg_time} sec avg'
@@ -632,8 +619,7 @@ class ChaoxCog(commands.Cog):
 
         count = 1
         for row in result_baal:
-            print(f'Baal: {row}')
-            user = self.get_user(row[1])
+            user = self.guild.get_member(row[1])
             avg_time = int(row[3] / row[2])
             top["baal"].append(
                 f'{count}. {user.mention} - {row[2]} runs - {avg_time} sec avg'
@@ -665,7 +651,7 @@ class ChaoxCog(commands.Cog):
             else:
                 password = ' (No PW)'
 
-            user = self.get_user(k)
+            user = self.guild.get_member(k)
             if v["region"].lower() == 'americas':
                 cur_games["americas"].append(
                     f'{v["game_name"]}{password} [{user.mention}] <t:{v["timestamp"]}:R>')
@@ -724,7 +710,7 @@ class ChaoxCog(commands.Cog):
         cursor.close()
         db.close()
         channel = self.guild.get_channel(await self.config.guild(self.guild).announce_channel())
-        user = self.get_user(runner)
+        user = self.guild.get_member(runner)
         self.prev_games[runner].sort()
 
         embed = discord.Embed(color=0xff0000)

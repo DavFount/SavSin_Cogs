@@ -484,8 +484,7 @@ class ChaoxCog(commands.Cog):
                     if len(self.prev_games[runner]):
                         self.prev_games[runner].append(duration)
 
-                await self.send_thankyou_message(runner, self.games[runner]["game_name"])
-                removed = self.prev_games.pop(runner)
+                await self.send_thankyou_message(runner)
 
             if runner in self.manual_games or runner in self.games:
                 await self.persist_data(self.games[runner]["game_type"], runner, duration)
@@ -725,9 +724,9 @@ class ChaoxCog(commands.Cog):
         embed = discord.Embed(color=0xff0000)
         embed.title = f'{user.name}\'s Stats'
         if len(self.prev_games[runner]) == 1:
-            embed.description = f'Thank you for joining ***{game_name}***. These games have come to an end.\nThat\'s all you got {user.mention}? {user.mention} has amassed a total of {runs} Baal & Chaos runs'
+            embed.description = f'Thank you for joining {user.mention}\'s runs. These games have come to an end.\nThat\'s all you got {user.mention}? {user.mention} has amassed a total of {runs} Baal & Chaos runs'
         else:
-            embed.description = f'Thank you for joining ***{game_name}***. These games have come to an end.\n{user.mention} has supported Clan ChX with a total of {runs} Baal & Chaos runs'
+            embed.description = f'Thank you for joining {user.mention}\'s runs. These games have come to an end.\n{user.mention} has supported Clan ChX with a total of {runs} Baal & Chaos runs'
 
         embed.add_field(
             name="Runs",

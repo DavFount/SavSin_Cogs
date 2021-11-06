@@ -46,7 +46,7 @@ class ChaoxCog(commands.Cog):
             if duration > 600:
                 remove = self.games.pop(k)
 
-        await self.update_channel(self.guild)
+        await self.update_channel()
 
     @game_announce.before_loop
     async def before_game_annoucne(self):
@@ -132,7 +132,7 @@ class ChaoxCog(commands.Cog):
             channel = self.guild.get_channel(await self.config.guild(self.guild).log_channel())
             await channel.send(f'|{username}|Logout||Americas|Baal|')
             removed = self.manual_games.pop(username)
-            await self.update_channel(self.guild)
+            await self.update_channel()
 
     @commands.command()
     async def whoami(self, ctx: commands.Context):
@@ -272,7 +272,7 @@ class ChaoxCog(commands.Cog):
     @chx_admin.command(name="stop")
     async def chx_admin_stop(self, ctx: commands.Context, user: discord.Member):
         removed = self.games.pop(str(user.id))
-        await self.update_channel(ctx.guild)
+        await self.update_channel()
 
     # @chx_admin.command(name="set_host")
     # async def chx_admin_set_host(self, ctx: commands.Context, host: str):
@@ -492,7 +492,7 @@ class ChaoxCog(commands.Cog):
                     await self.persist_data(self.games[runner]["game_type"], runner, duration)
 
                 removed = self.games.pop(runner)
-                await self.update_channel(message.guild)
+                await self.update_channel()
                 return
             elif game_name.lower() == 'game over':
                 # print(f'{runner}\'s games {self.prev_games[runner]}')
@@ -501,7 +501,7 @@ class ChaoxCog(commands.Cog):
                     self.prev_games[runner].append(duration)
                     await self.persist_data(self.games[runner]["game_type"], runner, duration)
                     removed = self.games.pop(runner)
-                    await self.update_channel(message.guild)
+                    await self.update_channel()
                     return
 
         if game_name.lower() == 'logout' or game_name.lower() == 'game over':

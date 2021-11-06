@@ -718,7 +718,7 @@ class ChaoxCog(commands.Cog):
         cursor.close()
         db.close()
         channel = self.guild.get_channel(await self.config.guild(self.guild).announce_channel())
-        user = self.guild.get_member(runner)
+        user = self.guild.get_member(int(runner))
         self.prev_games[runner].sort()
 
         embed = discord.Embed(color=0xff0000)

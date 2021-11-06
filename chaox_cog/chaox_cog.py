@@ -723,7 +723,7 @@ class ChaoxCog(commands.Cog):
         self.prev_games[runner].sort()
 
         embed = discord.Embed(color=0xff0000)
-        embed.title = f'{user.nick}\'s Stats'
+        embed.title = f'{user.name}\'s Stats'
         if len(self.prev_games[runner]) == 1:
             embed.description = f'Thank you for joining ***{game_name}***. These games have come to an end.\nThat\'s all you got {user.mention}? {user.mention} has amassed a total of {runs} Baal & Chaos runs'
         else:

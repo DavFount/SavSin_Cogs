@@ -706,7 +706,7 @@ class ChaoxCog(commands.Cog):
 
         return embed
 
-    async def send_thankyou_message(self, runner, game_name):
+    async def send_thankyou_message(self, runner):
         db = await self.connect_sql()
         cursor = db.cursor()
         cursor.execute(

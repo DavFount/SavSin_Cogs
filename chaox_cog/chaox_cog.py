@@ -477,8 +477,6 @@ class ChaoxCog(commands.Cog):
         game_type = run_data.group(5).lower()
         cur_time = int(time.time())
 
-        await message.edit(f'{message.content} ({message.author.name}#{message.author.discriminator})')
-
         if runner in self.games:
             duration = cur_time - self.games[runner]["timestamp"]
             if game_name.lower() == 'logout':

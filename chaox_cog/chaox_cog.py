@@ -696,7 +696,8 @@ class ChaoxCog(commands.Cog):
                 inline=False
             )
         if cur_game_count:
-            await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"{cur_game_count} runs."))
+            run_text = "runs" if cur_game_count > 1 else "run"
+            await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"{cur_game_count} {run_text}."))
         else:
             await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="for runners."))
 

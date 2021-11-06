@@ -622,6 +622,7 @@ class ChaoxCog(commands.Cog):
 
         top = {"chaos": [], "baal": []}
         for row in result_chaos:
+            print(f'Chaos: {row}')
             user = self.get_user(row[1])
             avg_time = int(row[3] / row[2])
             top["chaos"].append(
@@ -631,6 +632,7 @@ class ChaoxCog(commands.Cog):
 
         count = 1
         for row in result_baal:
+            print(f'Baal: {row}')
             user = self.get_user(row[1])
             avg_time = int(row[3] / row[2])
             top["baal"].append(

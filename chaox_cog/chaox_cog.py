@@ -44,7 +44,6 @@ class ChaoxCog(commands.Cog):
         for(k, v) in list(self.games.items()):
             duration = curtime - v["timestamp"]
             if duration > 600:
-                print(f'{k}\'s game ran to long. {duration} seconds')
                 remove = self.games.pop(k)
 
         await self.update_channel(self.guild)
@@ -81,7 +80,7 @@ class ChaoxCog(commands.Cog):
             await ctx.reply('Invalid Region. [Americas / Europe / Asia]')
             return
         elif game_type.lower() not in game_types:
-            await ctx.reply('Invalid Type. [Chaos / Baal]')
+            await ctx.reply('Invalid Game Type. [Chaos / Baal]')
             return
         else:
             self.manual_games[username] = {
@@ -496,6 +495,8 @@ class ChaoxCog(commands.Cog):
             duration = cur_time - self.games[runner]["timestamp"]
             if game_name.lower() == 'logout':
                 if runner in self.prev_games:
+                    if len(self.prev_games[runner]):
+                        self.prev_games[runner].append(duration)
                     await self.send_thankyou_message(runner, self.games[runner]["game_name"])
                     removed = self.prev_games.pop(runner)
 
@@ -506,7 +507,7 @@ class ChaoxCog(commands.Cog):
                 await self.update_channel(message.guild)
                 return
             elif game_name.lower() == 'game over':
-                print(f'{runner}\'s games {self.prev_games[runner]}')
+                # print(f'{runner}\'s games {self.prev_games[runner]}')
                 if (duration > await self.config.guild(message.guild).min_game_time()
                         and duration < await self.config.guild(message.guild).max_game_time()):
                     self.prev_games[runner].append(duration)
@@ -590,7 +591,7 @@ class ChaoxCog(commands.Cog):
 
                                 2. To run without CRU: https://www.d2chaox.com/h78-no-cru
 
-                                Please report all misconduct to <@&803366552303829042> and <@&822608935126564926>"""
+                                Please report all misconduct and abuse to <@&803366552303829042> and <@&822608935126564926>"""
 
         return embed
 
@@ -612,11 +613,11 @@ class ChaoxCog(commands.Cog):
 
         embed = discord.Embed(color=0xffffff)
         embed.title = f'Top {top_count} Runners'
-        embed.add_field(
-            name=f'Updated',
-            value=f'<t:{cur_time}:R>',
-            inline=False
-        )
+        # embed.add_field(
+        #     name=f'Updated',
+        #     value=f'<t:{cur_time}:R>',
+        #     inline=False
+        # )
         count = 1
 
         top = {"chaos": [], "baal": []}
@@ -726,7 +727,10 @@ class ChaoxCog(commands.Cog):
 
         embed = discord.Embed(color=0xff0000)
         embed.title = f'{user.nick}\'s Stats'
-        embed.description = f'Thank you for joining ***{game_name}***. These games have come to an end.\n{user.mention} has supported Clan ChX with a total of {runs} Baal & Chaos runs'
+        if len(self.prev_games[runner]) == 1:
+            embed.description = f'Thank you for joining ***{game_name}***. These games have come to an end.\nThat\'s all you got {user.mention}? {user.mention} has amassed a total of {runs} Baal & Chaos runs'
+        else:
+            embed.description = f'Thank you for joining ***{game_name}***. These games have come to an end.\n{user.mention} has supported Clan ChX with a total of {runs} Baal & Chaos runs'
 
         embed.add_field(
             name="Runs",

@@ -503,7 +503,6 @@ class ChaoxCog(commands.Cog):
                 await self.persist_data(self.games[runner]["game_type"], runner, duration)
                 removed = self.games.pop(runner)
                 await self.update_channel()
-                return
 
         if game_name.lower() == 'logout' or game_name.lower() == 'game over':
             return

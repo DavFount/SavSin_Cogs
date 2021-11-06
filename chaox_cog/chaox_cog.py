@@ -555,11 +555,11 @@ class ChaoxCog(commands.Cog):
             await message.edit(embed=await self.format_top())
 
         if(not await self.config.guild(self.guild).game_msg()):
-            message = await channel.send(embed=self.format_games())
+            message = await channel.send(embed=await self.format_games())
             await self.config.guild(self.guild).game_msg.set(message.id)
         else:
             message = await channel.fetch_message(await self.config.guild(self.guild).game_msg())
-            await message.edit(embed=self.format_games())
+            await message.edit(embed=await self.format_games())
 
     async def update_instructions(self):
         channel = self.guild.get_channel(await self.config.guild(self.guild).announce_channel())
@@ -640,16 +640,18 @@ class ChaoxCog(commands.Cog):
         db.close()
         return embed
 
-    def format_games(self):
+    async def format_games(self):
         cur_games = {"americas": [], "europe": [], "asia": []}
         cur_time = int(time.time())
+        cur_game_count = 0
         for(k, v) in self.games.items():
+            cur_game_count += 1
             if v["password"]:
                 password = f'///{v["password"]}'
             else:
                 password = ' (No PW)'
 
-            user = self.guild.get_member(k)
+            user = self.guild.get_member(int(k))
             if v["region"].lower() == 'americas':
                 cur_games["americas"].append(
                     f'{v["game_name"]}{password} [{user.mention}] <t:{v["timestamp"]}:R>')
@@ -665,7 +667,6 @@ class ChaoxCog(commands.Cog):
         )
 
         embed.title = 'Current Games'
-        # embed.set_footer(text=f'<t:{cur_time}:f>')
 
         if(not len(cur_games["americas"]) and not len(cur_games["europe"]) and not len(cur_games["asia"])):
             embed.add_field(
@@ -694,6 +695,11 @@ class ChaoxCog(commands.Cog):
                 value='\n\n'.join(cur_games["asia"]),
                 inline=False
             )
+        if cur_game_count:
+            await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"{cur_game_count} runs."))
+        else:
+            await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="for runners."))
+
         return embed
 
     async def send_thankyou_message(self, runner, game_name):

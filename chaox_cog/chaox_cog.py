@@ -581,7 +581,7 @@ class ChaoxCog(commands.Cog):
 
                                 2. To run without CRU: https://www.d2chaox.com/h78-no-cru
 
-                                Please report all misconduct and abuse to <@&803366552303829042> and <@&822608935126564926>"""
+                                Report runners & leachers. Example: !report <@!754500549340299375> Popping seals."""
 
         return embed
 
@@ -658,13 +658,13 @@ class ChaoxCog(commands.Cog):
             user = self.guild.get_member(int(k))
             if v["region"].lower() == 'americas':
                 cur_games["americas"].append(
-                    f'{v["game_name"]}{password} [{user.mention}] <t:{v["timestamp"]}:R>')
+                    f'***{v["game_name"]}***{password} [{user.mention}] <t:{v["timestamp"]}:R>')
             elif v["region"].lower() == 'europe':
                 cur_games["europe"].append(
-                    f'{v["game_name"]}{password} [{user.mention}] <t:{v["timestamp"]}:R>')
+                    f'***{v["game_name"]}***{password} [{user.mention}] <t:{v["timestamp"]}:R>')
             elif v["region"].lower() == 'asia':
                 cur_games["asia"].append(
-                    f'{v["game_name"]}{password} [{user.mention}] <t:{v["timestamp"]}:R>')
+                    f'***{v["game_name"]}***{password} [{user.mention}] <t:{v["timestamp"]}:R>')
 
         embed = discord.Embed(
             color=0x0000ff

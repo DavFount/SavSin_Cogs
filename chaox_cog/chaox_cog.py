@@ -477,11 +477,13 @@ class ChaoxCog(commands.Cog):
         game_type = run_data.group(5).lower()
         cur_time = int(time.time())
 
-        duration = cur_time - self.games[runner]["timestamp"]
         if game_name.lower() == 'logout':
             if runner in self.prev_games:
-                if len(self.prev_games[runner]):
-                    self.prev_games[runner].append(duration)
+                if runner in self.games:
+                    duration = cur_time - self.games[runner]["timestamp"]
+                    if len(self.prev_games[runner]):
+                        self.prev_games[runner].append(duration)
+
                 await self.send_thankyou_message(runner, self.games[runner]["game_name"])
                 removed = self.prev_games.pop(runner)
 
@@ -494,6 +496,7 @@ class ChaoxCog(commands.Cog):
             return
 
         if runner in self.games:
+            duration = cur_time - self.games[runner]["timestamp"]
             if (duration > await self.config.guild(message.guild).min_game_time()
                     and duration < await self.config.guild(message.guild).max_game_time()):
                 self.prev_games[runner].append(duration)

@@ -531,8 +531,9 @@ class ChaoxCog(commands.Cog):
         elif game_type.lower() == 'baal' and await self.config.guild(message.guild).baal_role():
             role = message.guild.get_role(await self.config.guild(message.guild).baal_role())
 
+        user = self.guild.get_member(int(runner))
         if await self.config.guild(message.guild).chaos_role() and await self.config.guild(message.guild).baal_role():
-            await channel.send(f'{role.mention} New Game: {game_name} [Hosted by {runner}] (Password: {text_password})', delete_after=msg_duration)
+            await channel.send(f'{role.mention} New Game: {game_name} [Hosted by {user.nick}] (Password: {text_password})', delete_after=msg_duration)
         else:
             await channel.send('You must first configure your role settings !chx_admin set_chaos_role and set_baal_role!')
 

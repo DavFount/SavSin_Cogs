@@ -477,30 +477,30 @@ class ChaoxCog(commands.Cog):
         game_type = run_data.group(5).lower()
         cur_time = int(time.time())
 
+        duration = cur_time - self.games[runner]["timestamp"]
+        if game_name.lower() == 'logout':
+            if runner in self.prev_games:
+                if len(self.prev_games[runner]):
+                    self.prev_games[runner].append(duration)
+                await self.send_thankyou_message(runner, self.games[runner]["game_name"])
+                removed = self.prev_games.pop(runner)
+
+            if runner in self.manual_games or runner in self.games:
+                await self.persist_data(self.games[runner]["game_type"], runner, duration)
+                if runner in self.games:
+                    removed = self.games.pop(runner)
+
+            await self.update_channel()
+            return
+
         if runner in self.games:
-            duration = cur_time - self.games[runner]["timestamp"]
-            if game_name.lower() == 'logout':
-                if runner in self.prev_games:
-                    if len(self.prev_games[runner]):
-                        self.prev_games[runner].append(duration)
-                    await self.send_thankyou_message(runner, self.games[runner]["game_name"])
-                    removed = self.prev_games.pop(runner)
-
-                if runner in self.manual_games:
-                    await self.persist_data(self.games[runner]["game_type"], runner, duration)
-
+            if (duration > await self.config.guild(message.guild).min_game_time()
+                    and duration < await self.config.guild(message.guild).max_game_time()):
+                self.prev_games[runner].append(duration)
+                await self.persist_data(self.games[runner]["game_type"], runner, duration)
                 removed = self.games.pop(runner)
                 await self.update_channel()
                 return
-            elif game_name.lower() == 'game over':
-                # print(f'{runner}\'s games {self.prev_games[runner]}')
-                if (duration > await self.config.guild(message.guild).min_game_time()
-                        and duration < await self.config.guild(message.guild).max_game_time()):
-                    self.prev_games[runner].append(duration)
-                    await self.persist_data(self.games[runner]["game_type"], runner, duration)
-                    removed = self.games.pop(runner)
-                    await self.update_channel()
-                    return
 
         if game_name.lower() == 'logout' or game_name.lower() == 'game over':
             return

@@ -505,6 +505,7 @@ class ChaoxCog(commands.Cog):
                 await self.update_channel()
 
         if game_name.lower() == 'logout' or game_name.lower() == 'game over':
+            # Stop Logout and Game Over from creating games in log #
             return
 
         game = {

@@ -136,7 +136,7 @@ class ChaoxCog(commands.Cog):
 
     @commands.command()
     async def whoami(self, ctx: commands.Context):
-        await ctx.author.reply(f'Your userid is: {ctx.author.id}')
+        await ctx.author.send(f'Your userid is: {ctx.author.id}')
 
     @commands.group(autohelp=True)
     @commands.guild_only()

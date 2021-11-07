@@ -657,13 +657,13 @@ class ChaoxCog(commands.Cog):
             user = self.guild.get_member(int(k))
             if v["region"].lower() == 'americas':
                 cur_games["americas"].append(
-                    f'***{v["game_name"]}***{password} [{user.mention}] <t:{v["timestamp"]}:R>')
+                    f'***{v["game_name"]}{password}*** [{user.mention}] <t:{v["timestamp"]}:R>')
             elif v["region"].lower() == 'europe':
                 cur_games["europe"].append(
-                    f'***{v["game_name"]}***{password} [{user.mention}] <t:{v["timestamp"]}:R>')
+                    f'***{v["game_name"]}{password}*** [{user.mention}] <t:{v["timestamp"]}:R>')
             elif v["region"].lower() == 'asia':
                 cur_games["asia"].append(
-                    f'***{v["game_name"]}***{password} [{user.mention}] <t:{v["timestamp"]}:R>')
+                    f'***{v["game_name"]}{password}*** [{user.mention}] <t:{v["timestamp"]}:R>')
 
         embed = discord.Embed(
             color=0x0000ff

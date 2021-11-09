@@ -738,14 +738,24 @@ class ChaoxCog(commands.Cog):
 
     async def send_thankyou_message(self, runner):
         db = await self.connect_sql()
-        cursor = db.cursor()
-        cursor.execute(
-            f'SELECT SUM(chaos_tracker.total_runs + baal_tracker.total_runs) from chaos_tracker INNER JOIN baal_tracker ON chaos_tracker.username=baal_tracker.username WHERE chaos_tracker.username=\'{runner}\'')
-        result = cursor.fetchall()
-        runs = 0
-        for row in result:
-            runs = row[0]
-        cursor.close()
+
+        cursor_chaos = db.cursor()
+        cursor_chaos.execute(
+            f'SELECT total_runs from chaos_tracker WHERE username=\'{runner}\'')
+        result_chaos = cursor_chaos.fetchall()
+        runs_chaos = 0
+        for row in result_chaos:
+            runs_chaos += row[0]
+        cursor_chaos.close()
+
+        cursor_baal = db.cursor()
+        cursor_baal.execute(
+            f'SELECT total_runs from baal_tracker WHERE username=\'{runner}\'')
+        result_baal = cursor_baal.fetchall()
+        runs_baal = 0
+        for row in result_baal:
+            runs_baal += row[0]
+        cursor_baal.close()
         db.close()
         channel = self.guild.get_channel(await self.config.guild(self.guild).announce_channel())
         user = self.guild.get_member(int(runner))
@@ -754,9 +764,9 @@ class ChaoxCog(commands.Cog):
         embed = discord.Embed(color=0xff0000)
         embed.title = f'{user.name}\'s Stats'
         if len(self.prev_games[runner]) == 1:
-            embed.description = f'Thank you for joining {user.mention}\'s runs. These games have come to an end.\nThat\'s all you got {user.mention}? {user.mention} has amassed a total of {runs} Baal & Chaos runs'
+            embed.description = f'Thank you for joining {user.mention}\'s runs. These games have come to an end.\nThat\'s all you got {user.mention}? {user.mention} has amassed a total of {runs_chaos} Chaos and {runs_baal} Baal runs'
         else:
-            embed.description = f'Thank you for joining {user.mention}\'s runs. These games have come to an end.\n{user.mention} has supported Clan ChX with a total of {runs} Baal & Chaos runs'
+            embed.description = f'Thank you for joining {user.mention}\'s runs. These games have come to an end.\n{user.mention} has supported Clan ChX with a total of {runs_chaos} Chaos and {runs_baal} Baal runs'
 
         embed.add_field(
             name="Runs",

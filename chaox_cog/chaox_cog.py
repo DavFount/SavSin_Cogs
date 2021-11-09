@@ -414,7 +414,6 @@ class ChaoxCog(commands.Cog):
         sql = f"UPDATE {type.lower()}_tracker SET total_runs={run_count}, total_time={run_time} WHERE username='{user.id}';"
         cursor.execute(sql)
         db.commit()
-        cursor.execute()
         cursor.close()
         db.close()
         await self.update_channel()

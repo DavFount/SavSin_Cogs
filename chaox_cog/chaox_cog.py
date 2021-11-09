@@ -403,9 +403,11 @@ class ChaoxCog(commands.Cog):
         cursor.execute(
             f"SELECT * FROM {type.lower()}_tracker WHERE username='{user.id}';")
         result = cursor.fetchall()
+        original_runs = 0
         run_count = 0
         run_time = 0
         for row in result:
+            original_runs += row[2]
             run_count += row[2]
             run_time += row[3]
 
@@ -417,7 +419,7 @@ class ChaoxCog(commands.Cog):
         cursor.close()
         db.close()
         await self.update_channel()
-        await ctx.send(f'{user.mention}\'s runs have been increased by {runs}.')
+        await ctx.send(f'{user.mention}\'s runs have been changed from {original_runs} to {run_count}.')
 
     @chx_admin.command(name="settings")
     async def chx_admin_settings(self, ctx: commands.Context):

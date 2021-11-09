@@ -394,13 +394,15 @@ class ChaoxCog(commands.Cog):
     @chx_admin.command(name="add")
     async def chx_add_runs(self, ctx: commands.Context, user: discord.User, type: str, runs: int):
         """ Adds a set number of runs to a user and saves that to the database """
-        if type.lower not in ['baal', 'chaos']:
+        if type.lower() not in ['baal', 'chaos']:
             await ctx.send(f'Invalid Type: {type} must be Baal or Chaos')
+            return
 
         db = await self.connect_sql()
         cursor = db.cursor()
-        result = cursor.execute(
+        cursor.execute(
             f"SELECT * FROM {type.lower()}_tracker WHERE username='{user.id}';")
+        result = cursor.fetchall()
         run_count = 0
         run_time = 0
         for row in result:

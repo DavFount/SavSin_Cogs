@@ -14,7 +14,7 @@ from redbot.core.commands.context import Context
 class ChaoxCog(commands.Cog):
     """ Chaox Cog for Game Spamming, career stats and top runners """
 
-    __version__ = '1.1.3'
+    __version__ = '1.1.4'
 
     def __init__(self, bot):
         self.bot = bot
@@ -390,6 +390,33 @@ class ChaoxCog(commands.Cog):
         """Sets the duration of the message displayed for new games"""
         await self.config.guild(ctx.guild).message_wait_time.set(delay)
         await ctx.send(f'The duration of the new game message is now {delay} seconds')
+
+    @chx_admin.command(name="add")
+    async def chx_add_runs(self, ctx: commands.Context, user: discord.User, type: str, runs: int):
+        """ Adds a set number of runs to a user and saves that to the database """
+        if type.lower not in ['baal', 'chaos']:
+            await ctx.send(f'Invalid Type: {type} must be Baal or Chaos')
+
+        db = await self.connect_sql()
+        cursor = db.cursor()
+        result = cursor.execute(
+            f"SELECT * FROM {type.lower()}_tracker WHERE username='{user.id}';")
+        run_count = 0
+        run_time = 0
+        for row in result:
+            run_count += row[2]
+            run_time += row[3]
+
+        run_count += runs
+        run_time += (runs * 150)
+        sql = f"UPDATE {type.lower()}_tracker SET total_runs={run_count}, total_time={run_time} WHERE username='{user.id}';"
+        cursor.execute(sql)
+        db.commit()
+        cursor.execute()
+        cursor.close()
+        db.close()
+        await self.update_channel()
+        await ctx.send(f'{user.mention}\'s runs have been increased by {runs}.')
 
     @chx_admin.command(name="settings")
     async def chx_admin_settings(self, ctx: commands.Context):

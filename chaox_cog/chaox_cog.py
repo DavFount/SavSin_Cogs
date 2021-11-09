@@ -143,64 +143,6 @@ class ChaoxCog(commands.Cog):
     async def chx(self, ctx: commands.Context):
         """Various ChX Commands."""
 
-    # @chx.command(name="top")
-    # async def chx_top(self, ctx: commands.Context, count: int = 5):
-    #     """ Displays embed with top runners """
-    #     if not await self.is_db_configured():
-    #         return
-    #     db = await self.connect_sql()
-
-    #     if count > 5:
-    #         count = 5
-    #     cursor_chaos = db.cursor()
-    #     # Chaos
-    #     cursor_chaos.execute(
-    #         f"SELECT * FROM `chaos_tracker` ORDER BY total_runs DESC LIMIT {count}")
-    #     result_chaos = cursor_chaos.fetchall()
-
-    #     # Baal
-    #     cursor_baal = db.cursor()
-    #     cursor_baal.execute(
-    #         f"SELECT * FROM `baal_tracker` ORDER BY total_runs DESC LIMIT {count}")
-    #     result_baal = cursor_baal.fetchall()
-
-    #     embed = discord.Embed(color=0xff0000)
-    #     embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
-    #     embed.title = f'Top {count} Runners'
-    #     count = 1
-
-    #     top = {"chaos": [], "baal": []}
-    #     for row in result_chaos:
-    #         user = row[1].split('#')[0]
-    #         top["chaos"].append(
-    #             f'{count}. {user} - Total Runs: {row[2]}'
-    #         )
-    #         count += 1
-
-    #     count = 1
-    #     for row in result_baal:
-    #         user = row[1].split('#')[0]
-    #         top["baal"].append(
-    #             f'{count}. {user} - Total Runs: {row[2]}'
-    #         )
-    #         count += 1
-
-    #     if(len(top["chaos"])):
-    #         embed.add_field(
-    #             name=f'Chaos',
-    #             value='\n'.join(top["chaos"]),
-    #             inline=True
-    #         )
-
-    #     if(len(top["baal"])):
-    #         embed.add_field(
-    #             name=f'Baal',
-    #             value='\n'.join(top["baal"]),
-    #             inline=True
-    #         )
-    #     db.close()
-    #     await ctx.send(embed=embed)
-
     @chx.command(name="career")
     async def chx_career(self, ctx: commands.Context, user: discord.Member = None):
         """ Display Embed with Career Stats """
@@ -263,67 +205,125 @@ class ChaoxCog(commands.Cog):
     async def chx_admin(self, ctx: commands.Context):
         """Various ChX Admin Settings."""
 
-    # @chx_admin.command(name="reset")
-    # async def chx_admin_reset(self, ctx: commands.Context):
-    #     await self.config.guild(ctx.guild).game_msg.set(None)
-    #     await self.config.guild(ctx.guild).inst_msg.set(None)
-    #     await self.config.guild(ctx.guild).top_msg.set(None)
+    @chx_admin.command(name="top")
+    async def chx_top(self, ctx: commands.Context, count: int = 5):
+        """ Displays embed with top runners """
+        if not await self.is_db_configured():
+            return
+        db = await self.connect_sql()
+
+        if count > 5:
+            count = 5
+        cursor_chaos = db.cursor()
+        # Chaos
+        cursor_chaos.execute(
+            f"SELECT * FROM `chaos_tracker` ORDER BY total_runs DESC LIMIT {count}")
+        result_chaos = cursor_chaos.fetchall()
+
+        # Baal
+        cursor_baal = db.cursor()
+        cursor_baal.execute(
+            f"SELECT * FROM `baal_tracker` ORDER BY total_runs DESC LIMIT {count}")
+        result_baal = cursor_baal.fetchall()
+
+        embed = discord.Embed(color=0xff0000)
+        embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
+        embed.title = f'Top {count} Runners'
+        count = 1
+
+        top = {"chaos": [], "baal": []}
+        for row in result_chaos:
+            user = row[1].split('#')[0]
+            top["chaos"].append(
+                f'{count}. {user} - Total Runs: {row[2]}'
+            )
+            count += 1
+
+        count = 1
+        for row in result_baal:
+            user = row[1].split('#')[0]
+            top["baal"].append(
+                f'{count}. {user} - Total Runs: {row[2]}'
+            )
+            count += 1
+
+        if(len(top["chaos"])):
+            embed.add_field(
+                name=f'Chaos',
+                value='\n'.join(top["chaos"]),
+                inline=True
+            )
+
+        if(len(top["baal"])):
+            embed.add_field(
+                name=f'Baal',
+                value='\n'.join(top["baal"]),
+                inline=True
+            )
+        db.close()
+        await ctx.send(embed=embed)
+
+    @chx_admin.command(name="reset")
+    async def chx_admin_reset(self, ctx: commands.Context):
+        await self.config.guild(ctx.guild).game_msg.set(None)
+        await self.config.guild(ctx.guild).inst_msg.set(None)
+        await self.config.guild(ctx.guild).top_msg.set(None)
 
     @chx_admin.command(name="stop")
     async def chx_admin_stop(self, ctx: commands.Context, user: discord.Member):
         removed = self.games.pop(str(user.id))
         await self.update_channel()
 
-    # @chx_admin.command(name="set_host")
-    # async def chx_admin_set_host(self, ctx: commands.Context, host: str):
-    #     """Set Hostname"""
-    #     if self.config.guild(ctx.guild).host != host:
-    #         await self.config.guild(ctx.guild).host.set(host)
-    #         await ctx.send('Host Updated.')
-    #         await ctx.message.delete()
-    #     else:
-    #         await ctx.send('This host is already set!')
-    #         await ctx.message.delete()
+    @chx_admin.command(name="set_host")
+    async def chx_admin_set_host(self, ctx: commands.Context, host: str):
+        """Set Hostname"""
+        if self.config.guild(ctx.guild).host != host:
+            await self.config.guild(ctx.guild).host.set(host)
+            await ctx.send('Host Updated.')
+            await ctx.message.delete()
+        else:
+            await ctx.send('This host is already set!')
+            await ctx.message.delete()
 
-    # @chx_admin.command(name="set_port")
-    # async def chx_admin_set_port(self, ctx: commands.Context, port: int):
-    #     """Set Database Port"""
-    #     if self.config.guild(ctx.guild).port != port:
-    #         await self.config.guild(ctx.guild).port(port)
-    #         await ctx.send('Port Updated.')
-    #         await ctx.message.delete()
-    #     else:
-    #         await ctx.send(f'Port is already set to {port}.')
-    #         await ctx.message.delete()
+    @chx_admin.command(name="set_port")
+    async def chx_admin_set_port(self, ctx: commands.Context, port: int):
+        """Set Database Port"""
+        if self.config.guild(ctx.guild).port != port:
+            await self.config.guild(ctx.guild).port(port)
+            await ctx.send('Port Updated.')
+            await ctx.message.delete()
+        else:
+            await ctx.send(f'Port is already set to {port}.')
+            await ctx.message.delete()
 
-    # @chx_admin.command(name="set_db")
-    # async def chx_admin_set_db(self, ctx: commands.Context, db: str):
-    #     """Set Database Name"""
-    #     if self.config.guild(ctx.guild).db != db:
-    #         await self.config.guild(ctx.guild).db.set(db)
-    #         await ctx.send('Database Selected.')
-    #         await ctx.message.delete()
-    #     else:
-    #         await ctx.send('This database is already selected.')
-    #         await ctx.message.delete()
+    @chx_admin.command(name="set_db")
+    async def chx_admin_set_db(self, ctx: commands.Context, db: str):
+        """Set Database Name"""
+        if self.config.guild(ctx.guild).db != db:
+            await self.config.guild(ctx.guild).db.set(db)
+            await ctx.send('Database Selected.')
+            await ctx.message.delete()
+        else:
+            await ctx.send('This database is already selected.')
+            await ctx.message.delete()
 
-    # @chx_admin.command(name="set_user")
-    # async def chx_admin_set_user(self, ctx: commands.Context, user: str):
-    #     """Set Database User"""
-    #     if self.config.guild(ctx.guild).user != user:
-    #         await self.config.guild(ctx.guild).user.set(user)
-    #         await ctx.send('Updated Database User.')
-    #         await ctx.message.delete()
-    #     else:
-    #         await ctx.send('This user is already set.')
-    #         await ctx.message.delete()
+    @chx_admin.command(name="set_user")
+    async def chx_admin_set_user(self, ctx: commands.Context, user: str):
+        """Set Database User"""
+        if self.config.guild(ctx.guild).user != user:
+            await self.config.guild(ctx.guild).user.set(user)
+            await ctx.send('Updated Database User.')
+            await ctx.message.delete()
+        else:
+            await ctx.send('This user is already set.')
+            await ctx.message.delete()
 
-    # @chx_admin.command(name="set_password")
-    # async def chx_admin_set_password(self, ctx: commands.Context, password: str):
-    #     """Set Database Password"""
-    #     await self.config.guild(ctx.guild).password.set(password)
-    #     await ctx.send('Password Updated')
-    #     await ctx.message.delete()
+    @chx_admin.command(name="set_password")
+    async def chx_admin_set_password(self, ctx: commands.Context, password: str):
+        """Set Database Password"""
+        await self.config.guild(ctx.guild).password.set(password)
+        await ctx.send('Password Updated')
+        await ctx.message.delete()
 
     @chx_admin.command(name="set_min_game_time")
     async def chx_admin_set_min_game_time(self, ctx: commands.Context, min: int):

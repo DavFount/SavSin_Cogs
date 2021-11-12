@@ -494,7 +494,7 @@ class ChaoxCog(commands.Cog):
             return
 
         run_data = re.search(
-            r"(?i)\|(\d{18})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|", message.content)
+            r"(?i)\|(\d{17,18})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|", message.content)
 
         if not run_data:
             await message.delete()

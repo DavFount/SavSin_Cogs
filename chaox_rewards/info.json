@@ -1,0 +1,27 @@
+{
+    "author": [
+        "SavSin"
+    ],
+    "description": "Adds rewards for runners!",
+    "disabled": false,
+    "end_user_statement": "This cog does not persistently store data or metadata about a user.",
+    "hidden": false,
+    "install_msg": "Thank you for installing! Use `[p]help chaox_cog` for more info.",
+    "min_bot_version": "3.4.0",
+    "min_python_version": [
+        3,
+        8,
+        1
+    ],
+    "permissions": [],
+    "required_cogs": {},
+    "requirements": [],
+    "short": "Announcement with Role Ping",
+    "tags": [
+        "utility",
+        "announcment",
+        "message",
+        "role ping"
+    ],
+    "type": "COG"
+}

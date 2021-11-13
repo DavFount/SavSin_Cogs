@@ -9,7 +9,7 @@ import mysql.connector
 from redbot.core.commands.context import Context
 
 
-class ChaoxCog(commands.Cog):
+class ChaoxRewards(commands.Cog):
     """ Chaox Cog for Rewards System """
 
     __version__ = '1.0.0'

@@ -20,7 +20,6 @@ class ChaoxCog(commands.Cog):
         self.bot = bot
         self.games = {}
         self.prev_games = {}
-        self.manual_games = {}
         self.game_announce.start()
         self.guild = None
         self.config = Config.get_conf(
@@ -58,81 +57,6 @@ class ChaoxCog(commands.Cog):
     def format_help_for_context(self, ctx: commands.Context) -> str:
         context = super().format_help_for_context(ctx)
         return f'{context}\n\nVersion: {self.__version__}'
-
-    @commands.command()
-    async def login(self, ctx: commands.Context, region: str, game_type: str):
-        """ Login to start running games. Use $login <americas/europe/asia> <chaos/baal> """
-
-        if ctx.guild:
-            ctx.reply('$login and $logout must be used in DM\'s only')
-            return
-
-        username = str(ctx.author.id)
-
-        if username in self.manual_games:
-            await ctx.reply('You\'re already logged in.')
-            return
-
-        regions = ["americas", "europe", "asia"]
-        game_types = ["chaos", "baal"]
-
-        if region.lower() not in regions:
-            await ctx.reply('Invalid Region. [Americas / Europe / Asia]')
-            return
-        elif game_type.lower() not in game_types:
-            await ctx.reply('Invalid Game Type. [Chaos / Baal]')
-            return
-        else:
-            self.manual_games[username] = {
-                "region": region,
-                "game_type": game_type
-            }
-
-            embed = discord.Embed(color=0xff0000)
-            embed.set_author(name=self.guild.name,
-                             icon_url=self.guild.icon_url)
-            embed.title = f'You are now logged in! Game Type: {game_type} Region: {region}'
-            embed.add_field(
-                name='1.',
-                value='Make a game and send it to me. See below for examples.',
-                inline=False
-            )
-            embed.add_field(
-                name='a.',
-                value='For Private Games: ***priv chaos-1///1***',
-                inline=False
-            )
-            embed.add_field(
-                name='b.',
-                value='For Public Games: ***pub chaos-1***',
-                inline=False
-            )
-            embed.add_field(
-                name='2.',
-                value='Make sure to send each new game to trigger the next game alert.',
-                inline=False
-            )
-            embed.add_field(
-                name='3.',
-                value='When you\'re done make sure to $logout.',
-                inline=False
-            )
-            await ctx.reply(embed=embed)
-
-    @commands.command()
-    async def logout(self, ctx: commands.Context):
-        """ Updates your run count with your last run. """
-        if ctx.guild:
-            ctx.reply('$login and $logout must be used in DM\'s only')
-            return
-        username = str(ctx.author.id)
-        cur_time = int(time.time())
-        duration = cur_time - self.games[username]["timestamp"]
-        if username in self.manual_games:
-            channel = self.guild.get_channel(await self.config.guild(self.guild).log_channel())
-            await channel.send(f'|{username}|Logout||Americas|Baal|')
-            removed = self.manual_games.pop(username)
-            await self.update_channel()
 
     @commands.command()
     async def whoami(self, ctx: commands.Context):
@@ -454,38 +378,6 @@ class ChaoxCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if not message.guild:
-            if "$" in message.content:
-                return
-            username = message.author.id
-            if username not in self.manual_games:
-                return
-
-            manual_run_data = re.search(
-                r"(?i)([a-zA-Z-= 0-9]{1,15})\/*([a-zA-Z0-9]{0,15})", message.content)
-
-            if not manual_run_data:
-                await message.reply('Invalid Game Name!')
-                return
-
-            await message.reply('Received. Send me your new game (and password) when game is over. Or $logout')
-            game_name = manual_run_data.group(1)
-            password = manual_run_data.group(2)
-
-            if not password:
-                password = ''
-
-            region = self.manual_games[username]["region"]
-            game_type = self.manual_games[username]["game_type"]
-
-            channel = self.guild.get_channel(await self.config.guild(self.guild).log_channel())
-
-            if username in self.games:
-                await channel.send(f'|{username}|Game Over||{region}|{game_type}|')
-
-            await channel.send(f'|{username}|{game_name}|{password}|{region}|{game_type}|')
-            return
-
         if message.channel.id == await self.config.guild(message.guild).announce_channel() and not message.author.bot:
             await message.delete()
             return
@@ -516,7 +408,7 @@ class ChaoxCog(commands.Cog):
 
                 await self.send_thankyou_message(runner)
 
-            if runner in self.manual_games or runner in self.games:
+            if runner in self.games:
                 await self.persist_data(self.games[runner]["game_type"], runner, duration)
                 if runner in self.games:
                     removed = self.games.pop(runner)
@@ -532,9 +424,12 @@ class ChaoxCog(commands.Cog):
                 await self.persist_data(self.games[runner]["game_type"], runner, duration)
                 removed = self.games.pop(runner)
                 await self.update_channel()
+            elif game_name.lower() == 'game over':
+                removed = self.games.pop(runner)
+                await self.update_channel()
 
         if game_name.lower() == 'logout' or game_name.lower() == 'game over':
-            # Stop Logout and Game Over from creating games in log #
+            # Stop Logout and Game Over from creating games in log channel
             return
 
         game = {

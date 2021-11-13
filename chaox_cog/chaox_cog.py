@@ -408,8 +408,8 @@ class ChaoxCog(commands.Cog):
                     duration = cur_time - self.games[runner]["timestamp"]
                     if len(self.prev_games[runner]):
                         self.prev_games[runner].append(duration)
-
-                await self.send_thankyou_message(runner)
+                if len(self.prev_games[runner]) > 0:
+                    await self.send_thankyou_message(runner)
 
             if runner in self.games:
                 await self.persist_data(self.games[runner]["game_type"], runner, duration)

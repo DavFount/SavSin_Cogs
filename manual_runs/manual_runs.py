@@ -110,7 +110,6 @@ class ManualRuns(commands.Cog):
 
             user = message.author.id
             if user not in self.runners:
-                await message.reply('You must be logged in to talk to me. Type $help login for more information.')
                 return
 
             manual_run_data = re.search(

@@ -114,33 +114,24 @@ class ManualRuns(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         if not message.guild:
-            print('New DM Arrived!')
             if "$" in message.content:
-                print('Ignoring Trigger commands')
                 return
 
             user = str(message.author.id)
             if user not in self.runners:
-                print('User is not logge din')
                 return
-
-            print('User is already logged in')
 
             manual_run_data = re.search(
                 r"(?i)([a-zA-Z-= 0-9]{1,15})\/*([a-zA-Z0-9]{0,15})", message.content)
 
             if not manual_run_data:
-                print('Invalid Game Name!')
                 await message.reply('Invalid Game Name!')
                 return
-
-            print('Game Name Received!')
 
             game_name = manual_run_data.group(1)
             password = manual_run_data.group(2)
 
             if 'baal' not in game_name.lower() and 'chaos' not in game_name.lower():
-                print('Game doesn\'t include baal or chaos.')
                 await message.reply('Invalid game name. Your game name must include Chaos or Baal')
                 return
 

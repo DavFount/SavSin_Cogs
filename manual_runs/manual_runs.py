@@ -59,8 +59,6 @@ class ManualRuns(commands.Cog):
             }
 
             embed = discord.Embed(color=0xff0000)
-            embed.set_author(name=self.guild.name,
-                             icon_url=self.guild.icon_url)
             embed.title = f'You are now logged in! Region: {region}'
             embed.add_field(
                 name='1.',

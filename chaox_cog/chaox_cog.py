@@ -378,6 +378,9 @@ class ChaoxCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        if not message.guild:
+            return
+
         if message.channel.id == await self.config.guild(message.guild).announce_channel() and not message.author.bot:
             await message.delete()
             return

@@ -108,7 +108,7 @@ class ManualRuns(commands.Cog):
                 print('Ignoring Trigger commands')
                 return
 
-            user = message.author.id
+            user = str(message.author.id)
             if user not in self.runners:
                 print('User is not logge din')
                 return

@@ -15,7 +15,7 @@ class ManualRuns(commands.Cog):
         self.bot = bot
         self.runners = {}
         self.config = Config.get_conf(
-            self, identifier=56456541165165, force_registration=True
+            self, identifier=56456541165166, force_registration=True
         )
 
         self.config.register_guild(
@@ -29,7 +29,7 @@ class ManualRuns(commands.Cog):
         """Various ChX Admin Settings."""
 
     @chx_manual.command()
-    async def set_log_ch(self, ctx: commands.Context, ch: discord.channel):
+    async def set_log_ch(self, ctx: commands.Context, ch: discord.TextChannel):
         await self.config.guild(ctx.guild).log_channel.set(ch.id)
         ctx.reply(f'{ch.mention} has been set as your log channel!')
 

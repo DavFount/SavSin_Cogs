@@ -42,14 +42,14 @@ class ManualRuns(commands.Cog):
     @chx_manual.command()
     async def set_log_ch(self, ctx: commands.Context, ch: discord.TextChannel):
         await self.config.guild(ctx.guild).log_channel.set(ch.id)
-        ctx.reply(f'{ch.mention} has been set as your log channel!')
+        await ctx.reply(f'{ch.mention} has been set as your log channel!')
 
     @commands.command()
     async def login(self, ctx: commands.Context, region: str):
         """ Login to start running games. Use $login <americas/europe/asia> """
 
         if ctx.guild:
-            ctx.reply('$login and $logout must be used in DM\'s only')
+            await ctx.reply('$login and $logout must be used in DM\'s only')
             return
 
         user = str(ctx.author.id)
@@ -102,7 +102,7 @@ class ManualRuns(commands.Cog):
     async def logout(self, ctx: commands.Context):
         """ Updates your run count with your last run. """
         if ctx.guild:
-            ctx.reply('$login and $logout must be used in DM\'s only')
+            await ctx.reply('$login and $logout must be used in DM\'s only')
             return
         user = str(ctx.author.id)
         if user in self.runners:

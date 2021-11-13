@@ -1,6 +1,6 @@
 import discord
 import re
-from discord import user
+from discord.ext import tasks
 from redbot.core import Config, checks, commands
 
 from redbot.core.commands.context import Context
@@ -13,13 +13,24 @@ class ManualRuns(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.guild = None
         self.runners = {}
+        self.set_guild.start()
         self.config = Config.get_conf(
             self, identifier=56456541165166, force_registration=True
         )
 
         self.config.register_guild(
             log_channel=None)
+
+    def cog_unload(self):
+        self.set_guild.cancel()
+        return super().cog_unload()
+
+    @tasks.loop(seconds=10, count=1)
+    async def set_guild(self):
+        if not self.guild:
+            self.guild = self.bot.get_guild(772664928627851275)
 
     # Admin Setup Commands
     @commands.group(autohelp=True)

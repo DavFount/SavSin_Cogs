@@ -760,10 +760,13 @@ class ChaoxCog(commands.Cog):
 
     async def get_chaox_id(self, user: discord.Member):
         userid = str(user.id).encode()
-        salt = "SQ7HqXQhrOIPEALbI7QhVjZ3DHJGhK18"
-        hashed_discordid = hashlib.sha512(userid + salt).hexdigest()
+        # salt = "SQ7HqXQhrOIPEALbI7QhVjZ3DHJGhK18"
+        salt = os.urandom(32)
 
-        print(f'{user.name}\'s Chaox ID: {hashed_discordid}')
+        digest = hashlib.pbkdf2_hmac("sha256", userid, salt, 100000)
+        hex_hash = digest.hex()
+
+        print(f'{user.name}\'s Chaox ID: {hex_hash}')
 
         # if key not in self.runners:
         #     db = await self.connect_sql()

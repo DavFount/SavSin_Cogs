@@ -1,6 +1,7 @@
 import discord
 import time
 import re
+import os
 import hashlib
 from redbot.core import Config, checks, commands
 from discord.ext import tasks
@@ -759,8 +760,9 @@ class ChaoxCog(commands.Cog):
 
     async def get_chaox_id(self, user: discord.Member):
         userid = str(user.id)
-        salt = "SQ7HqXQhrOIPEALbI7QhVjZ3DHJGhK18"
+        # salt = "SQ7HqXQhrOIPEALbI7QhVjZ3DHJGhK18"
 
+        salt = os.urandom(32)
         digest = hashlib.pbkdf2_hmac('sha256', userid, salt, 10000)
         hex_hash = digest.hex()
 
@@ -776,7 +778,7 @@ class ChaoxCog(commands.Cog):
         #     cursor.close()
         #     db.close()
 
-        return b64encode(digest)
+        return hex_hash
 
     def get_discord_id(self, chaox_id):
         return self.runners[chaox_id]

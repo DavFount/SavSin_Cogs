@@ -760,10 +760,9 @@ class ChaoxCog(commands.Cog):
 
     async def get_chaox_id(self, user: discord.Member):
         userid = str(user.id)
-        # salt = "SQ7HqXQhrOIPEALbI7QhVjZ3DHJGhK18"
+        salt = "SQ7HqXQhrOIPEALbI7QhVjZ3DHJGhK18"
 
-        salt = os.urandom(32)
-        digest = hashlib.pbkdf2_hmac('sha256', userid, salt, 10000)
+        digest = hashlib.pbkdf2_hmac('sha256', userid.encode(), salt, 10000)
         hex_hash = digest.hex()
 
         print(f'{user.name}\'s Chaox ID: {hex_hash}')

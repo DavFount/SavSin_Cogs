@@ -125,15 +125,25 @@ class ManualRuns(commands.Cog):
                 r"(?i)([a-zA-Z-= 0-9]{1,15})\/*([a-zA-Z0-9]{0,15})", message.content)
 
             if not manual_run_data:
-                await message.reply('Invalid Game Name!')
+                await message.reply('Invalid Game and Password format!')
                 return
 
             game_name = manual_run_data.group(1)
             password = manual_run_data.group(2)
 
-            if 'baal' not in game_name.lower() and 'chaos' not in game_name.lower():
-                await message.reply('Invalid game name. Your game name must include Chaos or Baal')
-                return
+            regex_chaos = "(?i)(chaos|cbaal|cs)"
+            regex_baal = "(?i)(baal)"
+
+            game_type_check = re.search(regex_chaos, game_name)
+            if game_type_check:
+                game_type = 'Chaos'
+            else:
+                game_type_check = re.search(regex_baal, game_name)
+                if game_type_check:
+                    game_type = 'Baal'
+                else:
+                    await message.reply('Invalid game name. Your game name must include Chaos or Baal')
+                    return
 
             await message.reply('Received. Send me your new game (and password) when game is over. Or $logout')
             if not password:

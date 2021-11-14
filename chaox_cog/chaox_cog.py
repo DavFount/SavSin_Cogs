@@ -1,25 +1,24 @@
 import discord
 import time
 import re
-from discord import user
+import os
+import hashlib
 from redbot.core import Config, checks, commands
 from discord.ext import tasks
 from datetime import datetime as dt
 import mysql.connector
-import random
-
-from redbot.core.commands.context import Context
 
 
 class ChaoxCog(commands.Cog):
     """ Chaox Cog for Game Spamming, career stats and top runners """
 
-    __version__ = '1.1.4'
+    __version__ = '1.1.6'
 
     def __init__(self, bot):
         self.bot = bot
         self.games = {}
         self.prev_games = {}
+        self.runners = {}
         self.game_announce.start()
         self.guild = None
         self.config = Config.get_conf(
@@ -44,6 +43,8 @@ class ChaoxCog(commands.Cog):
             duration = curtime - v["timestamp"]
             if duration > 600:
                 remove = self.games.pop(k)
+        if not len(self.runners):
+            await self.get_runners()
 
         await self.update_channel()
 
@@ -60,7 +61,8 @@ class ChaoxCog(commands.Cog):
 
     @commands.command()
     async def whoami(self, ctx: commands.Context):
-        await ctx.author.send(f'Your userid is: {ctx.author.id}')
+        await ctx.author.send(f'Your Chaox is: {await self.get_chaox_id(ctx.author)}')
+        await ctx.author.send(f'Your Discord is: {ctx.author.id}')
 
     @commands.group(autohelp=True)
     @commands.guild_only()
@@ -757,4 +759,44 @@ class ChaoxCog(commands.Cog):
                 cursor.execute(sql, val)
                 db.commit()
             cursor.close()
+        db.close()
+
+    async def get_chaox_id(self, user: discord.Member):
+        userid = str(user.id)
+        salt = os.urandom(self.guild.id)
+        key = hashlib.pbkdf2_hmac(
+            'sha256',
+            userid.encode('utf-8'),
+            salt,
+            100000
+        )
+
+        if key not in self.runners:
+            db = await self.connect_sql()
+            cursor = db.cursor()
+            sql = "INSERT INTO runners (`discord_id`, `chaox_id`) VALUES (%s, %s);"
+            val = (user.id, key)
+            cursor.execute(sql, val)
+            db.commit()
+            cursor.close()
+            db.close()
+
+        return key
+
+    def get_discord_id(self, chaox_id):
+        return self.runners[chaox_id]
+
+    async def get_runners(self):
+        db = await self.connect_sql()
+        cursor = db.cursor()
+        cursor.execute(
+            f"SELECT * FROM `runners`;")
+        result = cursor.fetchall()
+
+        for row in result:
+            discord_id = row[1]
+            chaox_id = row[2]
+            self.runners[chaox_id] = discord_id
+
+        cursor.close()
         db.close()

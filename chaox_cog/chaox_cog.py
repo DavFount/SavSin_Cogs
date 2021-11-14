@@ -2,7 +2,7 @@ import discord
 import time
 import re
 import os
-import hashlib
+from hashlib import sha256
 from redbot.core import Config, checks, commands
 from discord.ext import tasks
 from datetime import datetime as dt
@@ -760,15 +760,12 @@ class ChaoxCog(commands.Cog):
 
     async def get_chaox_id(self, user: discord.Member):
         userid = str(user.id)
-        # salt = os.urandom(256)
-        # key = hashlib.pbkdf2_hmac(
-        #     'sha256',
-        #     userid.encode('utf-8'),
-        #     salt,
-        #     100000
-        # )
+        salt = "SQ7HqXQhrOIPEALbI7QhVjZ3DHJGhK18"
 
-        key = hashlib.sha256(userid.encode('utf-8')).hexdigest()
+        key = ("%s{%s}" % (userid, salt)).encode()
+        digest = b""
+        for i in range(100):
+            digest = sha256(digest + key).digest()
 
         print(f'{user.name}\'s Chaox ID: {key}')
 

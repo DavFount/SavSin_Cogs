@@ -759,7 +759,7 @@ class ChaoxCog(commands.Cog):
         db.close()
 
     async def get_chaox_id(self, user: discord.Member):
-        userid = str(user.id)
+        userid = str(user.id).encode()
         salt = "SQ7HqXQhrOIPEALbI7QhVjZ3DHJGhK18"
         hashed_discordid = hashlib.sha512(userid + salt).hexdigest()
 

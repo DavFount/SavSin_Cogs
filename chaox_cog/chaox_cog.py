@@ -3,6 +3,7 @@ import time
 import re
 import os
 from hashlib import sha256
+from base64 import b64encode
 from redbot.core import Config, checks, commands
 from discord.ext import tasks
 from datetime import datetime as dt
@@ -762,12 +763,12 @@ class ChaoxCog(commands.Cog):
         userid = str(user.id)
         salt = "SQ7HqXQhrOIPEALbI7QhVjZ3DHJGhK18"
 
-        key = ("%s{%s}" % (userid, salt)).encode()
+        salted_userid = ("%s{%s}" % (userid, salt)).encode()
         digest = b""
         for i in range(100):
-            digest = sha256(digest + key).digest()
+            digest = sha256(digest + salted_userid).digest()
 
-        print(f'{user.name}\'s Chaox ID: {key}')
+        print(f'{user.name}\'s Chaox ID: {b64encode(digest)}')
 
         # if key not in self.runners:
         #     db = await self.connect_sql()
@@ -779,7 +780,7 @@ class ChaoxCog(commands.Cog):
         #     cursor.close()
         #     db.close()
 
-        return key
+        return b64encode(digest)
 
     def get_discord_id(self, chaox_id):
         return self.runners[chaox_id]

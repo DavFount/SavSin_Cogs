@@ -768,6 +768,8 @@ class ChaoxCog(commands.Cog):
             100000
         )
 
+        print(f'{user.name}\'s Chaox ID: {key}')
+
         if key not in self.runners:
             db = await self.connect_sql()
             cursor = db.cursor()

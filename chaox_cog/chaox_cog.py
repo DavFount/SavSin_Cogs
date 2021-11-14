@@ -764,21 +764,25 @@ class ChaoxCog(commands.Cog):
         salt = os.urandom(32)
 
         digest = hashlib.pbkdf2_hmac("sha256", userid, salt, 100000)
-        hex_hash = digest.hex()
+        key = digest.hex()
 
-        print(f'{user.name}\'s Chaox ID: {hex_hash}')
+        if key not in self.runners:
+            print('Adding key to DB')
+            db = await self.connect_sql()
+            cursor = db.cursor()
+            sql = "INSERT INTO runners (`discord_id`, `chaox_id`) VALUES (%s, %s);"
+            val = (user.id, key)
+            cursor.execute(sql, val)
+            db.commit()
+            if cursor.rowcount:
+                self.runners[key] = user.id
+            cursor.close()
+            db.close()
 
-        # if key not in self.runners:
-        #     db = await self.connect_sql()
-        #     cursor = db.cursor()
-        #     sql = "INSERT INTO runners (`discord_id`, `chaox_id`) VALUES (%s, %s);"
-        #     val = (user.id, key)
-        #     cursor.execute(sql, val)
-        #     db.commit()
-        #     cursor.close()
-        #     db.close()
+        else:
+            print('Key already exists')
 
-        return hex_hash
+        return key
 
     def get_discord_id(self, chaox_id):
         return self.runners[chaox_id]

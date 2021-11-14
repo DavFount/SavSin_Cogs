@@ -117,6 +117,9 @@ class ManualRuns(commands.Cog):
             if "$" in message.content:
                 return
 
+            if not message.author.bot:
+                print(f'{message.author.name}: {message.content}')
+
             user = str(message.author.id)
             if user not in self.runners:
                 return

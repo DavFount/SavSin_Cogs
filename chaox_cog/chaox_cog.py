@@ -1,7 +1,6 @@
 import discord
 import time
 import re
-import os
 import hashlib
 from redbot.core import Config, checks, commands
 from discord.ext import tasks
@@ -43,8 +42,6 @@ class ChaoxCog(commands.Cog):
             duration = curtime - v["timestamp"]
             if duration > 600:
                 remove = self.games.pop(k)
-        if not len(self.runners):
-            await self.get_runners()
 
         await self.update_channel()
 
@@ -61,8 +58,8 @@ class ChaoxCog(commands.Cog):
 
     @commands.command()
     async def whoami(self, ctx: commands.Context):
-        await ctx.author.send(f'Your Chaox is: {await self.get_chaox_id(ctx.author)}')
-        await ctx.author.send(f'Your Discord is: {ctx.author.id}')
+        await ctx.author.send(f'Your Chaox ID is: {await self.get_chaox_id(ctx.author)}')
+        await ctx.author.send(f'Your Discord ID is: {ctx.author.id}')
 
     @commands.group(autohelp=True)
     @commands.guild_only()
@@ -138,8 +135,8 @@ class ChaoxCog(commands.Cog):
             return
         db = await self.connect_sql()
 
-        if count > 5:
-            count = 5
+        if count > 25:
+            count = 25
         cursor_chaos = db.cursor()
         # Chaos
         cursor_chaos.execute(
@@ -390,22 +387,43 @@ class ChaoxCog(commands.Cog):
         if not message.channel.id == await self.config.guild(message.guild).log_channel():
             return
 
-        run_data = re.search(
+        runner_id = re.search(
             r"(?i)\|(\d{17,18})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|", message.content)
 
-        if not run_data:
-            await message.delete()
+        if runner_id:
+            user = message.guild.get_member(runner_id.group(1))
+            await user.send('')
             return
 
-        runner = str(run_data.group(1))
-        game_name = run_data.group(2)
-        password = run_data.group(3)
-        region = run_data.group(4)
-        game_type = run_data.group(5).lower()
+        run_data = re.search(
+            r"(?i)\|([0-9a-z]{64})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|", message.content)
+
+        if not run_data:
+            old_run_data = re.search(
+                r"(?i)\|(\d{17,18})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|", message.content)
+            runner = str(old_run_data.group(1))
+            game_name = old_run_data.group(2)
+            password = old_run_data.group(3)
+            region = old_run_data.group(4)
+            game_type = old_run_data.group(5).lower()
+        else:
+            chaox_id = str(run_data.group(1))
+            game_name = run_data.group(2)
+            password = run_data.group(3)
+            region = run_data.group(4)
+            game_type = run_data.group(5).lower()
+
+            if chaox_id not in self.runners:
+                await self.login_runner(chaox_id)
+
+            runner = self.runners[chaox_id]
+
         cur_time = int(time.time())
 
         if game_name.lower() == 'logout':
             if runner in self.prev_games:
+                if runner in self.runners:
+                    removed = self.runners.pop(runner)
                 if runner in self.games:
                     duration = cur_time - self.games[runner]["timestamp"]
                     if len(self.prev_games[runner]):
@@ -786,14 +804,16 @@ class ChaoxCog(commands.Cog):
     def get_discord_id(self, chaox_id):
         return self.runners[chaox_id]
 
-    async def get_runners(self):
+    async def login_runner(self, runner: str):
         db = await self.connect_sql()
         cursor = db.cursor()
         cursor.execute(
-            f"SELECT * FROM `runners`;")
-        result = cursor.fetchall()
+            f"SELECT * FROM `runners` WHERE chaox_id='{runner}';")
 
-        for row in result:
+        if not cursor.rowcount:
+            return
+
+        for row in cursor:
             discord_id = row[1]
             chaox_id = row[2]
             self.runners[chaox_id] = discord_id

@@ -795,7 +795,7 @@ class ChaoxCog(commands.Cog):
             cursor.close()
             db.close()
 
-        return key
+        return key.upper()
 
     async def runner_exists(self, user: discord.Member):
         db = await self.connect_sql()

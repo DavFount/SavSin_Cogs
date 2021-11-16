@@ -784,7 +784,6 @@ class ChaoxCog(commands.Cog):
         key = digest.hex()
 
         if not await self.runner_exists(user):
-            print('Adding key to DB')
             db = await self.connect_sql()
             cursor = db.cursor()
             sql = "INSERT INTO runners (`discord_id`, `chaox_id`) VALUES (%s, %s);"
@@ -796,9 +795,6 @@ class ChaoxCog(commands.Cog):
             cursor.close()
             db.close()
 
-        else:
-            print('Key already exists')
-
         return key
 
     async def runner_exists(self, user: discord.Member):
@@ -807,7 +803,7 @@ class ChaoxCog(commands.Cog):
         cursor.execute(
             f"SELECT * FROM `runners` WHERE chaox_id='{user.id}';")
 
-        if not cursor.rowcount:
+        if cursor.rowcount:
             return False
 
         return True

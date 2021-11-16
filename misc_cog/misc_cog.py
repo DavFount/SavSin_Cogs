@@ -1,6 +1,3 @@
-import discord
-import re
-from discord.ext import tasks
 from redbot.core import Config, commands
 import random
 

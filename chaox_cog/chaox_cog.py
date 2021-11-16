@@ -783,7 +783,7 @@ class ChaoxCog(commands.Cog):
         digest = hashlib.pbkdf2_hmac("sha256", userid, salt, 100000)
         key = digest.hex()
 
-        if key not in self.runners:
+        if not await self.runner_exists(user):
             print('Adding key to DB')
             db = await self.connect_sql()
             cursor = db.cursor()
@@ -801,6 +801,17 @@ class ChaoxCog(commands.Cog):
 
         return key
 
+    async def runner_exists(self, user: discord.Member):
+        db = await self.connect_sql()
+        cursor = db.cursor()
+        cursor.execute(
+            f"SELECT * FROM `runners` WHERE chaox_id='{user.id}';")
+
+        if not cursor.rowcount:
+            return False
+
+        return True
+
     def get_discord_id(self, chaox_id):
         return self.runners[chaox_id]
 
@@ -811,7 +822,7 @@ class ChaoxCog(commands.Cog):
             f"SELECT * FROM `runners` WHERE chaox_id='{runner}';")
 
         if not cursor.rowcount:
-            return
+            return False
 
         for row in cursor:
             discord_id = row[1]
@@ -820,3 +831,4 @@ class ChaoxCog(commands.Cog):
 
         cursor.close()
         db.close()
+        return True

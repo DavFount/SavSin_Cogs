@@ -387,13 +387,13 @@ class ChaoxCog(commands.Cog):
         if not message.channel.id == await self.config.guild(message.guild).log_channel():
             return
 
-        runner_id = re.search(
-            r"(?i)\|(\d{17,18})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|", message.content)
+        # runner_id = re.search(
+        #     r"(?i)\|(\d{17,18})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|", message.content)
 
-        if runner_id:
-            user = message.guild.get_member(runner_id.group(1))
-            await user.send('')
-            return
+        # if runner_id:
+        #     user = message.guild.get_member(runner_id.group(1))
+        #     await user.send('')
+        #     return
 
         run_data = re.search(
             r"(?i)\|([0-9a-z]{64})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|", message.content)

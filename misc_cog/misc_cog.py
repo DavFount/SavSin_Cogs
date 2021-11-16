@@ -18,7 +18,6 @@ class MiscCog(commands.Cog):
         #     log_channel=None)
 
     @commands.command()
-    @commands.guild_only()
     async def roll(self, ctx: commands.Context):
         """ Roll between min and max to compete for items. """
         num = random.randrange(0, 101)

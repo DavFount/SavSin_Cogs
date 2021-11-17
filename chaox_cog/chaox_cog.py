@@ -825,22 +825,21 @@ class ChaoxCog(commands.Cog):
         cursor = db.cursor()
         print(f'Attempting to find {runner}')
         cursor.execute(
-            f"SELECT * FROM `runners` WHERE chaox_id='{runner}' LIMIT 1;")
+            f"SELECT discord_id FROM `runners` WHERE chaox_id='{runner}' LIMIT 1;")
 
         print(
-            f"SELECT * FROM `runners` WHERE chaox_id='{runner}' LIMIT 1;")
+            f"SELECT discord_id FROM `runners` WHERE chaox_id='{runner}' LIMIT 1;")
         print(cursor.rowcount)
         print(cursor)
 
-        if not cursor.rowcount:
-            print('Runner not found')
-            return False
+        # if not cursor.rowcount:
+        #     print('Runner not found')
+        #     return False
 
         for row in cursor:
             print(f'{row}')
-            discord_id = row[1]
-            chaox_id = row[2]
-            self.runners[chaox_id] = discord_id
+            discord_id = row[0]
+            self.runners[runner] = discord_id
 
         cursor.close()
         db.close()

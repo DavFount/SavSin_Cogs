@@ -410,8 +410,12 @@ class ChaoxCog(commands.Cog):
             game_type = run_data.group(5).lower()
 
             if chaox_id not in self.runners:
+                print('User Not Logged In')
                 if await self.login_runner(chaox_id):
+                    print('Logged In User')
                     runner = self.runners[chaox_id]
+                else:
+                    print('Unable to login user')
         else:
             old_run_data = re.search(
                 r"(?i)\|(\d{17,18})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|", message.content)

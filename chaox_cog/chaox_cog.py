@@ -812,9 +812,9 @@ class ChaoxCog(commands.Cog):
             f"SELECT * FROM `runners` WHERE discord_id='{user.id}';")
 
         if cursor.rowcount:
-            return False
+            return True
 
-        return True
+        return False
 
     def get_discord_id(self, chaox_id):
         return self.runners[chaox_id]

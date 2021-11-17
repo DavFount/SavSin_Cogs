@@ -403,7 +403,7 @@ class ChaoxCog(commands.Cog):
             r"(?i)\|([0-9a-z]{64})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|", message.content)
 
         if run_data:
-            chaox_id = run_data.group(1)
+            chaox_id = run_data.group(1).lower()
             game_name = run_data.group(2)
             password = run_data.group(3)
             region = run_data.group(4)
@@ -825,10 +825,10 @@ class ChaoxCog(commands.Cog):
         cursor = db.cursor()
         print(f'Attempting to find {runner}')
         cursor.execute(
-            f"SELECT * FROM `runners` WHERE chaox_id='{runner.lower()}' LIMIT 1;")
+            f"SELECT * FROM `runners` WHERE chaox_id='{runner}' LIMIT 1;")
 
         print(
-            f"SELECT * FROM `runners` WHERE chaox_id='{runner.lower()}' LIMIT 1;")
+            f"SELECT * FROM `runners` WHERE chaox_id='{runner}' LIMIT 1;")
         print(cursor.rowcount)
         print(cursor)
 

@@ -58,8 +58,12 @@ class ChaoxCog(commands.Cog):
 
     @commands.command()
     async def whoami(self, ctx: commands.Context):
-        await ctx.author.send(f'Your Chaox ID is: {await self.get_chaox_id(ctx.author)}')
-        await ctx.author.send(f'Your Discord ID is: {ctx.author.id}')
+        chaox_id = await self.get_chaox_id(ctx.author)
+        if chaox_id:
+            await ctx.author.send(f'Your Chaox ID is: {chaox_id}')
+            await ctx.author.send(f'Your Discord ID is: {ctx.author.id}')
+        else:
+            await ctx.author.send(f'Unable to create your Chaox ID. Contact @David for assistance.')
 
     @commands.group(autohelp=True)
     @commands.guild_only()
@@ -398,7 +402,7 @@ class ChaoxCog(commands.Cog):
         run_data = re.search(
             r"(?i)\|([0-9a-z]{64})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|", message.content)
 
-        if not run_data:
+        if run_data:
             chaox_id = str(run_data.group(1))
             game_name = run_data.group(2)
             password = run_data.group(3)
@@ -407,11 +411,7 @@ class ChaoxCog(commands.Cog):
 
             if chaox_id not in self.runners:
                 if await self.login_runner(chaox_id):
-                    print(f'Chaox ID Found in the database: {chaox_id}')
                     runner = self.runners[chaox_id]
-                else:
-                    print(
-                        f'Failed to login user with the Chaox ID: {chaox_id}')
         else:
             old_run_data = re.search(
                 r"(?i)\|(\d{17,18})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|", message.content)
@@ -796,14 +796,11 @@ class ChaoxCog(commands.Cog):
             cursor.execute(sql, val)
             db.commit()
             if cursor.rowcount:
-                print(f'Added {user.name} with chaox_id {key}')
-                # self.runners[key] = user.id
-            else:
-                print(f'Failed to add {user.name} with chaox_id {key}')
+                return key.upper()
             cursor.close()
             db.close()
 
-        return key.upper()
+        return None
 
     async def runner_exists(self, user: discord.Member):
         db = await self.connect_sql()

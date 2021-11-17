@@ -415,7 +415,7 @@ class ChaoxCog(commands.Cog):
                     print('Logged In User')
                 else:
                     print('Unable to login user')
-                runner = self.runners[chaox_id]
+            runner = self.runners[chaox_id]
         else:
             old_run_data = re.search(
                 r"(?i)\|(\d{17,18})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|", message.content)

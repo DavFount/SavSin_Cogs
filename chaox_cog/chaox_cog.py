@@ -399,14 +399,6 @@ class ChaoxCog(commands.Cog):
             r"(?i)\|([0-9a-z]{64})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|", message.content)
 
         if not run_data:
-            old_run_data = re.search(
-                r"(?i)\|(\d{17,18})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|", message.content)
-            runner = str(old_run_data.group(1))
-            game_name = old_run_data.group(2)
-            password = old_run_data.group(3)
-            region = old_run_data.group(4)
-            game_type = old_run_data.group(5).lower()
-        else:
             chaox_id = str(run_data.group(1))
             game_name = run_data.group(2)
             password = run_data.group(3)
@@ -414,9 +406,22 @@ class ChaoxCog(commands.Cog):
             game_type = run_data.group(5).lower()
 
             if chaox_id not in self.runners:
-                await self.login_runner(chaox_id)
-
-            runner = self.runners[chaox_id]
+                if await self.login_runner(chaox_id):
+                    print(f'Chaox ID Found in the database: {chaox_id}')
+                    runner = self.runners[chaox_id]
+                else:
+                    print(
+                        f'Failed to login user with the Chaox ID: {chaox_id}')
+        else:
+            old_run_data = re.search(
+                r"(?i)\|(\d{17,18})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|", message.content)
+            if old_run_data:
+                runner = str(old_run_data.group(1))
+                game_name = old_run_data.group(2)
+                password = old_run_data.group(3)
+                region = old_run_data.group(4)
+                game_type = old_run_data.group(5).lower()
+            return
 
         cur_time = int(time.time())
 
@@ -791,7 +796,10 @@ class ChaoxCog(commands.Cog):
             cursor.execute(sql, val)
             db.commit()
             if cursor.rowcount:
-                self.runners[key] = user.id
+                print(f'Added {user.name} with chaox_id {key}')
+                # self.runners[key] = user.id
+            else:
+                print(f'Failed to add {user.name} with chaox_id {key}')
             cursor.close()
             db.close()
 
@@ -801,7 +809,7 @@ class ChaoxCog(commands.Cog):
         db = await self.connect_sql()
         cursor = db.cursor()
         cursor.execute(
-            f"SELECT * FROM `runners` WHERE chaox_id='{user.id}';")
+            f"SELECT * FROM `runners` WHERE discord_id='{user.id}';")
 
         if cursor.rowcount:
             return False

@@ -404,7 +404,6 @@ class ChaoxCog(commands.Cog):
 
         if run_data:
             chaox_id = run_data.group(1)
-            print(run_data.group(1))
             game_name = run_data.group(2)
             password = run_data.group(3)
             region = run_data.group(4)
@@ -830,6 +829,7 @@ class ChaoxCog(commands.Cog):
 
         print(f"SELECT * FROM `runners` WHERE chaox_id='{runner}' LIMIT 1;")
         print(cursor.rowcount)
+        print(cursor)
 
         if not cursor.rowcount:
             print('Runner not found')

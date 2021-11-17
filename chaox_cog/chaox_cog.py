@@ -827,6 +827,9 @@ class ChaoxCog(commands.Cog):
         cursor.execute(
             f"SELECT * FROM `runners` WHERE chaox_id='{runner}' LIMIT 1;")
 
+        print(f"SELECT * FROM `runners` WHERE chaox_id='{runner}' LIMIT 1;")
+        print(cursor.rowcount)
+
         if not cursor.rowcount:
             print('Runner not found')
             return False

@@ -410,11 +410,7 @@ class ChaoxCog(commands.Cog):
             game_type = run_data.group(5).lower()
 
             if chaox_id not in self.runners:
-                print(f'User Not Logged In: {chaox_id}')
-                if await self.login_runner(chaox_id):
-                    print('Logged In User')
-                else:
-                    print('Unable to login user')
+                await self.login_runner(chaox_id)
             runner = self.runners[chaox_id]
         else:
             old_run_data = re.search(
@@ -425,14 +421,15 @@ class ChaoxCog(commands.Cog):
                 password = old_run_data.group(3)
                 region = old_run_data.group(4)
                 game_type = old_run_data.group(5).lower()
-            return
+            else:
+                return
 
         cur_time = int(time.time())
 
         if game_name.lower() == 'logout':
+            if runner in self.runners:
+                removed = self.runners.pop(runner)
             if runner in self.prev_games:
-                if runner in self.runners:
-                    removed = self.runners.pop(runner)
                 if runner in self.games:
                     duration = cur_time - self.games[runner]["timestamp"]
                     if len(self.prev_games[runner]):
@@ -823,21 +820,10 @@ class ChaoxCog(commands.Cog):
     async def login_runner(self, runner: str):
         db = await self.connect_sql()
         cursor = db.cursor()
-        print(f'Attempting to find {runner}')
         cursor.execute(
             f"SELECT discord_id FROM `runners` WHERE chaox_id='{runner}' LIMIT 1;")
 
-        print(
-            f"SELECT discord_id FROM `runners` WHERE chaox_id='{runner}' LIMIT 1;")
-        print(cursor.rowcount)
-        print(cursor)
-
-        # if not cursor.rowcount:
-        #     print('Runner not found')
-        #     return False
-
         for row in cursor:
-            print(f'{row}')
             discord_id = row[0]
             self.runners[runner] = discord_id
 

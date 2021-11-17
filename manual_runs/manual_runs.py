@@ -27,7 +27,7 @@ class ManualRuns(commands.Cog):
         self.set_guild.cancel()
         return super().cog_unload()
 
-    @tasks.loop(seconds=10, count=1)
+    @tasks.loop(seconds=10)
     async def set_guild(self):
         if not self.guild:
             self.guild = self.bot.get_guild(772664928627851275)

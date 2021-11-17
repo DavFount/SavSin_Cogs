@@ -825,9 +825,10 @@ class ChaoxCog(commands.Cog):
         cursor = db.cursor()
         print(f'Attempting to find {runner}')
         cursor.execute(
-            f"SELECT * FROM `runners` WHERE chaox_id='{runner}' LIMIT 1;")
+            f"SELECT * FROM `runners` WHERE chaox_id='{runner.lower()}' LIMIT 1;")
 
-        print(f"SELECT * FROM `runners` WHERE chaox_id='{runner}' LIMIT 1;")
+        print(
+            f"SELECT * FROM `runners` WHERE chaox_id='{runner.lower()}' LIMIT 1;")
         print(cursor.rowcount)
         print(cursor)
 

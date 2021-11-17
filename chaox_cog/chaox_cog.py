@@ -823,13 +823,16 @@ class ChaoxCog(commands.Cog):
     async def login_runner(self, runner: str):
         db = await self.connect_sql()
         cursor = db.cursor()
+        print(f'Attempting to find {runner}')
         cursor.execute(
-            f"SELECT * FROM `runners` WHERE chaox_id='{runner}';")
+            f"SELECT * FROM `runners` WHERE chaox_id='{runner}' LIMIT 1;")
 
         if not cursor.rowcount:
+            print('Runner not found')
             return False
 
         for row in cursor:
+            print(f'{row}')
             discord_id = row[1]
             chaox_id = row[2]
             self.runners[chaox_id] = discord_id

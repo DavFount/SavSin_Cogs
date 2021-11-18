@@ -101,11 +101,11 @@ class ChaoxCog(commands.Cog):
         embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
         embed.title = f'{user.name}\'s Career'
 
-        if not len(result_chaos):
-            embed.add_field(
-                name='No Runs Recorded!',
-                value='Check out our links section to become a runner!'
-            )
+        # if not len(result_chaos):
+        #     embed.add_field(
+        #         name='No Runs Recorded!',
+        #         value='Check out our links section to become a runner!'
+        #     )
 
         if len(career["chaos"]):
             avg_time = int(career["chaos"][3] / career["chaos"][2])

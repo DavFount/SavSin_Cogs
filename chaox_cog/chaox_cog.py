@@ -377,7 +377,7 @@ class ChaoxCog(commands.Cog):
                         value=data["message_wait_time"])
 
         await ctx.send('I\'ve sent you the requested information via DM.')
-        await ctx.reply(embed=embed)
+        await ctx.author.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_message(self, message):

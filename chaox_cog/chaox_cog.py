@@ -36,8 +36,8 @@ class ChaoxCog(commands.Cog):
     @tasks.loop(seconds=10)
     async def game_announce(self):
         if not self.guild:
-            # self.guild = self.bot.get_guild(772664928627851275)
-            self.guild = self.bot.get_guild(909279119894798346)
+            self.guild = self.bot.get_guild(772664928627851275)
+            # self.guild = self.bot.get_guild(909279119894798346)
         curtime = int(time.time())
         for(k, v) in list(self.games.items()):
             duration = curtime - v["timestamp"]

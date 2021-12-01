@@ -209,6 +209,14 @@ class ChaoxCog(commands.Cog):
         db.close()
         await ctx.send(embed=embed)
 
+    @chx_admin.command(name="resetdb")
+    async def chx_admin_resetdb(self, ctx: commands.Context):
+        await self.config.guild(ctx.guild).host.set(None)
+        await self.config.guild(ctx.guild).port.set(3306)
+        await self.config.guild(ctx.guild).db.set(None)
+        await self.config.guild(ctx.guild).user.set(None)
+        await self.config.guild(ctx.guild).password.set(None)
+
     @chx_admin.command(name="reset")
     async def chx_admin_reset(self, ctx: commands.Context):
         await self.config.guild(ctx.guild).game_msg.set(None)

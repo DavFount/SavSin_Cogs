@@ -145,11 +145,11 @@ class ChaoxCog(commands.Cog):
         await self.config.guild(ctx.guild).enabled.set(False)
         await ctx.reply("ChaoX Run announcment has been disabled!")
 
-    @chx_admin.command(name="update_members")
-    async def chx_update_members(self, ctx: commands.Context):
-        """ Updates the Member Roster with Current Members """
-        await self.update_member_db()
-        await ctx.reply("Member Roster Updated")
+    # @chx_admin.command(name="update_members")
+    # async def chx_update_members(self, ctx: commands.Context):
+    #     """ Updates the Member Roster with Current Members """
+    #     await self.update_member_db()
+    #     await ctx.reply("Member Roster Updated")
 
     @chx_admin.command(name="top")
     async def chx_top(self, ctx: commands.Context, count: int = 5):

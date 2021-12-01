@@ -27,7 +27,7 @@ class ChaoxCog(commands.Cog):
         self.config.register_guild(
             host=None, port=3306, db=None, user=None, password=None, min_game_time=0, max_game_time=999,
             announce_channel=None, log_channel=None, game_msg=None, inst_msg=None, top_msg=None, chaos_role=None,
-            baal_role=None, message_wait_time=15, instructions=[])
+            baal_role=None, message_wait_time=15, instructions=[], enabled=True)
 
     def cog_unload(self):
         self.game_announce.cancel()
@@ -132,6 +132,16 @@ class ChaoxCog(commands.Cog):
     @checks.admin()
     async def chx_admin(self, ctx: commands.Context):
         """Various ChX Admin Settings."""
+
+    @chx.command(name="enable")
+    async def chx_enable(self, ctx: commands.Context):
+        """ Enable ChaoX run announcements """
+        await self.config.guild(ctx.guild).enabled.set(True)
+
+    @chx.command(name="disable")
+    async def chx_disable(self, ctx: commands.Context):
+        """ Disable ChaoX run announcements """
+        await self.config.guild(ctx.guild).enabled.set(False)
 
     @chx_admin.command(name="top")
     async def chx_top(self, ctx: commands.Context, count: int = 5):
@@ -377,6 +387,9 @@ class ChaoxCog(commands.Cog):
         embed.add_field(name='Game Message Duration*',
                         value=data["message_wait_time"])
 
+        status = 'Enabled' if data["enabled"] else 'Disabled'
+        embed.add_field(name='ChaoX Run Announcement Status:', value=status)
+
         await ctx.send('I\'ve sent you the requested information via DM.')
         await ctx.author.send(embed=embed)
 
@@ -392,13 +405,8 @@ class ChaoxCog(commands.Cog):
         if not message.channel.id == await self.config.guild(message.guild).log_channel():
             return
 
-        # runner_id = re.search(
-        #     r"(?i)\|(\d{17,18})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|", message.content)
-
-        # if runner_id:
-        #     user = message.guild.get_member(runner_id.group(1))
-        #     await user.send('')
-        #     return
+        if not await self.config.guild(message.guild).enabled():
+            return
 
         run_data = re.search(
             r"(?i)\|([0-9a-z]{64})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|", message.content)

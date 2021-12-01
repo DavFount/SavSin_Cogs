@@ -27,7 +27,7 @@ class ChaoxCog(commands.Cog):
         self.config.register_guild(
             host=None, port=3306, db=None, user=None, password=None, min_game_time=0, max_game_time=999,
             announce_channel=None, log_channel=None, game_msg=None, inst_msg=None, top_msg=None, chaos_role=None,
-            baal_role=None, message_wait_time=15, instructions=[], enabled=True)
+            baal_role=None, message_wait_time=15, instructions=[], enabled=True, first_run=True)
 
     def cog_unload(self):
         self.game_announce.cancel()
@@ -38,6 +38,8 @@ class ChaoxCog(commands.Cog):
         if not self.guild:
             self.guild = self.bot.get_guild(772664928627851275)
             # self.guild = self.bot.get_guild(909279119894798346)
+        if await self.config.guild(self.guild).first_run():
+            await self.update_member_db()
         curtime = int(time.time())
         for(k, v) in list(self.games.items()):
             duration = curtime - v["timestamp"]
@@ -394,6 +396,10 @@ class ChaoxCog(commands.Cog):
 
         await ctx.send('I\'ve sent you the requested information via DM.')
         await ctx.author.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        await self.update_member_db(member)
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -841,3 +847,20 @@ class ChaoxCog(commands.Cog):
         cursor.close()
         db.close()
         return True
+
+    async def update_member_db(self, member: discord.Member = None):
+        await self.config.guild(self.guild).first_run.set(False)
+        db = await self.connect_sql()
+        cursor = db.cursor()
+        sql = "INSERT INTO userlist (`discord_id`, `name`) VALUES (%s, %s);"
+        if not member:
+            for member in self.guild.members:
+                val = (member.id, member.name)
+                cursor.execute(sql, val)
+                db.commit()
+        else:
+            val = (member.id, member.name)
+            cursor.execute(sql, val)
+            db.commit()
+        cursor.close()
+        db.close()

@@ -137,11 +137,13 @@ class ChaoxCog(commands.Cog):
     async def chx_enable(self, ctx: commands.Context):
         """ Enable ChaoX run announcements """
         await self.config.guild(ctx.guild).enabled.set(True)
+        await ctx.reply("ChaoX Run announcment has been enabled!")
 
     @chx_admin.command(name="disable")
     async def chx_disable(self, ctx: commands.Context):
         """ Disable ChaoX run announcements """
         await self.config.guild(ctx.guild).enabled.set(False)
+        await ctx.reply("ChaoX Run announcment has been disabled!")
 
     @chx_admin.command(name="top")
     async def chx_top(self, ctx: commands.Context, count: int = 5):

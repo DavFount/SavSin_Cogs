@@ -133,12 +133,12 @@ class ChaoxCog(commands.Cog):
     async def chx_admin(self, ctx: commands.Context):
         """Various ChX Admin Settings."""
 
-    @chx.command(name="enable")
+    @chx_admin.command(name="enable")
     async def chx_enable(self, ctx: commands.Context):
         """ Enable ChaoX run announcements """
         await self.config.guild(ctx.guild).enabled.set(True)
 
-    @chx.command(name="disable")
+    @chx_admin.command(name="disable")
     async def chx_disable(self, ctx: commands.Context):
         """ Disable ChaoX run announcements """
         await self.config.guild(ctx.guild).enabled.set(False)

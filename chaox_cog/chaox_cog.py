@@ -33,7 +33,7 @@ class ChaoxCog(commands.Cog):
         self.game_announce.cancel()
         return super().cog_unload()
 
-    @tasks.loop(seconds=10)
+    @tasks.loop(seconds=15)
     async def game_announce(self):
         if not self.guild:
             self.guild = self.bot.get_guild(772664928627851275)
@@ -409,9 +409,9 @@ class ChaoxCog(commands.Cog):
         await ctx.send('I\'ve sent you the requested information via DM.')
         await ctx.author.send(embed=embed)
 
-    @commands.Cog.listener()
-    async def on_member_join(self, member):
-        await self.update_member_db(member)
+    # @commands.Cog.listener()
+    # async def on_member_join(self, member):
+    #     await self.update_member_db(member)
 
     @commands.Cog.listener()
     async def on_message(self, message):

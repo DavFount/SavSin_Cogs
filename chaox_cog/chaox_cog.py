@@ -226,7 +226,7 @@ class ChaoxCog(commands.Cog):
     @chx_admin.command(name="stop")
     async def chx_admin_stop(self, ctx: commands.Context, user: discord.Member):
         removed = self.games.pop(str(user.id))
-        await self.update_channel()
+        # await self.update_channel()
 
     @chx_admin.command(name="set_host")
     async def chx_admin_set_host(self, ctx: commands.Context, host: str):
@@ -372,7 +372,7 @@ class ChaoxCog(commands.Cog):
         db.commit()
         cursor.close()
         db.close()
-        await self.update_channel()
+        # await self.update_channel()
         await ctx.send(f'{user.mention}\'s runs have been changed from {original_runs} to {run_count}.')
 
     @chx_admin.command(name="settings")
@@ -471,7 +471,7 @@ class ChaoxCog(commands.Cog):
                 if runner in self.games:
                     removed = self.games.pop(runner)
 
-            await self.update_channel()
+            # await self.update_channel()
             return
 
         if runner in self.games:
@@ -481,10 +481,10 @@ class ChaoxCog(commands.Cog):
                 self.prev_games[runner].append(duration)
                 await self.persist_data(self.games[runner]["game_type"], runner, duration)
                 removed = self.games.pop(runner)
-                await self.update_channel()
+                # await self.update_channel()
             elif game_name.lower() == 'game over':
                 removed = self.games.pop(runner)
-                await self.update_channel()
+                # await self.update_channel()
 
         if game_name.lower() == 'logout' or game_name.lower() == 'game over':
             # Stop Logout and Game Over from creating games in log channel
@@ -522,7 +522,7 @@ class ChaoxCog(commands.Cog):
         else:
             await channel.send('You must first configure your role settings !chx_admin set_chaos_role and set_baal_role!')
 
-        await self.update_channel()
+        # await self.update_channel()
 
     async def update_channel(self):
         channel = self.guild.get_channel(await self.config.guild(self.guild).announce_channel())

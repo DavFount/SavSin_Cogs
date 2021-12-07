@@ -71,6 +71,14 @@ class ChaoxCog(commands.Cog):
     async def chx(self, ctx: commands.Context):
         """Various ChX Commands."""
 
+    @chx.command(name="top")
+    async def chx_top(self, ctx: commands.Context, count: int = 5):
+        """ Displays embed with top runners (Max: 25) """
+        if not await self.is_db_configured():
+            return
+        embed = await self.format_top(count)
+        await ctx.send(embed=embed)
+
     @chx.command(name="career")
     async def chx_career(self, ctx: commands.Context, user: discord.Member = None):
         """ Display Embed with Career Stats """
@@ -150,64 +158,6 @@ class ChaoxCog(commands.Cog):
     #     """ Updates the Member Roster with Current Members """
     #     await self.update_member_db()
     #     await ctx.reply("Member Roster Updated")
-
-    @chx_admin.command(name="top")
-    async def chx_top(self, ctx: commands.Context, count: int = 5):
-        """ Displays embed with top runners """
-        if not await self.is_db_configured():
-            return
-        db = await self.connect_sql()
-
-        if count > 25:
-            count = 25
-        cursor_chaos = db.cursor()
-        # Chaos
-        cursor_chaos.execute(
-            f"SELECT * FROM `chaos_tracker` ORDER BY total_runs DESC LIMIT {count}")
-        result_chaos = cursor_chaos.fetchall()
-
-        # Baal
-        cursor_baal = db.cursor()
-        cursor_baal.execute(
-            f"SELECT * FROM `baal_tracker` ORDER BY total_runs DESC LIMIT {count}")
-        result_baal = cursor_baal.fetchall()
-
-        embed = discord.Embed(color=0xff0000)
-        embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
-        embed.title = f'Top {count} Runners'
-        count = 1
-
-        top = {"chaos": [], "baal": []}
-        for row in result_chaos:
-            user = row[1].split('#')[0]
-            top["chaos"].append(
-                f'{count}. {user} - Total Runs: {row[2]}'
-            )
-            count += 1
-
-        count = 1
-        for row in result_baal:
-            user = row[1].split('#')[0]
-            top["baal"].append(
-                f'{count}. {user} - Total Runs: {row[2]}'
-            )
-            count += 1
-
-        if(len(top["chaos"])):
-            embed.add_field(
-                name=f'Chaos',
-                value='\n'.join(top["chaos"]),
-                inline=True
-            )
-
-        if(len(top["baal"])):
-            embed.add_field(
-                name=f'Baal',
-                value='\n'.join(top["baal"]),
-                inline=True
-            )
-        db.close()
-        await ctx.send(embed=embed)
 
     @chx_admin.command(name="resetdb")
     async def chx_admin_resetdb(self, ctx: commands.Context):
@@ -567,24 +517,25 @@ class ChaoxCog(commands.Cog):
 
         return embed
 
-    async def format_top(self):
+    async def format_top(self, count: int = 5):
         # cur_time = int(time.time())
         db = await self.connect_sql()
-        top_count = 5
+        if count > 25:
+            count = 25
         cursor_chaos = db.cursor()
         # Chaos
         cursor_chaos.execute(
-            f"SELECT * FROM `chaos_tracker` ORDER BY total_runs DESC LIMIT {top_count}")
+            f"SELECT * FROM `chaos_tracker` ORDER BY total_runs DESC LIMIT {count}")
         result_chaos = cursor_chaos.fetchall()
 
         # Baal
         cursor_baal = db.cursor()
         cursor_baal.execute(
-            f"SELECT * FROM `baal_tracker` ORDER BY total_runs DESC LIMIT {top_count}")
+            f"SELECT * FROM `baal_tracker` ORDER BY total_runs DESC LIMIT {count}")
         result_baal = cursor_baal.fetchall()
 
         embed = discord.Embed(color=0xffffff)
-        embed.title = f'Top {top_count} Runners'
+        embed.title = f'Top {count} Runners'
         # embed.add_field(
         #     name=f'Updated',
         #     value=f'<t:{cur_time}:R>',

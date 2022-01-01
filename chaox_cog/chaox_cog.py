@@ -520,8 +520,8 @@ class ChaoxCog(commands.Cog):
     async def format_top(self, count: int = 5):
         # cur_time = int(time.time())
         db = await self.connect_sql()
-        if count > 25:
-            count = 25
+        if count > 50:
+            count = 50
         cursor_chaos = db.cursor()
         # Chaos
         cursor_chaos.execute(
@@ -545,6 +545,7 @@ class ChaoxCog(commands.Cog):
 
         top = {"chaos": [], "baal": []}
         for row in result_chaos:
+            print(f'Runner: {row[1]}')
             user = self.guild.get_member(int(row[1]))
             avg_time = int(row[3] / row[2])
             top["chaos"].append(
@@ -554,6 +555,7 @@ class ChaoxCog(commands.Cog):
 
         count = 1
         for row in result_baal:
+            print(f'Runner: {row[1]}')
             user = self.guild.get_member(int(row[1]))
             avg_time = int(row[3] / row[2])
             top["baal"].append(

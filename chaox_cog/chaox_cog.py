@@ -556,9 +556,9 @@ class ChaoxCog(commands.Cog):
 
         count = 1
         for row in result_baal:
+            user = self.guild.get_member(int(row[1]))
             if not user:
                 continue
-            user = self.guild.get_member(int(row[1]))
             avg_time = int(row[3] / row[2])
             top["baal"].append(
                 f'{count}. {user.mention} - {row[2]} runs - {avg_time} sec avg'

@@ -520,8 +520,8 @@ class ChaoxCog(commands.Cog):
     async def format_top(self, count: int = 5):
         # cur_time = int(time.time())
         db = await self.connect_sql()
-        if count > 50:
-            count = 50
+        if count > 20:
+            count = 20
         cursor_chaos = db.cursor()
         # Chaos
         cursor_chaos.execute(

@@ -545,8 +545,9 @@ class ChaoxCog(commands.Cog):
 
         top = {"chaos": [], "baal": []}
         for row in result_chaos:
-            print(f'Runner: {row[1]}')
             user = self.guild.get_member(int(row[1]))
+            if not user:
+                continue
             avg_time = int(row[3] / row[2])
             top["chaos"].append(
                 f'{count}. {user.mention} - {row[2]} runs - {avg_time} sec avg'
@@ -555,7 +556,8 @@ class ChaoxCog(commands.Cog):
 
         count = 1
         for row in result_baal:
-            print(f'Runner: {row[1]}')
+            if not user:
+                continue
             user = self.guild.get_member(int(row[1]))
             avg_time = int(row[3] / row[2])
             top["baal"].append(

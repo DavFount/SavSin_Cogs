@@ -50,8 +50,8 @@ class ChaoxRewards(commands.Cog):
     @chx_rewards.command(name="reset")
     async def chx_rewards_reset(self, ctx: commands.Context):
         """Remove all members from the two roles"""
-        chaos_role_id = await self.config(ctx.guild).chaos_runner_role()
-        baal_role_id = await self.config(ctx.guild).baal_runner_role()
+        chaos_role_id = await self.config.guild(ctx.guild).chaos_runner_role()
+        baal_role_id = await self.config.guild(ctx.guild).baal_runner_role()
         chaos_role = ctx.guild.get_role(int(chaos_role_id))
         baal_role = ctx.guild.get_role(int(baal_role_id))
         if chaos_role:

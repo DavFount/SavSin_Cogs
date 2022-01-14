@@ -23,13 +23,13 @@ class ChaoxRewards(commands.Cog):
         )
 
         self.config.register_guild(
-            host=None, port=3306, db=None, user=None, password=None, chaos_runner_role=None, baal_runner_role=None)
+            host=None, port=3306, db=None, user=None, password=None, chaos_runner_role=None, baal_runner_role=None, min_game=10)
 
     def cog_unload(self):
         self.game_announce.cancel()
         return super().cog_unload()
 
-    @tasks.loop(seconds=60, count=1)
+    @tasks.loop(seconds=15, count=1)
     async def game_announce(self):
         if not self.guild:
             self.guild = self.bot.get_guild(772664928627851275)
@@ -120,6 +120,12 @@ class ChaoxRewards(commands.Cog):
         await ctx.send('Password Updated')
         await ctx.message.delete()
 
+    @chx_rewards.command(name="min_game_count")
+    async def chx_rewards_min_game_count(self, ctx: commands.Context, min_game_count: int):
+        """Set minimum games before roles are applied"""
+        await self.config.guild(ctx.guild).min_game.set(min_game_count)
+        await ctx.send(f'The minimum amount of games before a role is applied is now set to {min_game_count}.')
+
     async def connect_sql(self):
         host = await self.config.guild(self.guild).host()
         user = await self.config.guild(self.guild).user()
@@ -134,11 +140,40 @@ class ChaoxRewards(commands.Cog):
         )
 
     async def update_runners(self):
-        db = await self.connect_sql()
-        user = self.guild.get_member(862144674251669525)
-        role = self.guild.get_role(877044470888157185)
+        run_limit = await self.config.guild(self.guild).min_game()
 
-        print(self.user_has_role(user, role))
+        chaos_role_id = await self.config.guild(self.guild).chaos_runner_role()
+        baal_role_id = await self.config.guild(self.guild).baal_runner_role()
+
+        chaos_role = self.guild.get_role(chaos_role_id)
+        baal_role = self.guild.get_role(baal_role_id)
+
+        db = await self.connect_sql()
+        cursor_chaos = db.cursor()
+        cursor_chaos.execute(
+            f"SELECT * FROM `chaos_tracker` WHERE total_runs > {run_limit};")
+        result_chaos = cursor_chaos.fetchall()
+
+        for row in result_chaos:
+            user = self.guild.get_member(int(row[1]))
+            if not self.user_has_role(user, chaos_role):
+                await user.add_roles(chaos_role)
+                print(f'Added Chaos Role for {user.name}.')
+
+        cursor_baal = db.cursor()
+        cursor_baal.execute(
+            f"SELECT * FROM `baal_tracker` WHERE total_runs > {run_limit};")
+        result_baal = cursor_baal.fetchall()
+
+        for row in result_baal:
+            user = self.guild.get_member(int(row[1]))
+            if not self.user_has_role(user, baal_role):
+                await user.add_roles(baal_role)
+                print(f'Added Baal Role for {user.name}.')
+
+        cursor_chaos.close()
+        cursor_baal.close()
+        db.close()
 
     def user_has_role(self, user, role):
         for user_role in user.roles:

@@ -69,6 +69,57 @@ class ChaoxRewards(commands.Cog):
                 f'{role.mention} is already the current role.'
             )
 
+    @chx_rewards.command(name="set_host")
+    async def chx_rewards_set_host(self, ctx: commands.Context, host: str):
+        """Set Hostname"""
+        if self.config.guild(ctx.guild).host != host:
+            await self.config.guild(ctx.guild).host.set(host)
+            await ctx.send('Host Updated.')
+            await ctx.message.delete()
+        else:
+            await ctx.send('This host is already set!')
+            await ctx.message.delete()
+
+    @chx_rewards.command(name="set_port")
+    async def chx_rewards_set_port(self, ctx: commands.Context, port: int):
+        """Set Database Port"""
+        if self.config.guild(ctx.guild).port != port:
+            await self.config.guild(ctx.guild).port(port)
+            await ctx.send('Port Updated.')
+            await ctx.message.delete()
+        else:
+            await ctx.send(f'Port is already set to {port}.')
+            await ctx.message.delete()
+
+    @chx_rewards.command(name="set_db")
+    async def chx_rewards_set_db(self, ctx: commands.Context, db: str):
+        """Set Database Name"""
+        if self.config.guild(ctx.guild).db != db:
+            await self.config.guild(ctx.guild).db.set(db)
+            await ctx.send('Database Selected.')
+            await ctx.message.delete()
+        else:
+            await ctx.send('This database is already selected.')
+            await ctx.message.delete()
+
+    @chx_rewards.command(name="set_user")
+    async def chx_rewards_set_user(self, ctx: commands.Context, user: str):
+        """Set Database User"""
+        if self.config.guild(ctx.guild).user != user:
+            await self.config.guild(ctx.guild).user.set(user)
+            await ctx.send('Updated Database User.')
+            await ctx.message.delete()
+        else:
+            await ctx.send('This user is already set.')
+            await ctx.message.delete()
+
+    @chx_rewards.command(name="set_password")
+    async def chx_rewards_set_password(self, ctx: commands.Context, password: str):
+        """Set Database Password"""
+        await self.config.guild(ctx.guild).password.set(password)
+        await ctx.send('Password Updated')
+        await ctx.message.delete()
+
     async def connect_sql(self):
         host = await self.config.guild(self.guild).host()
         user = await self.config.guild(self.guild).user()
@@ -83,7 +134,7 @@ class ChaoxRewards(commands.Cog):
         )
 
     async def update_runners(self):
-        db = await self.connect_sql()
+        # db = await self.connect_sql()
         user = self.guild.get_member(862144674251669525)
         role = self.guild.get_role(877044470888157185)
 

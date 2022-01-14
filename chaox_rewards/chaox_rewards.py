@@ -23,7 +23,7 @@ class ChaoxRewards(commands.Cog):
         )
 
         self.config.register_guild(
-            host=None, port=3306, db=None, user=None, password=None)
+            host=None, port=3306, db=None, user=None, password=None, chaos_runner_role=None, baal_runner_role=None)
 
     def cog_unload(self):
         self.game_announce.cancel()
@@ -48,8 +48,8 @@ class ChaoxRewards(commands.Cog):
     @chx_admin.command(name="set_chaos_runner_role")
     async def chx_admin_set_chaos_role(self, ctx: commands.Context, role: discord.Role):
         """Set the chaos leecher role."""
-        if role.id != await self.config.guild(ctx.guild).chaos_role():
-            await self.config.guild(ctx.guild).chaos_role.set(role.id)
+        if role.id != await self.config.guild(ctx.guild).chaos_runner_role():
+            await self.config.guild(ctx.guild).chaos_runner_role.set(role.id)
             await ctx.send(f'{role.mention} has been set!')
         else:
             await ctx.send(
@@ -59,8 +59,8 @@ class ChaoxRewards(commands.Cog):
     @chx_admin.command(name="set_baal_runner_role")
     async def chx_admin_set_baal_role(self, ctx: commands.Context, role: discord.Role):
         """Set the baal leecher role."""
-        if role.id != await self.config.guild(ctx.guild).baal_role():
-            await self.config.guild(ctx.guild).baal_role.set(role.id)
+        if role.id != await self.config.guild(ctx.guild).baal_runner_role():
+            await self.config.guild(ctx.guild).baal_runner_role.set(role.id)
             await ctx.send(f'{role.mention} has been set!')
         else:
             await ctx.send(

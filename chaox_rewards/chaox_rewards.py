@@ -134,7 +134,7 @@ class ChaoxRewards(commands.Cog):
         )
 
     async def update_runners(self):
-        # db = await self.connect_sql()
+        db = await self.connect_sql()
         user = self.guild.get_member(862144674251669525)
         role = self.guild.get_role(877044470888157185)
 

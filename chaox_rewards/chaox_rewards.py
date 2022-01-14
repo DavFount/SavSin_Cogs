@@ -29,7 +29,7 @@ class ChaoxRewards(commands.Cog):
         self.game_announce.cancel()
         return super().cog_unload()
 
-    @tasks.loop(seconds=15)
+    @tasks.loop(seconds=600)
     async def game_announce(self):
         if not self.guild:
             self.guild = self.bot.get_guild(772664928627851275)
@@ -172,7 +172,6 @@ class ChaoxRewards(commands.Cog):
             user = self.guild.get_member(int(row[1]))
             if not self.user_has_role(user, chaos_role):
                 await user.add_roles(chaos_role)
-                print(f'Added Chaos Role for {user.name}.')
 
         cursor_baal = db.cursor()
         cursor_baal.execute(
@@ -183,7 +182,6 @@ class ChaoxRewards(commands.Cog):
             user = self.guild.get_member(int(row[1]))
             if not self.user_has_role(user, baal_role):
                 await user.add_roles(baal_role)
-                print(f'Added Baal Role for {user.name}.')
 
         cursor_chaos.close()
         cursor_baal.close()

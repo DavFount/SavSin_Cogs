@@ -56,10 +56,10 @@ class ChaoxRewards(commands.Cog):
         baal_role = ctx.guild.get_role(int(baal_role_id))
         if chaos_role:
             for member in chaos_role.members:
-                member.remove_roles(chaos_role)
+                await member.remove_roles(chaos_role)
         if baal_role:
             for member in baal_role.members:
-                member.remove_roles(baal_role)
+                await member.remove_roles(baal_role)
 
     @chx_rewards.command(name="set_chaos_runner_role")
     async def chx_rewards_set_chaos_role(self, ctx: commands.Context, role: discord.Role):

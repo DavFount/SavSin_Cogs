@@ -42,11 +42,11 @@ class ChaoxRewards(commands.Cog):
     @commands.group(autohelp=True)
     @commands.guild_only()
     @checks.admin()
-    async def chx_admin(self, ctx: commands.Context):
+    async def chx_rewards(self, ctx: commands.Context):
         """Various ChX Admin Settings."""
 
-    @chx_admin.command(name="set_chaos_runner_role")
-    async def chx_admin_set_chaos_role(self, ctx: commands.Context, role: discord.Role):
+    @chx_rewards.command(name="set_chaos_runner_role")
+    async def chx_rewards_set_chaos_role(self, ctx: commands.Context, role: discord.Role):
         """Set the chaos leecher role."""
         if role.id != await self.config.guild(ctx.guild).chaos_runner_role():
             await self.config.guild(ctx.guild).chaos_runner_role.set(role.id)
@@ -56,8 +56,8 @@ class ChaoxRewards(commands.Cog):
                 f'{role.mention} is already the current role.'
             )
 
-    @chx_admin.command(name="set_baal_runner_role")
-    async def chx_admin_set_baal_role(self, ctx: commands.Context, role: discord.Role):
+    @chx_rewards.command(name="set_baal_runner_role")
+    async def chx_rewards_set_baal_role(self, ctx: commands.Context, role: discord.Role):
         """Set the baal leecher role."""
         if role.id != await self.config.guild(ctx.guild).baal_runner_role():
             await self.config.guild(ctx.guild).baal_runner_role.set(role.id)

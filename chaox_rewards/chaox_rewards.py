@@ -29,10 +29,12 @@ class ChaoxRewards(commands.Cog):
         self.game_announce.cancel()
         return super().cog_unload()
 
-    @tasks.loop(seconds=10, count=1)
+    @tasks.loop(seconds=60, count=1)
     async def game_announce(self):
         if not self.guild:
             self.guild = self.bot.get_guild(772664928627851275)
+
+        await self.update_runners()
 
     @game_announce.before_loop
     async def before_game_annoucne(self):
@@ -81,7 +83,7 @@ class ChaoxRewards(commands.Cog):
         )
 
     async def update_runners(self):
-        # db = await self.connect_sql()
+        db = await self.connect_sql()
         user = self.guild.get_member(862144674251669525)
         role = self.guild.get_role(877044470888157185)
 

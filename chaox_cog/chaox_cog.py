@@ -44,7 +44,7 @@ class ChaoxCog(commands.Cog):
             if duration > 600:
                 remove = self.games.pop(k)
 
-        # await self.update_runners()
+        await self.update_runners()
         await self.update_channel()
 
     @game_announce.before_loop

@@ -44,7 +44,6 @@ class ChaoxCog(commands.Cog):
             if duration > 600:
                 remove = self.games.pop(k)
 
-        await self.update_runners()
         await self.update_channel()
 
     @game_announce.before_loop
@@ -726,20 +725,6 @@ class ChaoxCog(commands.Cog):
             password=password,
             database=database
         )
-
-    async def update_runners(self):
-        # db = await self.connect_sql()
-        user = self.guild.get_member(862144674251669525)
-        role = self.guild.get_role(931630404962779146)
-
-        print(self.user_has_role(user, role))
-
-    def user_has_role(self, user, role):
-        for user_role in user.roles:
-            if user_role is role:
-                return True
-
-        return False
 
     async def persist_data(self, game_type, runner, duration):
         db = await self.connect_sql()

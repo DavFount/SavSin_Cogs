@@ -167,8 +167,8 @@ class ChaoxCog(commands.Cog):
         await self.config.guild(ctx.guild).user.set(None)
         await self.config.guild(ctx.guild).password.set(None)
 
-    @chx_admin.command(name="reset")
-    async def chx_admin_reset(self, ctx: commands.Context):
+    @chx_admin.command(name="reset_ch")
+    async def chx_admin_reset_ch(self, ctx: commands.Context):
         await self.config.guild(ctx.guild).game_msg.set(None)
         await self.config.guild(ctx.guild).inst_msg.set(None)
         await self.config.guild(ctx.guild).top_msg.set(None)

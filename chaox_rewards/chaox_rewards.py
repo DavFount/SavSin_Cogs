@@ -47,6 +47,20 @@ class ChaoxRewards(commands.Cog):
     async def chx_rewards(self, ctx: commands.Context):
         """Various ChX Admin Settings."""
 
+    @chx_rewards.command(name="reset")
+    async def chx_rewards_reset(self, ctx: commands.Context):
+        """Remove all members from the two roles"""
+        chaos_role_id = await self.config(ctx.guild).chaos_runner_role()
+        baal_role_id = await self.config(ctx.guild).baal_runner_role()
+        chaos_role = ctx.guild.get_role(int(chaos_role_id))
+        baal_role = ctx.guild.get_role(int(baal_role_id))
+        if chaos_role:
+            for member in chaos_role.members:
+                member.remove_roles(chaos_role)
+        if baal_role:
+            for member in baal_role.members:
+                member.remove_roles(baal_role)
+
     @chx_rewards.command(name="set_chaos_runner_role")
     async def chx_rewards_set_chaos_role(self, ctx: commands.Context, role: discord.Role):
         """Set the chaos leecher role."""

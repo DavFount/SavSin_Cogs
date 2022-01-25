@@ -29,7 +29,7 @@ class MiscCog(commands.Cog):
         if not self.guild:
             self.guild = self.bot.get_guild(772664928627851275)
 
-        self.message_jamie()
+        await self.message_jamie()
 
     @twenty_four_hour_loop.before_loop
     async def before_24_hour_loop(self):
@@ -41,8 +41,7 @@ class MiscCog(commands.Cog):
         num = random.randrange(0, 101)
         await ctx.reply(f'{ctx.author.mention} rolled {num}')
 
-    def message_jamie(self):
+    async def message_jamie(self):
         ch = self.guild.get_channel(826471868663988224)
         usr = self.guild.get_member(456838972157460535)
-        ch.send(
-            f'{usr.mention}, Don\'t forget to workout noob you need to get in shape.')
+        await ch.send(f'{usr.mention}, Don\'t forget to workout noob you need to get in shape.')

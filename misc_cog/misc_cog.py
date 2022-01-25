@@ -29,7 +29,7 @@ class MiscCog(commands.Cog):
         if not self.guild:
             self.guild = self.bot.get_guild(772664928627851275)
 
-        await self.message_jamie()
+        # await self.message_jamie()
 
     @twenty_four_hour_loop.before_loop
     async def before_24_hour_loop(self):

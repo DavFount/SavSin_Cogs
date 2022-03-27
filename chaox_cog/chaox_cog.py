@@ -380,6 +380,7 @@ class ChaoxCog(commands.Cog):
         if not await self.config.guild(message.guild).enabled():
             return
 
+        # Add Ladder Data Here
         run_data = re.search(
             r"(?i)\|([0-9a-z]{64})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|", message.content)
 
@@ -394,14 +395,17 @@ class ChaoxCog(commands.Cog):
                 await self.login_runner(chaox_id)
             runner = self.runners[chaox_id]
         else:
+            # Add Ladder Data Here
             old_run_data = re.search(
-                r"(?i)\|(\d{17,18})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|", message.content)
+                r"(?i)\|(\d{17,18})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|(Ladder|Non-Ladder)\|", message.content)
             if old_run_data:
                 runner = str(old_run_data.group(1))
                 game_name = old_run_data.group(2)
                 password = old_run_data.group(3)
                 region = old_run_data.group(4)
                 game_type = old_run_data.group(5).lower()
+                ladder = True if old_run_data.group(
+                    6).lower() == 'ladder' else False
             else:
                 return
 
@@ -419,7 +423,7 @@ class ChaoxCog(commands.Cog):
                     await self.send_thankyou_message(runner)
 
             if runner in self.games:
-                await self.persist_data(self.games[runner]["game_type"], runner, duration)
+                await self.persist_data(self.games[runner]["game_type"], runner, duration, ladder)
                 if runner in self.games:
                     removed = self.games.pop(runner)
 
@@ -431,7 +435,7 @@ class ChaoxCog(commands.Cog):
             if (duration > await self.config.guild(message.guild).min_game_time()
                     and duration < await self.config.guild(message.guild).max_game_time()):
                 self.prev_games[runner].append(duration)
-                await self.persist_data(self.games[runner]["game_type"], runner, duration)
+                await self.persist_data(self.games[runner]["game_type"], runner, duration, ladder)
                 removed = self.games.pop(runner)
                 # await self.update_channel()
             elif game_name.lower() == 'game over':
@@ -737,7 +741,7 @@ class ChaoxCog(commands.Cog):
                     f"SELECT * FROM `chaos_tracker` WHERE `username`='{runner}' AND `ladder`={season} LIMIT 1;")
             else:
                 cursor.execute(
-                    f"SELECT * FROM `chaos_tracker` WHERE `username`='{runner}' LIMIT 1;")
+                    f"SELECT * FROM `chaos_tracker` WHERE `username`='{runner}' AND `ladder`=0 LIMIT 1;")
             result = cursor.fetchall()
             if len(result):
                 update_runs = result[0][2] + 1
@@ -747,16 +751,15 @@ class ChaoxCog(commands.Cog):
                         f"UPDATE `chaos_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `username`='{runner}' AND `ladder`={season} LIMIT 1;")
                 else:
                     cursor.execute(
-                        f"UPDATE `chaos_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `username`='{runner}' LIMIT 1;")
+                        f"UPDATE `chaos_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `username`='{runner}' AND `ladder`=0 LIMIT 1;")
                 db.commit()
             else:
                 run_time = duration
+                sql = "INSERT INTO chaos_tracker (`username`,`total_runs`,`total_time`, `ladder`) VALUES (%s, %s, %s, %s);"
                 if ladder:
-                    sql = "INSERT INTO chaos_tracker (`username`,`total_runs`,`total_time`, `ladder`) VALUES (%s, %s, %s, %s);"
                     val = (runner, 1, run_time, season)
                 else:
-                    sql = "INSERT INTO chaos_tracker (`username`,`total_runs`,`total_time`) VALUES (%s, %s, %s);"
-                    val = (runner, 1, run_time)
+                    val = (runner, 1, run_time, 0)
 
                 cursor.execute(sql, val)
                 db.commit()
@@ -768,7 +771,7 @@ class ChaoxCog(commands.Cog):
                     f"SELECT * FROM `baal_tracker` WHERE `username`='{runner}' AND `ladder`={season} LIMIT 1;")
             else:
                 cursor.execute(
-                    f"SELECT * FROM `baal_tracker` WHERE `username`='{runner}' LIMIT 1;")
+                    f"SELECT * FROM `baal_tracker` WHERE `username`='{runner}' AND `ladder`=0 LIMIT 1;")
             result = cursor.fetchall()
             if len(result):
                 update_runs = result[0][2] + 1
@@ -778,16 +781,15 @@ class ChaoxCog(commands.Cog):
                         f"UPDATE `baal_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `username`='{runner}' AND `ladder`={season} LIMIT 1;")
                 else:
                     cursor.execute(
-                        f"UPDATE `baal_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `username`='{runner}' LIMIT 1;")
+                        f"UPDATE `baal_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `username`='{runner}' AND `ladder`=0 LIMIT 1;")
                 db.commit()
             else:
                 run_time = duration
+                sql = "INSERT INTO baal_tracker (`username`,`total_runs`,`total_time`, `ladder`) VALUES (%s, %s, %s, %s);"
                 if ladder:
-                    sql = "INSERT INTO baal_tracker (`username`,`total_runs`,`total_time`, `ladder`) VALUES (%s, %s, %s, %s);"
                     val = (runner, 1, run_time, season)
                 else:
-                    sql = "INSERT INTO baal_tracker (`username`,`total_runs`,`total_time`) VALUES (%s, %s, %s);"
-                    val = (runner, 1, run_time)
+                    val = (runner, 1, run_time, 0)
                 cursor.execute(sql, val)
                 db.commit()
             cursor.close()

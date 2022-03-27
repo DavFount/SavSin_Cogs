@@ -7,6 +7,8 @@ from discord.ext import tasks
 from datetime import datetime as dt
 import mysql.connector
 
+season = 1
+
 
 class ChaoxCog(commands.Cog):
     """ Chaox Cog for Game Spamming, career stats and top runners """
@@ -525,13 +527,13 @@ class ChaoxCog(commands.Cog):
         cursor_chaos = db.cursor()
         # Chaos
         cursor_chaos.execute(
-            f"SELECT * FROM `chaos_tracker` WHERE ladder=1 ORDER BY total_runs DESC LIMIT {count}")
+            f"SELECT * FROM `chaos_tracker` WHERE ladder={season} ORDER BY total_runs DESC LIMIT {count}")
         result_chaos = cursor_chaos.fetchall()
 
         # Baal
         cursor_baal = db.cursor()
         cursor_baal.execute(
-            f"SELECT * FROM `baal_tracker` WHERE ladder=1  ORDER BY total_runs DESC LIMIT {count}")
+            f"SELECT * FROM `baal_tracker` WHERE ladder={season}  ORDER BY total_runs DESC LIMIT {count}")
         result_baal = cursor_baal.fetchall()
 
         embed = discord.Embed(color=0xffffff)

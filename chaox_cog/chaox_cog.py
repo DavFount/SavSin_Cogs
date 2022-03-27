@@ -7,7 +7,7 @@ from discord.ext import tasks
 from datetime import datetime as dt
 import mysql.connector
 
-season = 0
+season = 1
 
 
 class ChaoxCog(commands.Cog):
@@ -96,14 +96,14 @@ class ChaoxCog(commands.Cog):
 
         cursor_chaos = db.cursor()
         cursor_chaos.execute(
-            f"SELECT * FROM `chaos_tracker` WHERE `username`='{username}' LIMIT 1")
+            f"SELECT * FROM `chaos_tracker` WHERE `username`='{username}' AND ladder={season} LIMIT 1")
         result_chaos = cursor_chaos.fetchall()
         for row in result_chaos:
             career["chaos"] = row
 
         cursor_baal = db.cursor()
         cursor_baal.execute(
-            f"SELECT * FROM `baal_tracker` WHERE `username`='{username}' LIMIT 1")
+            f"SELECT * FROM `baal_tracker` WHERE `username`='{username}' AND ladder={season} LIMIT 1")
         result_baal = cursor_baal.fetchall()
         for row in result_baal:
             career["baal"] = row
@@ -651,7 +651,7 @@ class ChaoxCog(commands.Cog):
 
         cursor_chaos = db.cursor()
         cursor_chaos.execute(
-            f'SELECT total_runs from chaos_tracker WHERE username=\'{runner}\'')
+            f'SELECT total_runs from chaos_tracker WHERE username=\'{runner}\' AND ladder={season}')
         result_chaos = cursor_chaos.fetchall()
         runs_chaos = 0
         for row in result_chaos:
@@ -660,7 +660,7 @@ class ChaoxCog(commands.Cog):
 
         cursor_baal = db.cursor()
         cursor_baal.execute(
-            f'SELECT total_runs from baal_tracker WHERE username=\'{runner}\'')
+            f'SELECT total_runs from baal_tracker WHERE username=\'{runner}\' AND ladder={season}')
         result_baal = cursor_baal.fetchall()
         runs_baal = 0
         for row in result_baal:
@@ -728,41 +728,66 @@ class ChaoxCog(commands.Cog):
             database=database
         )
 
-    async def persist_data(self, game_type, runner, duration):
+    async def persist_data(self, game_type, runner, duration, ladder=False):
         db = await self.connect_sql()
         if game_type == 'chaos':
             cursor = db.cursor()
-            cursor.execute(
-                f"SELECT * FROM `chaos_tracker` WHERE `username`='{runner}' LIMIT 1;")
+            if ladder:
+                cursor.execute(
+                    f"SELECT * FROM `chaos_tracker` WHERE `username`='{runner}' AND `ladder`={season} LIMIT 1;")
+            else:
+                cursor.execute(
+                    f"SELECT * FROM `chaos_tracker` WHERE `username`='{runner}' LIMIT 1;")
             result = cursor.fetchall()
             if len(result):
                 update_runs = result[0][2] + 1
                 update_time = result[0][3] + (duration)
-                cursor.execute(
-                    f"UPDATE `chaos_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `username`='{runner}' LIMIT 1;")
+                if ladder:
+                    cursor.execute(
+                        f"UPDATE `chaos_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `username`='{runner}' AND `ladder`={season} LIMIT 1;")
+                else:
+                    cursor.execute(
+                        f"UPDATE `chaos_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `username`='{runner}' LIMIT 1;")
                 db.commit()
             else:
                 run_time = duration
-                sql = "INSERT INTO chaos_tracker (`username`,`total_runs`,`total_time`) VALUES (%s, %s, %s);"
-                val = (runner, 1, run_time)
+                if ladder:
+                    sql = "INSERT INTO chaos_tracker (`username`,`total_runs`,`total_time`, `ladder`) VALUES (%s, %s, %s, %s);"
+                    val = (runner, 1, run_time, season)
+                else:
+                    sql = "INSERT INTO chaos_tracker (`username`,`total_runs`,`total_time`) VALUES (%s, %s, %s);"
+                    val = (runner, 1, run_time)
+
                 cursor.execute(sql, val)
                 db.commit()
             cursor.close()
         elif game_type == 'baal':
             cursor = db.cursor()
-            cursor.execute(
-                f"SELECT * FROM `baal_tracker` WHERE `username`='{runner}' LIMIT 1;")
+            if ladder:
+                cursor.execute(
+                    f"SELECT * FROM `baal_tracker` WHERE `username`='{runner}' AND `ladder`={season} LIMIT 1;")
+            else:
+                cursor.execute(
+                    f"SELECT * FROM `baal_tracker` WHERE `username`='{runner}' LIMIT 1;")
             result = cursor.fetchall()
             if len(result):
                 update_runs = result[0][2] + 1
                 update_time = result[0][3] + (duration)
-                cursor.execute(
-                    f"UPDATE `baal_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `username`='{runner}' LIMIT 1;")
+                if ladder:
+                    cursor.execute(
+                        f"UPDATE `baal_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `username`='{runner}' AND `ladder`={season} LIMIT 1;")
+                else:
+                    cursor.execute(
+                        f"UPDATE `baal_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `username`='{runner}' LIMIT 1;")
                 db.commit()
             else:
                 run_time = duration
-                sql = "INSERT INTO baal_tracker (`username`,`total_runs`,`total_time`) VALUES (%s, %s, %s);"
-                val = (runner, 1, run_time)
+                if ladder:
+                    sql = "INSERT INTO baal_tracker (`username`,`total_runs`,`total_time`, `ladder`) VALUES (%s, %s, %s, %s);"
+                    val = (runner, 1, run_time, season)
+                else:
+                    sql = "INSERT INTO baal_tracker (`username`,`total_runs`,`total_time`) VALUES (%s, %s, %s);"
+                    val = (runner, 1, run_time)
                 cursor.execute(sql, val)
                 db.commit()
             cursor.close()

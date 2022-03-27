@@ -7,7 +7,7 @@ from discord.ext import tasks
 from datetime import datetime as dt
 import mysql.connector
 
-season = 1
+season = 0
 
 
 class ChaoxCog(commands.Cog):

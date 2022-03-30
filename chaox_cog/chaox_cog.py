@@ -382,32 +382,37 @@ class ChaoxCog(commands.Cog):
 
         # Add Ladder Data Here
         run_data = re.search(
-            r"(?i)\|([0-9a-z]{64})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|", message.content)
+            r"(?i)\|([0-9a-z]{64})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|(Ladder|Non-Ladder)\|(Amazon|Assassin|Barbarian|Druid|Necromancer|Paladin|Sorceress)\|[a-zA-Z0-9]{0,50}\|", message.content)
 
         if run_data:
+            # CRU Runs
             chaox_id = run_data.group(1).lower()
             game_name = run_data.group(2)
             password = run_data.group(3)
             region = run_data.group(4)
             game_type = run_data.group(5).lower()
+            ladder = True if run_data.group(6).lower() == 'ladder' else False
+            char_class = run_data.group(7)
+            char_build = run_data.group(8)
 
             if chaox_id not in self.runners:
                 await self.login_runner(chaox_id)
             runner = self.runners[chaox_id]
         else:
-            # Add Ladder Data Here
-            old_run_data = re.search(
-                r"(?i)\|(\d{17,18})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|(Ladder|Non-Ladder)\|", message.content)
-            if old_run_data:
-                runner = str(old_run_data.group(1))
-                game_name = old_run_data.group(2)
-                password = old_run_data.group(3)
-                region = old_run_data.group(4)
-                game_type = old_run_data.group(5).lower()
-                ladder = True if old_run_data.group(
-                    6).lower() == 'ladder' else False
-            else:
-                return
+            return
+            # # Manual Runs
+            # old_run_data = re.search(
+            #     r"(?i)\|(\d{17,18})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|(Ladder|Non-Ladder)\|", message.content)
+            # if old_run_data:
+            #     runner = str(old_run_data.group(1))
+            #     game_name = old_run_data.group(2)
+            #     password = old_run_data.group(3)
+            #     region = old_run_data.group(4)
+            #     game_type = old_run_data.group(5).lower()
+            #     ladder = True if old_run_data.group(
+            #         6).lower() == 'ladder' else False
+            # else:
+            #     return
 
         cur_time = int(time.time())
 
@@ -423,7 +428,7 @@ class ChaoxCog(commands.Cog):
                     await self.send_thankyou_message(runner)
 
             if runner in self.games:
-                await self.persist_data(self.games[runner]["game_type"], runner, duration, ladder)
+                await self.persist_data(self.games[runner]["game_type"], runner, duration, ladder, char_class, char_build)
                 if runner in self.games:
                     removed = self.games.pop(runner)
 
@@ -435,7 +440,7 @@ class ChaoxCog(commands.Cog):
             if (duration > await self.config.guild(message.guild).min_game_time()
                     and duration < await self.config.guild(message.guild).max_game_time()):
                 self.prev_games[runner].append(duration)
-                await self.persist_data(self.games[runner]["game_type"], runner, duration, ladder)
+                await self.persist_data(self.games[runner]["game_type"], runner, duration, ladder, char_class, char_build)
                 removed = self.games.pop(runner)
                 # await self.update_channel()
             elif game_name.lower() == 'game over':
@@ -452,7 +457,10 @@ class ChaoxCog(commands.Cog):
                 "timestamp": cur_time,
                 "password": password,
                 "region": region,
-                "game_type": game_type
+                "game_type": game_type,
+                "ladder": ladder,
+                "class": char_class,
+                "build": char_build
             }
         }
 
@@ -732,7 +740,11 @@ class ChaoxCog(commands.Cog):
             database=database
         )
 
-    async def persist_data(self, game_type, runner, duration, ladder=False):
+    async def persist_data(self, game_type, runner, duration, ladder, char_class: str, char_build: str):
+        # Store character run stats
+        if char_class.lower() != 'None' and char_build.lower() != 'None':
+            await self.persist_class_data(game_type, runner, duration, ladder, char_class, char_build)
+
         db = await self.connect_sql()
         if game_type == 'chaos':
             cursor = db.cursor()
@@ -794,6 +806,10 @@ class ChaoxCog(commands.Cog):
                 db.commit()
             cursor.close()
         db.close()
+
+    async def persist_class_data(self, game_type, runner, duration, ladder, char_class: str, char_build: str):
+        # db = await self.connect_sql()
+        pass
 
     async def get_chaox_id(self, user: discord.Member):
         userid = str(user.id).encode()

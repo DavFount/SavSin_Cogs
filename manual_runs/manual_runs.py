@@ -45,8 +45,8 @@ class ManualRuns(commands.Cog):
         await ctx.reply(f'{ch.mention} has been set as your log channel!')
 
     @commands.command()
-    async def login(self, ctx: commands.Context, region: str, ladder: str):
-        """ Login to start running games. Use $login <americas/europe/asia> <ladder/non-ladder>"""
+    async def login(self, ctx: commands.Context, region: str):
+        """ Login to start running games. Use $login <americas/europe/asia>"""
 
         if ctx.guild:
             await ctx.reply('$login and $logout must be used in DM\'s only')
@@ -59,11 +59,6 @@ class ManualRuns(commands.Cog):
             return
 
         regions = ["americas", "europe", "asia"]
-        ladders = ["non-ladder", "ladder"]
-
-        if ladder.lower() not in ladders:
-            await ctx.reply('Invalid ladder selection. [Ladder / Non-Ladder]')
-            return
 
         if region.lower() not in regions:
             await ctx.reply('Invalid Region. [Americas / Europe / Asia]')
@@ -71,12 +66,11 @@ class ManualRuns(commands.Cog):
         else:
             self.runners[user] = {
                 "region": region,
-                "ladder": ladder,
                 "game_count": 0
             }
 
             embed = discord.Embed(color=0xff0000)
-            embed.title = f'You are now logged in! Region: {region} Ladder: {ladder}'
+            embed.title = f'You are now logged in! Region: {region}'
             embed.add_field(
                 name='1.',
                 value='Make a game and send it to me. See below for examples.',
@@ -166,10 +160,9 @@ class ManualRuns(commands.Cog):
 
             # Add Ladder Here
             if self.runners[user]["game_count"] > 0:
-                await channel.send(f'|{user}|Game Over||{region}|{game_type}|{ladder}|')
+                await channel.send(f'|{user}|Game Over||{region}|{game_type}|Ladder|None|None|')
 
             self.runners[user]["game_count"] += 1
 
-            # Add Ladder Here
-            await channel.send(f'|{user}|{game_name}|{password}|{region}|{game_type}|{ladder}|')
+            await channel.send(f'|{user}|{game_name}|{password}|{region}|{game_type}|Ladder|None|None|')
             return

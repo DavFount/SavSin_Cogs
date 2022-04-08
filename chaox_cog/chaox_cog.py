@@ -744,6 +744,7 @@ class ChaoxCog(commands.Cog):
 
     async def persist_data(self, game_type, runner, duration, ladder, char_class: str, char_build: str):
         # Store character run stats
+        print(f'Class: {char_class.lower()} Build: {char_build.lower()}')
         if char_class.lower() != 'None' and char_build.lower() != 'None':
             await self.persist_class_data(game_type, runner, duration, ladder, char_class, char_build)
 

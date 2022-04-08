@@ -808,8 +808,68 @@ class ChaoxCog(commands.Cog):
         db.close()
 
     async def persist_class_data(self, game_type, runner, duration, ladder, char_class: str, char_build: str):
-        # db = await self.connect_sql()
-        pass
+        db = await self.connect_sql()
+        if game_type == 'chaos':
+            cursor = db.cursor()
+            if ladder:
+                cursor.execute(
+                    f"SELECT * FROM `chaos_build_tracker` WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`={season} LIMIT 1;")
+            else:
+                cursor.execute(
+                    f"SELECT * FROM `chaos_build_tracker` WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`=0 LIMIT 1;")
+            result = cursor.fetchall()
+            if len(result):
+                update_runs = result[0][2] + 1
+                update_time = result[0][3] + (duration)
+                if ladder:
+                    cursor.execute(
+                        f"UPDATE `chaos_build_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`={season} LIMIT 1;")
+                else:
+                    cursor.execute(
+                        f"UPDATE `chaos_build_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`=0 LIMIT 1;")
+                db.commit()
+            else:
+                run_time = duration
+                sql = "INSERT INTO chaos_build_tracker (`chaox_id`,`total_runs`,`total_time`, `class`, `build`, `ladder`) VALUES (%s, %s, %s, %s, %s, %s);"
+                if ladder:
+                    val = (runner, 1, run_time, char_class, char_build, season)
+                else:
+                    val = (runner, 1, run_time, char_class, char_build, 0)
+
+                cursor.execute(sql, val)
+                db.commit()
+            cursor.close()
+        elif game_type == 'baal':
+            cursor = db.cursor()
+            if ladder:
+                cursor.execute(
+                    f"SELECT * FROM `baal_build_tracker` WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`={season} LIMIT 1;")
+            else:
+                cursor.execute(
+                    f"SELECT * FROM `baal_build_tracker` WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`=0 LIMIT 1;")
+            result = cursor.fetchall()
+            if len(result):
+                update_runs = result[0][2] + 1
+                update_time = result[0][3] + (duration)
+                if ladder:
+                    cursor.execute(
+                        f"UPDATE `baal_build_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`={season} LIMIT 1;")
+                else:
+                    cursor.execute(
+                        f"UPDATE `baal_build_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`=0 LIMIT 1;")
+                db.commit()
+            else:
+                run_time = duration
+                sql = "INSERT INTO baal_build_tracker (`chaox_id`,`total_runs`,`total_time`, `class`, `build`, `ladder`) VALUES (%s, %s, %s, %s, %s, %s);"
+                if ladder:
+                    val = (runner, 1, run_time, char_class, char_build, season)
+                else:
+                    val = (runner, 1, run_time, char_class, char_build, 0)
+
+                cursor.execute(sql, val)
+                db.commit()
+            cursor.close()
+        db.close()
 
     async def get_chaox_id(self, user: discord.Member):
         userid = str(user.id).encode()

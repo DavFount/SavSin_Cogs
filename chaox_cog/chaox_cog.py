@@ -435,6 +435,7 @@ class ChaoxCog(commands.Cog):
             # await self.update_channel()
             return
 
+        user = self.guild.get_member(int(runner))
         if runner in self.games:
             duration = cur_time - self.games[runner]["timestamp"]
             if (duration > await self.config.guild(message.guild).min_game_time()
@@ -444,7 +445,7 @@ class ChaoxCog(commands.Cog):
                 removed = self.games.pop(runner)
                 # await self.update_channel()
             elif game_name.lower() == 'game over':
-                await self.update_game_list(user.name, game_name, password, region, game_type, char_class, char_build, ladder, False)
+                await self.update_game_list('user.name', game_name, password, region, game_type, char_class, char_build, ladder, False)
                 removed = self.games.pop(runner)
                 # await self.update_channel()
 
@@ -481,7 +482,6 @@ class ChaoxCog(commands.Cog):
         elif game_type.lower() == 'baal' and await self.config.guild(message.guild).baal_role():
             role = message.guild.get_role(await self.config.guild(message.guild).baal_role())
 
-        user = self.guild.get_member(int(runner))
         if await self.config.guild(message.guild).chaos_role() and await self.config.guild(message.guild).baal_role():
             await self.update_game_list(user.name, game_name, password, region, game_type, char_class, char_build, ladder, True)
             await channel.send(f'{role.mention} New Game: ***{game_name}*** [Hosted by {user.name}] (Password: ***{text_password}***)', delete_after=msg_duration)

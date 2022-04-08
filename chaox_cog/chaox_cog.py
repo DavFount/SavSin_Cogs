@@ -35,7 +35,7 @@ class ChaoxCog(commands.Cog):
         self.game_announce.cancel()
         return super().cog_unload()
 
-    @tasks.loop(seconds=20)
+    @tasks.loop(seconds=30)
     async def game_announce(self):
         if not self.guild:
             self.guild = self.bot.get_guild(772664928627851275)
@@ -445,7 +445,7 @@ class ChaoxCog(commands.Cog):
                 removed = self.games.pop(runner)
                 # await self.update_channel()
             elif game_name.lower() == 'game over':
-                await self.update_game_list('user.name', game_name, password, region, game_type, char_class, char_build, ladder, False)
+                await self.update_game_list(user.name, game_name, password, region, game_type, char_class, char_build, ladder, False)
                 removed = self.games.pop(runner)
                 # await self.update_channel()
 
@@ -880,6 +880,7 @@ class ChaoxCog(commands.Cog):
         if not new_game:
             if game_type.lower() == 'chaos':
                 sql = f"DELETE from `chaos_games` WHERE `username`='{username}';"
+
             else:
                 sql = f"DELETE from `baal_games` WHERE `username`='{username}';"
 

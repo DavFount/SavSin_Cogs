@@ -35,7 +35,7 @@ class ChaoxCog(commands.Cog):
         self.game_announce.cancel()
         return super().cog_unload()
 
-    @tasks.loop(seconds=30)
+    @tasks.loop(seconds=20)
     async def game_announce(self):
         if not self.guild:
             self.guild = self.bot.get_guild(772664928627851275)
@@ -888,13 +888,13 @@ class ChaoxCog(commands.Cog):
             return
         else:
             if game_type.lower() == 'chaos':
-                sql = "INSERT INTO `chaos_games` (`username`, `game_name`, `password`, `class`, `build`, `realm`, `ladder`) VALUES (%s, %s, %s, %s, %s, %s, %s);"
+                sql = "INSERT INTO `chaos_games` (`username`, `game_name`, `password`, `class`, `build`, `region`, `ladder`) VALUES (%s, %s, %s, %s, %s, %s, %s);"
                 val = (username, game_name, password, region,
-                       char_class, char_build, region, ladder)
+                       char_class, char_build, ladder)
             else:
-                sql = "INSERT INTO `baal_games` (`username`, `game_name`, `password`, `class`, `build`, `realm`, `ladder`) VALUES (%s, %s, %s, %s, %s, %s, %s);"
+                sql = "INSERT INTO `baal_games` (`username`, `game_name`, `password`, `class`, `build`, `region`, `ladder`) VALUES (%s, %s, %s, %s, %s, %s, %s);"
                 val = (username, game_name, password, region,
-                       char_class, char_build, region, ladder)
+                       char_class, char_build, ladder)
 
             cursor.execute(sql, val)
             db.commit()

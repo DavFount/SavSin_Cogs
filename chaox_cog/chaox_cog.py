@@ -395,8 +395,6 @@ class ChaoxCog(commands.Cog):
             char_class = run_data.group(7)
             char_build = run_data.group(8)
 
-            print(f'On Message: Class - {char_class}  Build - {char_build}')
-
             if chaox_id not in self.runners:
                 await self.login_runner(chaox_id)
             runner = self.runners[chaox_id]
@@ -746,7 +744,6 @@ class ChaoxCog(commands.Cog):
 
     async def persist_data(self, game_type, runner, duration, ladder, char_class, char_build):
         # Store character run stats
-        print(f'Class: {char_class.lower()} Build: {char_build.lower()}')
         if char_class.lower() != 'None' and char_build.lower() != 'None':
             await self.persist_class_data(game_type, runner, duration, ladder, char_class, char_build)
 

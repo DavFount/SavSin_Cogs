@@ -444,6 +444,7 @@ class ChaoxCog(commands.Cog):
                 removed = self.games.pop(runner)
                 # await self.update_channel()
             elif game_name.lower() == 'game over':
+                await self.update_game_list(user.name, game_name, password, region, game_type, char_class, char_build, ladder, False)
                 removed = self.games.pop(runner)
                 # await self.update_channel()
 
@@ -482,6 +483,7 @@ class ChaoxCog(commands.Cog):
 
         user = self.guild.get_member(int(runner))
         if await self.config.guild(message.guild).chaos_role() and await self.config.guild(message.guild).baal_role():
+            await self.update_game_list(user.name, game_name, password, region, game_type, char_class, char_build, ladder, True)
             await channel.send(f'{role.mention} New Game: ***{game_name}*** [Hosted by {user.name}] (Password: ***{text_password}***)', delete_after=msg_duration)
         else:
             await channel.send('You must first configure your role settings !chx_admin set_chaos_role and set_baal_role!')
@@ -869,6 +871,34 @@ class ChaoxCog(commands.Cog):
                 cursor.execute(sql, val)
                 db.commit()
             cursor.close()
+        db.close()
+
+    async def update_game_list(self, username, game_name, password, region, game_type, char_class, char_build, ladder, new_game):
+        db = await self.connect_sql()
+        cursor = db.cursor()
+
+        if not new_game:
+            if game_type.lower() == 'chaos':
+                sql = f"DELETE from `chaos_games` WHERE `username`='{username}';"
+            else:
+                sql = f"DELETE from `baal_games` WHERE `username`='{username}';"
+
+            cursor.execute(sql)
+            db.commit()
+            return
+        else:
+            if game_type.lower() == 'chaos':
+                sql = "INSERT INTO `chaos_games` (`username`, `game_name`, `password`, `class`, `build`, `realm`, `ladder`) VALUES (%s, %s, %s, %s, %s, %s, %s);"
+                val = (username, game_name, password, region,
+                       char_class, char_build, region, ladder)
+            else:
+                sql = "INSERT INTO `baal_games` (`username`, `game_name`, `password`, `class`, `build`, `realm`, `ladder`) VALUES (%s, %s, %s, %s, %s, %s, %s);"
+                val = (username, game_name, password, region,
+                       char_class, char_build, region, ladder)
+
+            cursor.execute(sql, val)
+            db.commit()
+        cursor.close()
         db.close()
 
     async def get_chaox_id(self, user: discord.Member):

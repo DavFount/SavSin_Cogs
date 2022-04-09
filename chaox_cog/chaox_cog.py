@@ -758,6 +758,8 @@ class ChaoxCog(commands.Cog):
         # Store character run stats
         if char_class.lower() != 'None' and char_build.lower() != 'None':
             await self.persist_class_data(game_type, runner, duration, ladder, char_class, char_build)
+            if debug:
+                print('Persist Class Data')
 
         db = await self.connect_sql()
         if game_type == 'chaos':
@@ -828,9 +830,15 @@ class ChaoxCog(commands.Cog):
             if ladder:
                 cursor.execute(
                     f"SELECT * FROM `chaos_build_tracker` WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`={season} LIMIT 1;")
+                if debug:
+                    print(
+                        f"SELECT * FROM `chaos_build_tracker` WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`={season} LIMIT 1;")
             else:
                 cursor.execute(
                     f"SELECT * FROM `chaos_build_tracker` WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`=0 LIMIT 1;")
+                if debug:
+                    print(
+                        f"SELECT * FROM `chaos_build_tracker` WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`={season} LIMIT 1;")
             result = cursor.fetchall()
             if len(result):
                 update_runs = result[0][2] + 1
@@ -838,9 +846,15 @@ class ChaoxCog(commands.Cog):
                 if ladder:
                     cursor.execute(
                         f"UPDATE `chaos_build_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`={season} LIMIT 1;")
+                    if debug:
+                        print(
+                            f"UPDATE `chaos_build_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`={season} LIMIT 1;")
                 else:
                     cursor.execute(
                         f"UPDATE `chaos_build_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`=0 LIMIT 1;")
+                    if debug:
+                        print(
+                            f"UPDATE `chaos_build_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`={season} LIMIT 1;")
                 db.commit()
             else:
                 run_time = duration
@@ -901,12 +915,12 @@ class ChaoxCog(commands.Cog):
 
             if game_type.lower() == 'chaos':
                 sql = "INSERT INTO `chaos_games` (`username`, `game_name`, `password`, `class`, `build`, `region`, `ladder`) VALUES (%s, %s, %s, %s, %s, %s, %s);"
-                val = (runner, game_name, password, region,
-                       char_class, char_build, cur_season)
+                val = (runner, game_name, password, char_class,
+                       char_build, region, cur_season)
             else:
                 sql = "INSERT INTO `baal_games` (`username`, `game_name`, `password`, `class`, `build`, `region`, `ladder`) VALUES (%s, %s, %s, %s, %s, %s, %s);"
-                val = (runner, game_name, password, region,
-                       char_class, char_build, cur_season)
+                val = (runner, game_name, password, char_class,
+                       char_build, region, cur_season)
             cursor.execute(sql, val)
             db.commit()
 

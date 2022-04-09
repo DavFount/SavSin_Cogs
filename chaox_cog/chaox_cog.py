@@ -884,33 +884,33 @@ class ChaoxCog(commands.Cog):
             cursor.close()
         db.close()
 
-    async def update_game_list(self, username, game_name, password, region, game_type, char_class, char_build, ladder, new_game):
+    async def update_game_list(self, runner, game_name, password, region, game_type, char_class, char_build, ladder, new_game):
         db = await self.connect_sql()
         cursor = db.cursor()
 
         if not new_game:
             if game_type.lower() == 'chaos':
-                sql = f"DELETE from `chaos_games` WHERE `username`='{username}';"
+                sql = f"DELETE from `chaos_games` WHERE `username`='{runner}';"
 
             else:
-                sql = f"DELETE from `baal_games` WHERE `username`='{username}';"
+                sql = f"DELETE from `baal_games` WHERE `username`='{runner}';"
 
             cursor.execute(sql)
             db.commit()
-            return
         else:
             cur_season = season if ladder else 0
 
             if game_type.lower() == 'chaos':
                 sql = "INSERT INTO `chaos_games` (`username`, `game_name`, `password`, `class`, `build`, `region`, `ladder`) VALUES (%s, %s, %s, %s, %s, %s, %s);"
-                val = (username, game_name, password, region,
+                val = (runner, game_name, password, region,
                        char_class, char_build, cur_season)
             else:
                 sql = "INSERT INTO `baal_games` (`username`, `game_name`, `password`, `class`, `build`, `region`, `ladder`) VALUES (%s, %s, %s, %s, %s, %s, %s);"
-                val = (username, game_name, password, region,
+                val = (runner, game_name, password, region,
                        char_class, char_build, cur_season)
             cursor.execute(sql, val)
             db.commit()
+
         cursor.close()
         db.close()
 

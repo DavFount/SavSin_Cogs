@@ -841,8 +841,8 @@ class ChaoxCog(commands.Cog):
                         f"SELECT * FROM `chaos_build_tracker` WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`={season} LIMIT 1;")
             result = cursor.fetchall()
             if len(result):
-                update_runs = result[0][2] + 1
-                update_time = result[0][3] + (duration)
+                update_runs = result[0][4] + 1
+                update_time = result[0][5] + (duration)
                 if ladder:
                     cursor.execute(
                         f"UPDATE `chaos_build_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`={season} LIMIT 1;")

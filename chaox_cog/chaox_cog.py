@@ -7,7 +7,7 @@ from discord.ext import tasks
 from datetime import datetime as dt
 import mysql.connector
 
-debug = True
+debug = False
 season = 0
 
 
@@ -30,7 +30,7 @@ class ChaoxCog(commands.Cog):
         self.config.register_guild(
             host=None, port=3306, db=None, user=None, password=None, min_game_time=0, max_game_time=999,
             announce_channel=None, log_channel=None, game_msg=None, inst_msg=None, top_msg=None, chaos_role=None,
-            baal_role=None, message_wait_time=15, instructions=[], enabled=True)
+            baal_role=None, message_wait_time=15, instructions=[], enabled=True, debug=False)
 
     def cog_unload(self):
         self.game_announce.cancel()
@@ -149,6 +149,11 @@ class ChaoxCog(commands.Cog):
         """ Enable ChaoX run announcements """
         await self.config.guild(ctx.guild).enabled.set(True)
         await ctx.reply("ChaoX Run announcment has been enabled!")
+
+    @chx_admin.command(name="debug")
+    async def chx_debug(self, ctx: commands.Context, value: int):
+        """ Toggle Debug """
+        await self.config.guild(ctx.guild).enabled.set(bool(value))
 
     @chx_admin.command(name="disable")
     async def chx_disable(self, ctx: commands.Context):

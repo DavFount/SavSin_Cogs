@@ -898,15 +898,16 @@ class ChaoxCog(commands.Cog):
             db.commit()
             return
         else:
+            cur_season = season if ladder else 0
+
             if game_type.lower() == 'chaos':
                 sql = "INSERT INTO `chaos_games` (`username`, `game_name`, `password`, `class`, `build`, `region`, `ladder`) VALUES (%s, %s, %s, %s, %s, %s, %s);"
                 val = (username, game_name, password, region,
-                       char_class, char_build, season)
+                       char_class, char_build, cur_season)
             else:
                 sql = "INSERT INTO `baal_games` (`username`, `game_name`, `password`, `class`, `build`, `region`, `ladder`) VALUES (%s, %s, %s, %s, %s, %s, %s);"
                 val = (username, game_name, password, region,
-                       char_class, char_build, season)
-
+                       char_class, char_build, cur_season)
             cursor.execute(sql, val)
             db.commit()
         cursor.close()

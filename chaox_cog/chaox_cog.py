@@ -830,15 +830,9 @@ class ChaoxCog(commands.Cog):
             if ladder:
                 cursor.execute(
                     f"SELECT * FROM `chaos_build_tracker` WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`={season} LIMIT 1;")
-                if debug:
-                    print(
-                        f"SELECT * FROM `chaos_build_tracker` WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`={season} LIMIT 1;")
             else:
                 cursor.execute(
                     f"SELECT * FROM `chaos_build_tracker` WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`=0 LIMIT 1;")
-                if debug:
-                    print(
-                        f"SELECT * FROM `chaos_build_tracker` WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`={season} LIMIT 1;")
             result = cursor.fetchall()
             if len(result):
                 update_runs = result[0][4] + 1
@@ -846,15 +840,9 @@ class ChaoxCog(commands.Cog):
                 if ladder:
                     cursor.execute(
                         f"UPDATE `chaos_build_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`={season} LIMIT 1;")
-                    if debug:
-                        print(
-                            f"UPDATE `chaos_build_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`={season} LIMIT 1;")
                 else:
                     cursor.execute(
                         f"UPDATE `chaos_build_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`=0 LIMIT 1;")
-                    if debug:
-                        print(
-                            f"UPDATE `chaos_build_tracker` SET total_runs={update_runs}, total_time={update_time} WHERE `chaox_id`='{runner}' AND `class`='{char_class}' AND `build`='{char_build}' AND `ladder`={season} LIMIT 1;")
                 db.commit()
             else:
                 run_time = duration

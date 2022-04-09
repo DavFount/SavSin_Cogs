@@ -145,22 +145,16 @@ class ChaoxCog(commands.Cog):
         """Various ChX Admin Settings."""
 
     @chx_admin.command(name="enable")
-    async def chx_enable(self, ctx: commands.Context):
+    async def chx_enable(self, ctx: commands.Context, value: int):
         """ Enable ChaoX run announcements """
-        await self.config.guild(ctx.guild).enabled.set(True)
-        await ctx.reply("ChaoX Run announcment has been enabled!")
+        await self.config.guild(ctx.guild).enabled.set(bool(value))
+        await ctx.reply(f"Chaox Run Announcement {'Enabled' if bool(value) else 'Disabled'}!")
 
     @chx_admin.command(name="debug")
     async def chx_debug(self, ctx: commands.Context, value: int):
         """ Toggle Debug """
-        await self.config.guild(ctx.guild).enabled.set(bool(value))
-        await ctx.reply(f"Debug Mode Enabled: {bool(value)}")
-
-    @chx_admin.command(name="disable")
-    async def chx_disable(self, ctx: commands.Context):
-        """ Disable ChaoX run announcements """
-        await self.config.guild(ctx.guild).enabled.set(False)
-        await ctx.reply("ChaoX Run announcment has been disabled!")
+        await self.config.guild(ctx.guild).debug.set(bool(value))
+        await ctx.reply(f"Debug Mode {'Enabled' if bool(value) else 'Disabled'}!")
 
     # @chx_admin.command(name="update_members")
     # async def chx_update_members(self, ctx: commands.Context):
@@ -392,7 +386,7 @@ class ChaoxCog(commands.Cog):
             r"(?i)\|([0-9a-z]{64})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|(Ladder|Non-Ladder)\|(Amazon|Assassin|Barbarian|Druid|Necromancer|Paladin|Sorceress)\|([a-zA-Z0-9 ]{1,})\|", message.content)
 
         if run_data:
-            if debug:
+            if await self.config.guild(message.guild).debug():
                 print('Regex Pass')
             # CRU Runs
             chaox_id = run_data.group(1).lower()
@@ -408,7 +402,7 @@ class ChaoxCog(commands.Cog):
                 await self.login_runner(chaox_id)
             runner = self.runners[chaox_id]
         else:
-            if debug:
+            if await self.config.guild(message.guild).debug():
                 print('Regex Failed')
             return
             # # Manual Runs
@@ -758,7 +752,7 @@ class ChaoxCog(commands.Cog):
         # Store character run stats
         if char_class.lower() != 'None' and char_build.lower() != 'None':
             await self.persist_class_data(game_type, runner, duration, ladder, char_class, char_build)
-            if debug:
+            if await self.config.guild(self.guild).debug():
                 print('Persist Class Data')
 
         db = await self.connect_sql()

@@ -154,6 +154,7 @@ class ChaoxCog(commands.Cog):
     async def chx_debug(self, ctx: commands.Context, value: int):
         """ Toggle Debug """
         await self.config.guild(ctx.guild).enabled.set(bool(value))
+        await ctx.reply(f"Debug Mode Enabled: {bool(value)}")
 
     @chx_admin.command(name="disable")
     async def chx_disable(self, ctx: commands.Context):

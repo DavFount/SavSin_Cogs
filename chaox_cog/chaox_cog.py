@@ -453,6 +453,7 @@ class ChaoxCog(commands.Cog):
                     and duration < await self.config.guild(message.guild).max_game_time()):
                 self.prev_games[runner].append(duration)
                 await self.persist_data(self.games[runner]["game_type"], runner, duration, ladder, char_class, char_build)
+                await self.update_game_list(user.name, game_name, password, region, game_type, char_class, char_build, ladder, False)
                 removed = self.games.pop(runner)
                 # await self.update_channel()
             elif game_name.lower() == 'game over':
@@ -891,10 +892,8 @@ class ChaoxCog(commands.Cog):
         if not new_game:
             if game_type.lower() == 'chaos':
                 sql = f"DELETE from `chaos_games` WHERE `username`='{runner}';"
-
             else:
                 sql = f"DELETE from `baal_games` WHERE `username`='{runner}';"
-
             cursor.execute(sql)
             db.commit()
         else:

@@ -7,6 +7,7 @@ from discord.ext import tasks
 from datetime import datetime as dt
 import mysql.connector
 
+debug = True
 season = 0
 
 
@@ -385,6 +386,8 @@ class ChaoxCog(commands.Cog):
             r"(?i)\|([0-9a-z]{64})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|(Ladder|Non-Ladder)\|(Amazon|Assassin|Barbarian|Druid|Necromancer|Paladin|Sorceress)\|([a-zA-Z0-9]{1,})\|", message.content)
 
         if run_data:
+            if debug:
+                print('Regex Pass')
             # CRU Runs
             chaox_id = run_data.group(1).lower()
             game_name = run_data.group(2)
@@ -399,6 +402,8 @@ class ChaoxCog(commands.Cog):
                 await self.login_runner(chaox_id)
             runner = self.runners[chaox_id]
         else:
+            if debug:
+                print('Regex Failed')
             return
             # # Manual Runs
             # old_run_data = re.search(

@@ -901,11 +901,11 @@ class ChaoxCog(commands.Cog):
             if game_type.lower() == 'chaos':
                 sql = "INSERT INTO `chaos_games` (`username`, `game_name`, `password`, `class`, `build`, `region`, `ladder`) VALUES (%s, %s, %s, %s, %s, %s, %s);"
                 val = (username, game_name, password, region,
-                       char_class, char_build, ladder)
+                       char_class, char_build, season)
             else:
                 sql = "INSERT INTO `baal_games` (`username`, `game_name`, `password`, `class`, `build`, `region`, `ladder`) VALUES (%s, %s, %s, %s, %s, %s, %s);"
                 val = (username, game_name, password, region,
-                       char_class, char_build, ladder)
+                       char_class, char_build, season)
 
             cursor.execute(sql, val)
             db.commit()

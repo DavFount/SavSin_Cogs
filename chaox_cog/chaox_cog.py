@@ -383,7 +383,7 @@ class ChaoxCog(commands.Cog):
 
         # Add Ladder Data Here
         run_data = re.search(
-            r"(?i)\|([0-9a-z]{64})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|(Ladder|Non-Ladder)\|(Amazon|Assassin|Barbarian|Druid|Necromancer|Paladin|Sorceress)\|([a-zA-Z0-9]{1,})\|", message.content)
+            r"(?i)\|([0-9a-z]{64})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|(Ladder|Non-Ladder)\|(Amazon|Assassin|Barbarian|Druid|Necromancer|Paladin|Sorceress)\|([a-zA-Z0-9 ]{1,})\|", message.content)
 
         if run_data:
             if debug:

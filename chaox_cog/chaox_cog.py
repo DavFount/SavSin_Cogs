@@ -553,7 +553,7 @@ class ChaoxCog(commands.Cog):
 
     async def format_top(self, count: int = 5):
         # cur_time = int(time.time())
-        season = await self.config.guild(self.guild).season
+        season = await self.config.guild(self.guild).season()
         db = await self.connect_sql()
         if count > 20:
             count = 20
@@ -683,7 +683,7 @@ class ChaoxCog(commands.Cog):
 
     async def send_thankyou_message(self, runner):
         db = await self.connect_sql()
-        season = await self.config.guild(self.guild).season
+        season = await self.config.guild(self.guild).season()
 
         cursor_chaos = db.cursor()
         cursor_chaos.execute(
@@ -771,7 +771,7 @@ class ChaoxCog(commands.Cog):
             if await self.config.guild(self.guild).debug():
                 print('Persist Class Data')
 
-        season = await self.config.guild(self.guild).season
+        season = await self.config.guild(self.guild).season()
         db = await self.connect_sql()
         if game_type == 'chaos':
             cursor = db.cursor()
@@ -836,7 +836,7 @@ class ChaoxCog(commands.Cog):
 
     async def persist_class_data(self, game_type, runner, duration, ladder, char_class: str, char_build: str):
         db = await self.connect_sql()
-        season = await self.config.guild(self.guild).season
+        season = await self.config.guild(self.guild).season()
         if game_type == 'chaos':
             cursor = db.cursor()
             if ladder:
@@ -901,7 +901,7 @@ class ChaoxCog(commands.Cog):
 
     async def update_game_list(self, runner, game_name, password, region, game_type, char_class, char_build, ladder, new_game):
         db = await self.connect_sql()
-        season = await self.config.guild(self.guild).season
+        season = await self.config.guild(self.guild).season()
         cursor = db.cursor()
 
         if not new_game:

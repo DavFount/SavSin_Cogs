@@ -560,13 +560,13 @@ class ChaoxCog(commands.Cog):
         cursor_chaos = db.cursor()
         # Chaos
         cursor_chaos.execute(
-            f"SELECT * FROM `chaos_tracker` WHERE ladder={season} ORDER BY total_runs DESC LIMIT {count}+5;")
+            f"SELECT * FROM `chaos_tracker` WHERE ladder={season} ORDER BY total_runs DESC LIMIT {count+5};")
         result_chaos = cursor_chaos.fetchall()
 
         # Baal
         cursor_baal = db.cursor()
         cursor_baal.execute(
-            f"SELECT * FROM `baal_tracker` WHERE ladder={season}  ORDER BY total_runs DESC LIMIT {count}+5;")
+            f"SELECT * FROM `baal_tracker` WHERE ladder={season}  ORDER BY total_runs DESC LIMIT {count+5};")
         result_baal = cursor_baal.fetchall()
 
         embed = discord.Embed(color=0xffffff)

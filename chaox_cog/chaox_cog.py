@@ -560,13 +560,13 @@ class ChaoxCog(commands.Cog):
         cursor_chaos = db.cursor()
         # Chaos
         cursor_chaos.execute(
-            f"SELECT * FROM `chaos_tracker` WHERE ladder={season} ORDER BY total_runs DESC LIMIT {count}")
+            f"SELECT * FROM `chaos_tracker` WHERE ladder={season} ORDER BY total_runs DESC LIMIT {count}+5;")
         result_chaos = cursor_chaos.fetchall()
 
         # Baal
         cursor_baal = db.cursor()
         cursor_baal.execute(
-            f"SELECT * FROM `baal_tracker` WHERE ladder={season}  ORDER BY total_runs DESC LIMIT {count}")
+            f"SELECT * FROM `baal_tracker` WHERE ladder={season}  ORDER BY total_runs DESC LIMIT {count}+5;")
         result_baal = cursor_baal.fetchall()
 
         embed = discord.Embed(color=0xffffff)
@@ -576,29 +576,31 @@ class ChaoxCog(commands.Cog):
         #     value=f'<t:{cur_time}:R>',
         #     inline=False
         # )
-        count = 1
+        index = 1
 
         top = {"chaos": [], "baal": []}
         for row in result_chaos:
-            user = self.guild.get_member(int(row[1]))
-            if not user:
-                continue
-            avg_time = int(row[3] / row[2])
-            top["chaos"].append(
-                f'{count}. {user.mention} - {row[2]} runs - {avg_time} sec avg'
-            )
-            count += 1
+            if index <= count:
+                user = self.guild.get_member(int(row[1]))
+                if not user:
+                    continue
+                avg_time = int(row[3] / row[2])
+                top["chaos"].append(
+                    f'{index}. {user.mention} - {row[2]} runs - {avg_time} sec avg'
+                )
+                index += 1
 
-        count = 1
+        index = 1
         for row in result_baal:
-            user = self.guild.get_member(int(row[1]))
-            if not user:
-                continue
-            avg_time = int(row[3] / row[2])
-            top["baal"].append(
-                f'{count}. {user.mention} - {row[2]} runs - {avg_time} sec avg'
-            )
-            count += 1
+            if index <= count:
+                user = self.guild.get_member(int(row[1]))
+                if not user:
+                    continue
+                avg_time = int(row[3] / row[2])
+                top["baal"].append(
+                    f'{index}. {user.mention} - {row[2]} runs - {avg_time} sec avg'
+                )
+                index += 1
 
         embed.add_field(
             name=f'Chaos',

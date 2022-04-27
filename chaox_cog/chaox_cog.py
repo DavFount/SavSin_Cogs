@@ -8,7 +8,7 @@ from datetime import datetime as dt
 import mysql.connector
 
 debug = False
-season = 0
+season = 1
 
 
 class ChaoxCog(commands.Cog):
@@ -30,7 +30,7 @@ class ChaoxCog(commands.Cog):
         self.config.register_guild(
             host=None, port=3306, db=None, user=None, password=None, min_game_time=0, max_game_time=999,
             announce_channel=None, log_channel=None, game_msg=None, inst_msg=None, top_msg=None, chaos_role=None,
-            baal_role=None, message_wait_time=15, instructions=[], enabled=True, debug=False)
+            baal_role=None, message_wait_time=15, instructions=[], enabled=True, debug=False, season=0)
 
     def cog_unload(self):
         self.game_announce.cancel()
@@ -91,6 +91,8 @@ class ChaoxCog(commands.Cog):
         if not user:
             user = ctx.author
 
+        season = await self.config.guild(ctx.guild).season
+
         username = user.id
         db = await self.connect_sql()
         career = {"chaos": [], "baal": []}
@@ -143,6 +145,16 @@ class ChaoxCog(commands.Cog):
     @checks.admin()
     async def chx_admin(self, ctx: commands.Context):
         """Various ChX Admin Settings."""
+
+    @chx_admin.command(name="set_season")
+    async def chx_set_season(self, ctx: commands.Context, value: int):
+        """ Set the current season """
+        try:
+            int_value = int(value)
+            await self.config.guild(ctx.guild).season.set(int_value)
+            await ctx.reply(f"Season set to: {int_value}.")
+        except ValueError:
+            await ctx.reply(f"Invalid Integer: {value}.")
 
     @chx_admin.command(name="enable")
     async def chx_enable(self, ctx: commands.Context, value: int):
@@ -541,6 +553,7 @@ class ChaoxCog(commands.Cog):
 
     async def format_top(self, count: int = 5):
         # cur_time = int(time.time())
+        season = await self.config.guild(ctx.guild).season
         db = await self.connect_sql()
         if count > 20:
             count = 20
@@ -668,6 +681,7 @@ class ChaoxCog(commands.Cog):
 
     async def send_thankyou_message(self, runner):
         db = await self.connect_sql()
+        season = await self.config.guild(ctx.guild).season
 
         cursor_chaos = db.cursor()
         cursor_chaos.execute(
@@ -755,6 +769,7 @@ class ChaoxCog(commands.Cog):
             if await self.config.guild(self.guild).debug():
                 print('Persist Class Data')
 
+        season = await self.config.guild(self.guild).season
         db = await self.connect_sql()
         if game_type == 'chaos':
             cursor = db.cursor()
@@ -819,6 +834,7 @@ class ChaoxCog(commands.Cog):
 
     async def persist_class_data(self, game_type, runner, duration, ladder, char_class: str, char_build: str):
         db = await self.connect_sql()
+        season = await self.config.guild(self.guild).season
         if game_type == 'chaos':
             cursor = db.cursor()
             if ladder:
@@ -883,6 +899,7 @@ class ChaoxCog(commands.Cog):
 
     async def update_game_list(self, runner, game_name, password, region, game_type, char_class, char_build, ladder, new_game):
         db = await self.connect_sql()
+        season = await self.config.guild(self.guild).season
         cursor = db.cursor()
 
         if not new_game:

@@ -8,7 +8,7 @@ from datetime import datetime as dt
 import mysql.connector
 
 debug = False
-season = 1
+# season = 1
 
 
 class ChaoxCog(commands.Cog):
@@ -553,7 +553,7 @@ class ChaoxCog(commands.Cog):
 
     async def format_top(self, count: int = 5):
         # cur_time = int(time.time())
-        season = await self.config.guild(ctx.guild).season
+        season = await self.config.guild(self.guild).season
         db = await self.connect_sql()
         if count > 20:
             count = 20
@@ -681,7 +681,7 @@ class ChaoxCog(commands.Cog):
 
     async def send_thankyou_message(self, runner):
         db = await self.connect_sql()
-        season = await self.config.guild(ctx.guild).season
+        season = await self.config.guild(self.guild).season
 
         cursor_chaos = db.cursor()
         cursor_chaos.execute(

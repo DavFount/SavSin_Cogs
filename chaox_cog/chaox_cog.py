@@ -1,3 +1,4 @@
+from colorama import Cursor
 import discord
 import time
 import re
@@ -203,14 +204,17 @@ class ChaoxCog(commands.Cog):
     @chx_admin. command(name="allow")
     async def chx_admin_allow(self, ctx: commands.Context, user: str):
         """ Removes user from block list if they exist """
-        db = await self.connect_sql()
-        cursor = db.cursor()
-        sql = f"DELETE from `block_list` WHERE `username`='{user}';"
-        cursor.execute(sql)
-        db.commit()
-        cursor.close()
-        db.close()
-        await ctx.send(f"Removed {ctx.guild.get_member(int(user)).name} from the block list.")
+        if self.is_blocked(user):
+            db = await self.connect_sql()
+            cursor = db.cursor()
+            sql = f"DELETE from `block_list` WHERE `username`='{user}';"
+            cursor.execute(sql)
+            db.commit()
+            cursor.close()
+            db.close()
+            await ctx.send(f"Removed {ctx.guild.get_member(int(user)).name} from the block list.")
+        else:
+            await ctx.send(f"{ctx.guild.get_member(int(user)).name} was not found on the block list.")
 
     @chx_admin.command(name="stop")
     async def chx_admin_stop(self, ctx: commands.Context, user: str):
@@ -1002,6 +1006,23 @@ class ChaoxCog(commands.Cog):
         cursor.close()
         db.close()
         return True
+
+    async def is_blocked(self, discord_id: str):
+        db = await self.connect_sql()
+        cursor = db.cursor()
+        cursor.execute(
+            f"SELECT username FROM `block_list` WHERE `username`='{discord_id}' LIMIT 1;")
+
+        records_found = len(cursor)
+        cursor.close()
+        db.close()
+
+        if records_found > 0:
+            print("User Found!")
+            return True
+
+        print("User Not Found!")
+        return False
 
     async def update_member_db(self, member: discord.Member = None):
         db = await self.connect_sql()

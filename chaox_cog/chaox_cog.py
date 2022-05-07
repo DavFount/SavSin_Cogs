@@ -198,6 +198,7 @@ class ChaoxCog(commands.Cog):
         db.commit()
         cursor.close()
         db.close()
+        await ctx.send(f"Added {ctx.guild.get_member(int(user)).name} to the block list.")
 
     @chx_admin. command(name="allow")
     async def chx_admin_allow(self, ctx: commands.Context, user: str):
@@ -209,12 +210,14 @@ class ChaoxCog(commands.Cog):
         db.commit()
         cursor.close()
         db.close()
+        await ctx.send(f"Removed {ctx.guild.get_member(int(user)).name} from the block list.")
 
     @chx_admin.command(name="stop")
     async def chx_admin_stop(self, ctx: commands.Context, user: str):
         """ Removes a user from runners list """
         removed = self.games.pop(user)
         await self.update_channel()
+        await ctx.send(f"Removed {ctx.guild.get_member(int(user)).name} from the games list.")
 
     @chx_admin.command(name="set_host")
     async def chx_admin_set_host(self, ctx: commands.Context, host: str):

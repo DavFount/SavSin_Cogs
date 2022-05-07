@@ -191,14 +191,15 @@ class ChaoxCog(commands.Cog):
     @chx_admin.command(name="block")
     async def chx_admin_block(self, ctx: commands.Context, user: str):
         """ Blocks a user from being a runner """
-        db = await self.connect_sql()
-        cursor = db.cursor()
-        sql = "INSERT INTO `block_list` (`username`) VALUES (%s);"
-        val = (user)
-        cursor.execute(sql, val)
-        db.commit()
-        cursor.close()
-        db.close()
+        await ctx.send(f"Type: {type(user)}  Value: {user}")
+        # db = await self.connect_sql()
+        # cursor = db.cursor()
+        # sql = "INSERT INTO `block_list` (`username`) VALUES (%s);"
+        # val = (user)
+        # cursor.execute(sql, val)
+        # db.commit()
+        # cursor.close()
+        # db.close()
 
     @chx_admin. command(name="allow")
     async def chx_admin_allow(self, ctx: commands.Context, user: str):
@@ -215,7 +216,7 @@ class ChaoxCog(commands.Cog):
     async def chx_admin_stop(self, ctx: commands.Context, user: str):
         """ Removes a user from runners list """
         removed = self.games.pop(user)
-        # await self.update_channel()
+        await self.update_channel()
 
     @chx_admin.command(name="set_host")
     async def chx_admin_set_host(self, ctx: commands.Context, host: str):

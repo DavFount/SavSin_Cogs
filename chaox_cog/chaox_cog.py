@@ -1011,13 +1011,13 @@ class ChaoxCog(commands.Cog):
         db = await self.connect_sql()
         cursor = db.cursor()
         cursor.execute(
-            f"SELECT username FROM `block_list` WHERE `username`='{discord_id}' LIMIT 1;")
+            f"SELECT username FROM `block_list` WHERE `username`='{discord_id}';")
 
-        records_found = len(cursor)
+        blocked_user_count = len(cursor.fetchall())
         cursor.close()
         db.close()
 
-        if records_found > 0:
+        if blocked_user_count > 0:
             print("User Found!")
             return True
 

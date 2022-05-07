@@ -189,32 +189,32 @@ class ChaoxCog(commands.Cog):
         await self.config.guild(ctx.guild).top_msg.set(None)
 
     @chx_admin.command(name="block")
-    async def chx_admin_block(self, ctx: commands.Context, user: discord.Member):
+    async def chx_admin_block(self, ctx: commands.Context, user: str):
         """ Blocks a user from being a runner """
         db = await self.connect_sql()
         cursor = db.cursor()
         sql = "INSERT INTO `block_list` (`username`) VALUES (%s);"
-        val = (user.id)
+        val = (user)
         cursor.execute(sql, val)
         db.commit()
         cursor.close()
         db.close()
 
     @chx_admin. command(name="allow")
-    async def chx_admin_allow(self, ctx: commands.Context, user: discord.Member):
+    async def chx_admin_allow(self, ctx: commands.Context, user: str):
         """ Removes user from block list if they exist """
         db = await self.connect_sql()
         cursor = db.cursor()
-        sql = f"DELETE from `block_list` WHERE `username`='{user.id}';"
+        sql = f"DELETE from `block_list` WHERE `username`='{user}';"
         cursor.execute(sql)
         db.commit()
         cursor.close()
         db.close()
 
     @chx_admin.command(name="stop")
-    async def chx_admin_stop(self, ctx: commands.Context, user: discord.Member):
+    async def chx_admin_stop(self, ctx: commands.Context, user: str):
         """ Removes a user from runners list """
-        removed = self.games.pop(str(user.id))
+        removed = self.games.pop(user)
         # await self.update_channel()
 
     @chx_admin.command(name="set_host")

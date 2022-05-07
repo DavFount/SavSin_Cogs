@@ -191,15 +191,17 @@ class ChaoxCog(commands.Cog):
     @chx_admin.command(name="block")
     async def chx_admin_block(self, ctx: commands.Context, user: str):
         """ Blocks a user from being a runner """
-        await ctx.send(f"Type: {type(user)}  Value: {user}")
-        # db = await self.connect_sql()
-        # cursor = db.cursor()
-        # sql = "INSERT INTO `block_list` (`username`) VALUES (%s);"
+        if self.config.guild(ctx.guild).debug():
+            await ctx.send(f"Type: {type(user)}  Value: {user}")
+
+        db = await self.connect_sql()
+        cursor = db.cursor()
+        sql = "INSERT INTO `block_list` (`username`) VALUES (%s);"
         # val = (user)
-        # cursor.execute(sql, val)
-        # db.commit()
-        # cursor.close()
-        # db.close()
+        cursor.execute(sql, user)
+        db.commit()
+        cursor.close()
+        db.close()
 
     @chx_admin. command(name="allow")
     async def chx_admin_allow(self, ctx: commands.Context, user: str):

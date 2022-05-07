@@ -204,7 +204,7 @@ class ChaoxCog(commands.Cog):
     @chx_admin. command(name="allow")
     async def chx_admin_allow(self, ctx: commands.Context, user: str):
         """ Removes user from block list if they exist """
-        if self.is_blocked(user):
+        if await self.is_blocked(user):
             db = await self.connect_sql()
             cursor = db.cursor()
             sql = f"DELETE from `block_list` WHERE `username`='{user}';"

@@ -193,7 +193,7 @@ class ChaoxCog(commands.Cog):
         """ Blocks a user from being a runner """
         db = await self.connect_sql()
         cursor = db.cursor()
-        sql = "INSERT INTO `block_list` (`username`) VALUES (%s,%s);"
+        sql = "INSERT INTO `block_list` (`username`,`admin`) VALUES (%s,%s);"
         cursor.execute(sql, (user, str(ctx.author.id)))
         db.commit()
         cursor.close()

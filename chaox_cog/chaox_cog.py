@@ -413,14 +413,17 @@ class ChaoxCog(commands.Cog):
         if not message.guild:
             return
 
+        # Check if the mod is enabled
+        if not await self.config.guild(message.guild).enabled():
+            return
+
+        # Delete messages from runs channel if its not from a bot
         if message.channel.id == await self.config.guild(message.guild).announce_channel() and not message.author.bot:
             await message.delete()
             return
 
+        # Ignore all messages except for those in the log channel
         if not message.channel.id == await self.config.guild(message.guild).log_channel():
-            return
-
-        if not await self.config.guild(message.guild).enabled():
             return
 
         # Add Ladder Data Here
@@ -447,19 +450,13 @@ class ChaoxCog(commands.Cog):
             if await self.config.guild(message.guild).debug():
                 print('Regex Failed')
             return
-            # # Manual Runs
-            # old_run_data = re.search(
-            #     r"(?i)\|(\d{17,18})\|([a-zA-Z-= 0-9]{1,15})\|([a-zA-Z0-9]{0,15})\|(Americas|Europe|Asia)\|(Baal|Chaos)\|(Ladder|Non-Ladder)\|", message.content)
-            # if old_run_data:
-            #     runner = str(old_run_data.group(1))
-            #     game_name = old_run_data.group(2)
-            #     password = old_run_data.group(3)
-            #     region = old_run_data.group(4)
-            #     game_type = old_run_data.group(5).lower()
-            #     ladder = True if old_run_data.group(
-            #         6).lower() == 'ladder' else False
-            # else:
-            #     return
+
+        # Check if the runner is blocked
+        if await self.is_blocked(runner):
+            self.logout_runner(chaox_id)
+            message.send(
+                f"{message.guild.get_member(int(runner)).name} is being blocked from login.")
+            return
 
         cur_time = int(time.time())
 
@@ -1000,8 +997,8 @@ class ChaoxCog(commands.Cog):
             f"SELECT discord_id FROM `runners` WHERE chaox_id='{runner}' LIMIT 1;")
 
         for row in cursor:
-            discord_id = row[0]
-            self.runners[runner] = discord_id
+            # Row[0] = discord_id
+            self.runners[runner] = row[0]
 
         cursor.close()
         db.close()

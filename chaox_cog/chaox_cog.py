@@ -1018,10 +1018,8 @@ class ChaoxCog(commands.Cog):
         db.close()
 
         if blocked_user_count > 0:
-            print("User Found!")
             return True
 
-        print("User Not Found!")
         return False
 
     async def update_member_db(self, member: discord.Member = None):

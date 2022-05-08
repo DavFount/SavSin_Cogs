@@ -461,8 +461,8 @@ class ChaoxCog(commands.Cog):
         cur_time = int(time.time())
 
         if game_name.lower() == 'logout':
-            if runner in self.runners:
-                removed = self.runners.pop(runner)
+            self.logout_runner(chaox_id)
+
             if runner in self.prev_games:
                 if runner in self.games:
                     duration = cur_time - self.games[runner]["timestamp"]
@@ -1003,6 +1003,9 @@ class ChaoxCog(commands.Cog):
         cursor.close()
         db.close()
         return True
+
+    def logout_runner(self, chaox_id):
+        self.runners.pop(chaox_id)
 
     async def is_blocked(self, discord_id: str):
         db = await self.connect_sql()

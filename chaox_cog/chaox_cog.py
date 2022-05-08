@@ -454,7 +454,7 @@ class ChaoxCog(commands.Cog):
         # Check if the runner is blocked
         if await self.is_blocked(runner):
             self.logout_runner(chaox_id)
-            message.channel.send(
+            await message.channel.send(
                 f"{message.guild.get_member(int(runner)).name} is being blocked from login.")
             return
 

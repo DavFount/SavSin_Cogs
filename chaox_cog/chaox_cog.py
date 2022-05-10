@@ -34,7 +34,7 @@ class ChaoxCog(commands.Cog):
         self.game_announce.cancel()
         return super().cog_unload()
 
-    @tasks.loop(seconds=35)
+    @tasks.loop(seconds=60)
     async def game_announce(self):
         if not self.guild:
             self.guild = self.bot.get_guild(772664928627851275)

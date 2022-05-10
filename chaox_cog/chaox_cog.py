@@ -20,6 +20,7 @@ class ChaoxCog(commands.Cog):
         self.prev_games = {}
         self.runners = {}
         self.last_update = None
+        self.last_game = False
         self.game_announce.start()
         self.guild = None
         self.config = Config.get_conf(
@@ -46,7 +47,7 @@ class ChaoxCog(commands.Cog):
             if duration > 600:
                 remove = self.games.pop(k)
 
-        if len(self.games) > 0 or self.last_update == None:
+        if len(self.games) > 0 or not self.last_update or self.last_game:
             await self.update_channel()
             self.last_update = int(time.time())
 
@@ -495,6 +496,7 @@ class ChaoxCog(commands.Cog):
                 # await self.update_channel()
 
         if game_name.lower() == 'logout' or game_name.lower() == 'game over':
+            self.last_game = True
             # Stop Logout and Game Over from creating games in log channel
             return
 
@@ -560,6 +562,8 @@ class ChaoxCog(commands.Cog):
         else:
             message = await channel.fetch_message(await self.config.guild(self.guild).game_msg())
             await message.edit(embed=await self.format_games())
+
+        self.last_game = False
 
     async def update_instructions(self):
         channel = self.guild.get_channel(await self.config.guild(self.guild).announce_channel())

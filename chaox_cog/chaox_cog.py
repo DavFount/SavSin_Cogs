@@ -678,7 +678,7 @@ class ChaoxCog(commands.Cog):
 
         if(not len(cur_games["americas"]) and not len(cur_games["europe"]) and not len(cur_games["asia"])):
             embed.add_field(
-                name=f' ',
+                name=f'Download CRU To Run!',
                 value='Currently there are no games going!',
                 inline=False
             )

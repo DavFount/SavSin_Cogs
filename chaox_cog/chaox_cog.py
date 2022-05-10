@@ -674,11 +674,11 @@ class ChaoxCog(commands.Cog):
             color=0x0000ff
         )
 
-        embed.title = 'Current Games'
+        embed.title = 'Current Games (Updates every 60s)'
 
         if(not len(cur_games["americas"]) and not len(cur_games["europe"]) and not len(cur_games["asia"])):
             embed.add_field(
-                name=f'Check back soon!',
+                name=f' ',
                 value='Currently there are no games going!',
                 inline=False
             )

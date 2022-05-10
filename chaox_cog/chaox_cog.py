@@ -8,9 +8,6 @@ from discord.ext import tasks
 from datetime import datetime as dt
 import mysql.connector
 
-debug = False
-# season = 1
-
 
 class ChaoxCog(commands.Cog):
     """ Chaox Cog for Game Spamming, career stats and top runners """
@@ -37,7 +34,7 @@ class ChaoxCog(commands.Cog):
         self.game_announce.cancel()
         return super().cog_unload()
 
-    @tasks.loop(seconds=30)
+    @tasks.loop(seconds=35)
     async def game_announce(self):
         if not self.guild:
             self.guild = self.bot.get_guild(772664928627851275)
@@ -48,7 +45,8 @@ class ChaoxCog(commands.Cog):
             if duration > 600:
                 remove = self.games.pop(k)
 
-        await self.update_channel()
+        if len(self.games > 0):
+            await self.update_channel()
 
     @game_announce.before_loop
     async def before_game_annoucne(self):
@@ -537,12 +535,12 @@ class ChaoxCog(commands.Cog):
 
     async def update_channel(self):
         channel = self.guild.get_channel(await self.config.guild(self.guild).announce_channel())
-        if(not await self.config.guild(self.guild).inst_msg()):
-            message = await channel.send(embed=self.format_instructions())
-            await self.config.guild(self.guild).inst_msg.set(message.id)
-        else:
-            message = await channel.fetch_message(await self.config.guild(self.guild).inst_msg())
-            await message.edit(embed=self.format_instructions())
+        # if(not await self.config.guild(self.guild).inst_msg()):
+        #     message = await channel.send(embed=self.format_instructions())
+        #     await self.config.guild(self.guild).inst_msg.set(message.id)
+        # else:
+        #     message = await channel.fetch_message(await self.config.guild(self.guild).inst_msg())
+        #     await message.edit(embed=self.format_instructions())
 
         if(not await self.config.guild(self.guild).top_msg()):
             message = await channel.send(embed=await self.format_top())
@@ -675,7 +673,7 @@ class ChaoxCog(commands.Cog):
 
         if(not len(cur_games["americas"]) and not len(cur_games["europe"]) and not len(cur_games["asia"])):
             embed.add_field(
-                name=f'<t:{cur_time}:f>',
+                name=f'Check back soon!',
                 value='Currently there are no games going!',
                 inline=False
             )

@@ -46,7 +46,7 @@ class ChaoxCog(commands.Cog):
             if duration > 600:
                 remove = self.games.pop(k)
 
-        if len(self.games > 0) or self.last_update == None:
+        if len(self.games) > 0 or self.last_update == None:
             await self.update_channel()
             self.last_update = int(time.time())
 

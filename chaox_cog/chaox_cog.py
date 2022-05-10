@@ -19,6 +19,7 @@ class ChaoxCog(commands.Cog):
         self.games = {}
         self.prev_games = {}
         self.runners = {}
+        self.last_update = None
         self.game_announce.start()
         self.guild = None
         self.config = Config.get_conf(
@@ -45,8 +46,9 @@ class ChaoxCog(commands.Cog):
             if duration > 600:
                 remove = self.games.pop(k)
 
-        if len(self.games > 0):
+        if len(self.games > 0) or self.last_update == None:
             await self.update_channel()
+            self.last_update = int(time.time())
 
     @game_announce.before_loop
     async def before_game_annoucne(self):
@@ -528,6 +530,9 @@ class ChaoxCog(commands.Cog):
         if await self.config.guild(message.guild).chaos_role() and await self.config.guild(message.guild).baal_role():
             await self.update_game_list(user.name, game_name, password, region, game_type, char_class, char_build, ladder, True)
             await channel.send(f'{role.mention} New Game: ***{game_name}*** [Hosted by {user.name}] (Password: ***{text_password}***)', delete_after=msg_duration)
+            current_time = int(time.time())
+            if (current_time - self.last_update) > 60:
+                await self.update_channel()
         else:
             await channel.send('You must first configure your role settings !chx_admin set_chaos_role and set_baal_role!')
 

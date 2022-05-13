@@ -368,7 +368,8 @@ class ChaoxCog(commands.Cog):
         # sql = f"UPDATE {type.lower()}_tracker SET total_runs={run_count}, total_time={run_time} WHERE username='{user.id} AND ladder={season}';"
         # cursor.execute(sql)
         # db.commit()
-        print(f"Original Runs: {original_runs} \n Original Time: {original_time} \n New Run Count: {run_count} \n New Run Time: {run_time} \n Average Time: {avg_time}")
+        print(
+            f"Original Runs: {original_runs} \nOriginal Time: {original_time} \nNew Run Count: {run_count} \nNew Run Time: {run_time} \nAverage Time: {avg_time}")
         cursor.close()
         db.close()
         # await self.update_channel()

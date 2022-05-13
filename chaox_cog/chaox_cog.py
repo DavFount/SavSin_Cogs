@@ -360,11 +360,11 @@ class ChaoxCog(commands.Cog):
         for row in result:
             original_runs += row[0]
             original_time = row[1]
-            avg_time = original_time / original_runs
+            avg_time = round(original_time / original_runs)
             run_count += row[0]
 
         run_count += runs
-        run_time += (runs * avg_time)
+        run_time = original_time + (runs * avg_time)
         # sql = f"UPDATE {type.lower()}_tracker SET total_runs={run_count}, total_time={run_time} WHERE username='{user.id} AND ladder={season}';"
         # cursor.execute(sql)
         # db.commit()

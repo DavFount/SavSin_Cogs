@@ -348,24 +348,27 @@ class ChaoxCog(commands.Cog):
             await ctx.send(f'Invalid Type: {type} must be Baal or Chaos')
             return
 
+        season = await self.config.guild(self.guild).season()
         db = await self.connect_sql()
         cursor = db.cursor()
         cursor.execute(
-            f"SELECT * FROM {type.lower()}_tracker WHERE username='{user.id}';")
+            f"SELECT total_runs, total_time FROM {type.lower()}_tracker WHERE username='{user.id}' AND ladder={season} LIMIT 1;")
         result = cursor.fetchall()
         original_runs = 0
         run_count = 0
         run_time = 0
         for row in result:
-            original_runs += row[2]
-            run_count += row[2]
-            run_time += row[3]
+            original_runs += row[0]
+            original_time = row[1]
+            avg_time = original_time / original_runs
+            run_count += row[0]
 
         run_count += runs
-        run_time += (runs * 150)
-        sql = f"UPDATE {type.lower()}_tracker SET total_runs={run_count}, total_time={run_time} WHERE username='{user.id}';"
-        cursor.execute(sql)
-        db.commit()
+        run_time += (runs * avg_time)
+        # sql = f"UPDATE {type.lower()}_tracker SET total_runs={run_count}, total_time={run_time} WHERE username='{user.id} AND ladder={season}';"
+        # cursor.execute(sql)
+        # db.commit()
+        print(f"Original Runs: {original_runs} \n Original Time: {original_time} \n New Run Count: {run_count} \n New Run Time: {run_time} \n Average Time: {avg_time}")
         cursor.close()
         db.close()
         # await self.update_channel()

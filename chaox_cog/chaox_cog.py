@@ -365,14 +365,14 @@ class ChaoxCog(commands.Cog):
 
         run_count += runs
         run_time = original_time + (runs * avg_time)
-        # sql = f"UPDATE {type.lower()}_tracker SET total_runs={run_count}, total_time={run_time} WHERE username='{user.id} AND ladder={season}';"
-        # cursor.execute(sql)
-        # db.commit()
-        print(
-            f"Original Runs: {original_runs} \nOriginal Time: {original_time} \nNew Run Count: {run_count} \nNew Run Time: {run_time} \nAverage Time: {avg_time}")
+        sql = f"UPDATE {type.lower()}_tracker SET total_runs={run_count}, total_time={run_time} WHERE username='{user.id} AND ladder={season}';"
+        cursor.execute(sql)
+        db.commit()
+        # print(
+        #     f"Original Runs: {original_runs} \nOriginal Time: {original_time} \nNew Run Count: {run_count} \nNew Run Time: {run_time} \nAverage Time: {avg_time}")
         cursor.close()
         db.close()
-        # await self.update_channel()
+        await self.update_channel()
         await ctx.send(f'{user.mention}\'s runs have been changed from {original_runs} to {run_count}.')
 
     @chx_admin.command(name="settings")

@@ -367,6 +367,7 @@ class ChaoxCog(commands.Cog):
         run_time = original_time + (runs * avg_time)
         sql = f"UPDATE {type.lower()}_tracker SET total_runs={run_count}, total_time={run_time} WHERE username='{user.id} AND ladder={season}';"
         cursor.execute(sql)
+        print(sql)
         db.commit()
         # print(
         #     f"Original Runs: {original_runs} \nOriginal Time: {original_time} \nNew Run Count: {run_count} \nNew Run Time: {run_time} \nAverage Time: {avg_time}")

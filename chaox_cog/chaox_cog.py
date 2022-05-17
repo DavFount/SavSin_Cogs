@@ -220,9 +220,12 @@ class ChaoxCog(commands.Cog):
     @chx_admin.command(name="stop")
     async def chx_admin_stop(self, ctx: commands.Context, user: str):
         """ Removes a user from runners list """
-        removed = self.games.pop(user)
-        await self.update_channel()
-        await ctx.send(f"Removed {ctx.guild.get_member(int(user)).name} from the games list.")
+        try:
+            removed = self.games.pop(user)
+            await self.update_channel()
+            await ctx.send(f"User removed from the games list.")
+        except:
+            await ctx.send(f"Unable to find {user} in the runners table. Make sure you're using a discord ID.")
 
     @chx_admin.command(name="set_host")
     async def chx_admin_set_host(self, ctx: commands.Context, host: str):
@@ -775,7 +778,7 @@ class ChaoxCog(commands.Cog):
             inline=True
         )
         await channel.send(embed=embed, delete_after=25)
-        removed = self.prev_games[runner].pop()
+        removed = self.prev_games.pop(runner, None)
 
     async def is_db_configured(self):
         host = await self.config.guild(self.guild).host()

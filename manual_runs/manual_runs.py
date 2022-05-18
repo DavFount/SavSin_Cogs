@@ -178,7 +178,6 @@ class ManualRuns(commands.Cog):
                 password = ''
 
             region = self.runners[user]["region"]
-            ladder = self.runners[user]["ladder"]
             # game_type = 'Chaos' if 'chaos' in game_name.lower() else 'Baal'
 
             channel = self.guild.get_channel(await self.config.guild(self.guild).log_channel())

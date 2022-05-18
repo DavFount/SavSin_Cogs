@@ -135,7 +135,15 @@ class ManualRuns(commands.Cog):
             if not message.author.bot:
                 print(f'{message.author.name}: {message.content}')
 
-            user = str(message.author.id)
+            try:
+                cog = self.bot.get_cog("ChaoxCog")
+                user = cog.get_chaox_id(message.author)
+            except:
+                channel = message.guild.get_channel(972619497263468595)
+                message.channel.reply(
+                    f'Unable to retrieve your ChaoX ID. Contact @David for support in {channel.mention}')
+                return
+
             if user not in self.runners:
                 return
 

@@ -52,7 +52,14 @@ class ManualRuns(commands.Cog):
             await ctx.reply('$login and $logout must be used in DM\'s only')
             return
 
-        user = str(ctx.author.id)
+        try:
+            cog = self.bot.get_cog("ChaoxCog")
+            user = cog.get_chaox_id(ctx.author)
+        except:
+            channel = ctx.guild.get_channel(972619497263468595)
+            ctx.reply(
+                f'Unable to retrieve your ChaoX ID. Contact @David for support in {channel.mention}')
+            return
 
         if user in self.runners:
             await ctx.reply('You\'re already logged in.')
@@ -102,13 +109,21 @@ class ManualRuns(commands.Cog):
     async def logout(self, ctx: commands.Context):
         """ Updates your run count with your last run. """
         if ctx.guild:
-            await ctx.reply('$login and $logout must be used in DM\'s only')
             return
-        user = str(ctx.author.id)
+        try:
+            cog = self.bot.get_cog("ChaoxCog")
+            user = cog.get_chaox_id(ctx.author)
+        except:
+            channel = ctx.guild.get_channel(972619497263468595)
+            ctx.reply(
+                f'Unable to retrieve your ChaoX ID. Contact @David for support in {channel.mention}')
+            return
+
         if user in self.runners:
             channel = self.guild.get_channel(await self.config.guild(self.guild).log_channel())
-            await channel.send(f'|{user}|Game Over||Americas|Baal|')
-            await channel.send(f'|{user}|Logout||Americas|Baal|')
+            region = self.runners[user]["region"]
+            await channel.send(f'|{user}|Game Over||{region}|Baal|Ladder|None|None|')
+            await channel.send(f'|{user}|Logout||{region}|Baal|Ladder|None|None|')
             removed = self.runners.pop(user)
 
     @commands.Cog.listener()

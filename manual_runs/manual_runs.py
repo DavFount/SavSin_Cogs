@@ -147,7 +147,6 @@ class ManualRuns(commands.Cog):
                 return
 
             if user not in self.runners:
-                print(f'User {user} not found in runners dict.')
                 return
 
             manual_run_data = re.search(

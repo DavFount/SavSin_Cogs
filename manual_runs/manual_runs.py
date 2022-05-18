@@ -105,6 +105,8 @@ class ManualRuns(commands.Cog):
             )
             await ctx.reply(embed=embed)
 
+            print(self.runners)
+
     @commands.command()
     async def logout(self, ctx: commands.Context):
         """ Updates your run count with your last run. """
@@ -139,12 +141,13 @@ class ManualRuns(commands.Cog):
                 cog = self.bot.get_cog("ChaoxCog")
                 user = cog.get_chaox_id(message.author)
             except:
-                channel = message.guild.get_channel(972619497263468595)
-                message.channel.reply(
-                    f'Unable to retrieve your ChaoX ID. Contact @David for support in {channel.mention}')
+                support_channel = message.guild.get_channel(972619497263468595)
+                message.author.reply(
+                    f'Unable to retrieve your ChaoX ID. Contact @David for support in {support_channel.mention}')
                 return
 
             if user not in self.runners:
+                print(f'User {user} not found in runners dict.')
                 return
 
             manual_run_data = re.search(
@@ -177,7 +180,7 @@ class ManualRuns(commands.Cog):
 
             region = self.runners[user]["region"]
             ladder = self.runners[user]["ladder"]
-            game_type = 'Chaos' if 'chaos' in game_name.lower() else 'Baal'
+            # game_type = 'Chaos' if 'chaos' in game_name.lower() else 'Baal'
 
             channel = self.guild.get_channel(await self.config.guild(self.guild).log_channel())
 

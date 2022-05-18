@@ -105,8 +105,6 @@ class ManualRuns(commands.Cog):
             )
             await ctx.reply(embed=embed)
 
-            print(self.runners)
-
     @commands.command()
     async def logout(self, ctx: commands.Context):
         """ Updates your run count with your last run. """
@@ -133,9 +131,6 @@ class ManualRuns(commands.Cog):
         if not message.guild:
             if "$" in message.content:
                 return
-
-            if not message.author.bot:
-                print(f'{message.author.name}: {message.content}')
 
             try:
                 cog = self.bot.get_cog("ChaoxCog")

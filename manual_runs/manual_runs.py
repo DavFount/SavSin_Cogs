@@ -54,7 +54,7 @@ class ManualRuns(commands.Cog):
 
         try:
             cog = self.bot.get_cog("ChaoxCog")
-            user = cog.get_chaox_id(ctx.author)
+            user = await cog.get_chaox_id(ctx.author)
         except:
             channel = ctx.guild.get_channel(972619497263468595)
             ctx.reply(
@@ -114,7 +114,7 @@ class ManualRuns(commands.Cog):
             return
         try:
             cog = self.bot.get_cog("ChaoxCog")
-            user = cog.get_chaox_id(ctx.author)
+            user = await cog.get_chaox_id(ctx.author)
         except:
             channel = ctx.guild.get_channel(972619497263468595)
             ctx.reply(
@@ -139,7 +139,7 @@ class ManualRuns(commands.Cog):
 
             try:
                 cog = self.bot.get_cog("ChaoxCog")
-                user = cog.get_chaox_id(message.author)
+                user = await cog.get_chaox_id(message.author)
             except:
                 support_channel = message.guild.get_channel(972619497263468595)
                 message.author.reply(

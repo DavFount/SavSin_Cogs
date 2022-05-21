@@ -93,22 +93,21 @@ class ChaoxCog(commands.Cog):
         if not user:
             user = ctx.author
 
-        season = await self.config.guild(ctx.guild).season
-
+        season = await self.config.guild(ctx.guild).season()
         username = user.id
         db = await self.connect_sql()
         career = {"chaos": [], "baal": []}
 
         cursor_chaos = db.cursor()
         cursor_chaos.execute(
-            f"SELECT * FROM `chaos_tracker` WHERE `username`='{username}' AND ladder={season} LIMIT 1")
+            f"SELECT * FROM `chaos_tracker` WHERE `username`='{username}' AND `ladder`={season} LIMIT 1;")
         result_chaos = cursor_chaos.fetchall()
         for row in result_chaos:
             career["chaos"] = row
 
         cursor_baal = db.cursor()
         cursor_baal.execute(
-            f"SELECT * FROM `baal_tracker` WHERE `username`='{username}' AND ladder={season} LIMIT 1")
+            f"SELECT * FROM `baal_tracker` WHERE `username`='{username}' AND `ladder`={season} LIMIT 1;")
         result_baal = cursor_baal.fetchall()
         for row in result_baal:
             career["baal"] = row

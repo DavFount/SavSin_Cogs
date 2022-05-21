@@ -114,7 +114,7 @@ class ChaoxCog(commands.Cog):
 
         embed = discord.Embed(color=0xff0000)
         embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
-        embed.title = f'{user.name}\'s Career'
+        embed.title = f'{user.name}\'s Career (Season {season})'
 
         # if not len(result_chaos):
         #     embed.add_field(

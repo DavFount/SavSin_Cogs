@@ -27,17 +27,17 @@ class Diablo2Res(commands.Cog):
             sql = "SELECT * FROM runes WHERE name like CONCAT('%', %s, '%') LIMIT 1;"
             cursor.execute(sql, (rune,))
             if len(cursor) < 0:
-                ctx.send(f'{rune} was not found.')
+                await ctx.send(f'{rune} was not found.')
                 return
 
             for (id, name, level, attributes, recipe, runewords) in cursor:
-                print(
+                await ctx.send(
                     f"Found {name}(#{id}):\nRequired Level: {level}\nAttributes:{attributes}\nRecipe:{recipe}\nRunewords:{runewords}")
 
             cursor.close()
             db.close()
         except:
-            ctx.send('There has been an error. Contact David for support!')
+            await ctx.send('There has been an error. Contact David for support!')
 
     async def connect_sql(self):
         return mysql.connector.connect(

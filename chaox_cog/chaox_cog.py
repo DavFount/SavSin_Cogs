@@ -114,7 +114,7 @@ class ChaoxCog(commands.Cog):
 
         embed = discord.Embed(color=0xff0000)
         embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
-        if season is 999:
+        if season == 999:
             embed.title = f'{user.name}\'s Career (Special Event)'
         else:
             embed.title = f'{user.name}\'s Career (Season {season})'

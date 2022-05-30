@@ -114,10 +114,7 @@ class ChaoxCog(commands.Cog):
 
         embed = discord.Embed(color=0xff0000)
         embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
-        if season == 999:
-            embed.title = f'{user.name}\'s Career (Special Event)'
-        else:
-            embed.title = f'{user.name}\'s Career (Season {season})'
+        embed.title = f'{user.name}\'s Career (Season {season})'
 
         # if not len(result_chaos):
         #     embed.add_field(
@@ -345,12 +342,6 @@ class ChaoxCog(commands.Cog):
         """Sets the duration of the message displayed for new games"""
         await self.config.guild(ctx.guild).message_wait_time.set(delay)
         await ctx.send(f'The duration of the new game message is now {delay} seconds')
-
-    @chx_admin.command(name="update")
-    async def chx_update(self, ctx: commands.Context):
-        """Trigger update to Chaox-Runs channel"""
-        await self.update_channel()
-        await ctx.send(f'Update Completed.')
 
     @chx_admin.command(name="add")
     async def chx_add_runs(self, ctx: commands.Context, user: discord.User, type: str, runs: int):

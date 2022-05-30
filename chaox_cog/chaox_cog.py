@@ -119,7 +119,6 @@ class ChaoxCog(commands.Cog):
         else:
             embed.title = f'{user.name}\'s Career (Season {season})'
 
-
         # if not len(result_chaos):
         #     embed.add_field(
         #         name='No Runs Recorded!',
@@ -150,6 +149,12 @@ class ChaoxCog(commands.Cog):
     @checks.admin()
     async def chx_admin(self, ctx: commands.Context):
         """Various ChX Admin Settings."""
+
+    @chx_admin.command(name="update")
+    async def chx_update_ch(self, ctx: commands.Context, value: int):
+        """ Update channel """
+        await self.update_channel()
+        await ctx.reply("Chaox-Runs Channel Updated.")
 
     @chx_admin.command(name="set_season")
     async def chx_set_season(self, ctx: commands.Context, value: int):

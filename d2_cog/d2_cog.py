@@ -37,8 +37,14 @@ class Diablo2Res(commands.Cog):
 
             cursor.close()
             db.close()
+        except mysql.connector.ProgrammingError as error:
+            await ctx.send(f'Error Number: {error.errno}\nSQL State: {error.sqlstate}\nError Message: {error.msg}')
         except mysql.connector.Error as error:
             await ctx.send(f'There has been an error. Send this to David for help. {error}')
+        finally:
+            if db.is_connected():
+                cursor.close()
+                db.close()
 
     async def connect_sql(self):
         host = 'localhost'

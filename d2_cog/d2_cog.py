@@ -23,11 +23,9 @@ class Diablo2Res(commands.Cog):
     async def rune(self, ctx: commands.Context, rune: str):
         try:
             db = await self.connect_sql()
-            await ctx.send('Connected to DB.')
-            # cursor = db.cursor
-            # sql = "SELECT * FROM runes WHERE name like CONCAT('%', %s, '%') LIMIT 1;"
-            # cursor.execute(sql, (rune,))
-
+            cursor = db.cursor
+            sql = "SELECT * FROM runes WHERE name like CONCAT('%', %s, '%') LIMIT 1;"
+            cursor.execute(sql, (rune,))
             # if len(cursor) < 0:
             #     await ctx.send(f'{rune} was not found.')
             #     return
@@ -36,7 +34,7 @@ class Diablo2Res(commands.Cog):
             #     await ctx.send(
             #         f"Found {name}(#{id}):\nRequired Level: {level}\nAttributes:{attributes}\nRecipe:{recipe}\nRunewords:{runewords}")
 
-            # cursor.close()
+            cursor.close()
             db.close()
         except:
             await ctx.send('There has been an error. Contact David for support!')

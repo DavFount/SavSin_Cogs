@@ -31,9 +31,12 @@ class Diablo2Res(commands.Cog):
                 await ctx.send(f'{rune} was not found.')
                 return
 
-            for (id, name, level, attributes, recipe, runewords) in cursor:
-                await ctx.send(
-                    f"Found {name}(#{id}):\nRequired Level: {level}\nAttributes:{attributes}\nRecipe:{recipe}\nRunewords:{runewords}")
+            # for (id, name, level, attributes, recipe, runewords) in cursor:
+            #     await ctx.send(
+            #         f"Found {name}(#{id}):\nRequired Level: {level}\nAttributes:{attributes}\nRecipe:{recipe}\nRunewords:{runewords}")
+
+            for row in cursor:
+                await ctx.send(f"{row}")
 
             cursor.close()
             db.close()

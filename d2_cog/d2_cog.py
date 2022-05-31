@@ -24,7 +24,7 @@ class Diablo2Res(commands.Cog):
         try:
             db = await self.connect_sql()
             cursor = db.cursor
-            sql = """SELECT * FROM runes WHERE name like CONCAT('%', %s, '%') LIMIT 1;"""
+            sql = """SELECT * FROM runes WHERE name = %s LIMIT 1;"""
             val = (rune,)
             cursor.execute(sql, val)
             if len(cursor) < 0:

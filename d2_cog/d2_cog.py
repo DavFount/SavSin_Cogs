@@ -41,9 +41,12 @@ class Diablo2Res(commands.Cog):
             await ctx.send('There has been an error. Contact David for support!')
 
     async def connect_sql(self):
+        host = 'localhost'
+        user = 'd2r'
+        password = 'pWrI4m8k@FEUVaSu'
         return mysql.connector.connect(
-            host='localhost',
-            user='d2r',
-            password='ib@R-ONQYv7OmmPq',
-            database='d2r'
+            host=host,
+            user=user,
+            password=password,
+            database=user
         )

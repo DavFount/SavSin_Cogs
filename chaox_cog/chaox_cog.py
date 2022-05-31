@@ -151,7 +151,7 @@ class ChaoxCog(commands.Cog):
         """Various ChX Admin Settings."""
 
     @chx_admin.command(name="update")
-    async def chx_update_ch(self, ctx: commands.Context, value: int):
+    async def chx_update_ch(self, ctx: commands.Context):
         """ Update channel """
         await self.update_channel()
         await ctx.reply("Chaox-Runs Channel Updated.")

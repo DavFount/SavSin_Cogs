@@ -556,13 +556,15 @@ class ChaoxCog(commands.Cog):
         # await self.update_channel()
 
     async def update_channel(self):
+        # Get Announcment Channel
         channel = self.guild.get_channel(await self.config.guild(self.guild).announce_channel())
-        if(not await self.config.guild(self.guild).inst_msg()):
-            message = await channel.send(embed=self.format_instructions())
-            await self.config.guild(self.guild).inst_msg.set(message.id)
-        else:
-            message = await channel.fetch_message(await self.config.guild(self.guild).inst_msg())
-            await message.edit(embed=self.format_instructions())
+
+        # if(not await self.config.guild(self.guild).inst_msg()):
+        #     message = await channel.send(embed=self.format_instructions())
+        #     await self.config.guild(self.guild).inst_msg.set(message.id)
+        # else:
+        #     message = await channel.fetch_message(await self.config.guild(self.guild).inst_msg())
+        #     await message.edit(embed=self.format_instructions())
 
         if(not await self.config.guild(self.guild).top_msg()):
             message = await channel.send(embed=await self.format_top())

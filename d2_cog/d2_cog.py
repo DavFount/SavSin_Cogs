@@ -25,8 +25,7 @@ class Diablo2Res(commands.Cog):
             db = await self.connect_sql()
             cursor = db.cursor
             sql = """SELECT * FROM runes WHERE name = %s LIMIT 1;"""
-            val = (rune,)
-            cursor.execute(sql, val)
+            cursor.execute(sql, (rune,))
             if len(cursor) < 0:
                 await ctx.send(f'{rune} was not found.')
                 return

@@ -52,6 +52,7 @@ class Diablo2Res(commands.Cog):
                     value=f"{row['runewords']}",
                     inline=False
                 )
+
                 await ctx.send(embed=embed)
 
             cursor.close()

@@ -39,14 +39,14 @@ class Diablo2Res(commands.Cog):
                 embed.title = f"{row['name']} ({row['id']})"
                 embed.add_field(
                     name="Info",
-                    value=f"Required Level: {row['level']}",
-                    inline=False
+                    value=f"Required Level: {row['level']} \n\n\n {row['attributes']}",
+                    inline=True
                 )
-                embed.add_field(
-                    name="Attributes",
-                    value=f"{row['attributes']}",
-                    inline=False
-                )
+                # embed.add_field(
+                #     name="Attributes",
+                #     value=f"{row['attributes']}",
+                #     inline=True
+                # )
                 embed.add_field(
                     name="Recipe",
                     value=f"{row['recipe']}",
@@ -55,7 +55,7 @@ class Diablo2Res(commands.Cog):
                 embed.add_field(
                     name="Runewords",
                     value=f"{row['runewords']}",
-                    inline=False
+                    inline=True
                 )
 
                 await ctx.send(embed=embed)

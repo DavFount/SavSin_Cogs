@@ -20,7 +20,8 @@ class Diablo2Res(commands.Cog):
 
     # Runes
     @commands.command()
-    async def rune(self, ctx: commands.Context, rune: str):
+    async def d2(self, ctx: commands.Context, rune: str):
+        print(f'Searching for {rune}')
         try:
             db = await self.connect_sql()
             cursor = db.cursor()
@@ -28,19 +29,23 @@ class Diablo2Res(commands.Cog):
             cursor.execute(sql, (rune,))
             result = cursor.fetchall()
             if len(result) < 0:
-                await ctx.send(f'{rune} was not found.')
+                print(f'{rune} was not found.')
                 return
 
             for (id, name, level, attributes, recipe, runewords) in cursor:
-                await ctx.send(
+                print(
                     f"Found {name}(#{id}):\nRequired Level: {level}\nAttributes:{attributes}\nRecipe:{recipe}\nRunewords:{runewords}")
 
             cursor.close()
             db.close()
         except mysql.connector.ProgrammingError as error:
-            await ctx.send(f'Error Number: {error.errno}\nSQL State: {error.sqlstate}\nError Message: {error.msg}')
+            print(
+                f'Error Number: {error.errno}\nSQL State: {error.sqlstate}\nError Message: {error.msg}')
         except mysql.connector.Error as error:
-            await ctx.send(f'There has been an error. Send this to David for help. {error}')
+            print(
+                f'There has been an error. Send this to David for help. {error}')
+        except:
+            print('Unknown Error!')
         finally:
             if db.is_connected():
                 cursor.close()

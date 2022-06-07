@@ -44,12 +44,12 @@ class Diablo2Res(commands.Cog):
                 )
                 embed.add_field(
                     name="Recipe",
-                    value=f"{row['recipe']}"
+                    value=f"{row['recipe']}",
                     inline=False
                 )
                 embed.add_field(
                     name="Runewords",
-                    value=f"{row['runewords']}"
+                    value=f"{row['runewords']}",
                     inline=False
                 )
                 await ctx.send(embed=embed)

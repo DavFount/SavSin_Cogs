@@ -50,7 +50,7 @@ class Diablo2Res(commands.Cog):
                 embed.add_field(
                     name="Recipe",
                     value=f"{row['recipe']}",
-                    inline=False
+                    inline=True
                 )
                 embed.add_field(
                     name="Runewords",

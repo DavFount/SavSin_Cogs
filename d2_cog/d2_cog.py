@@ -37,9 +37,16 @@ class Diablo2Res(commands.Cog):
                 embed.set_author(name=ctx.guild.name,
                                  icon_url=ctx.guild.icon_url)
                 embed.title = f"{row['name']} ({row['id']})"
+                embed.image(
+                    'https://img.rankedboost.com/wp-content/plugins/diablo-2/assets/runes/El.png')
                 embed.add_field(
                     name="Info",
-                    value=f"Required Level: {row['level']}\nAttributes:{row['attributes']}",
+                    value=f"Required Level: {row['level']}",
+                    inline=False
+                )
+                embed.add_field(
+                    name="Attributes",
+                    value=f"{row['attributes']}",
                     inline=False
                 )
                 embed.add_field(

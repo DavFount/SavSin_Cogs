@@ -1,3 +1,4 @@
+import discord
 from redbot.core import Config, commands
 from discord.ext import tasks
 import mysql.connector
@@ -21,7 +22,6 @@ class Diablo2Res(commands.Cog):
     # Runes
     @commands.command()
     async def rune(self, ctx: commands.Context, rune: str):
-        print(f'Searching for {rune}')
         try:
             db = await self.connect_sql()
             cursor = db.cursor(dictionary=True)
@@ -29,14 +29,27 @@ class Diablo2Res(commands.Cog):
             cursor.execute(sql, (rune,))
             result = cursor.fetchall()
             if len(result) < 0:
-                print(f'{rune} was not found.')
+                await ctx.send(f'{rune} was not found.')
                 return
-            else:
-                print(f'{rune} found.')
 
             for row in result:
-                print(
-                    f"Found {row['name']}(#{row['id']}):\nRequired Level: {row['level']}\nAttributes:{row['attributes']}\nRecipe:{row['recipe']}\nRunewords:{row['runewords']}")
+                embed = discord.Embed(color=0xff0000)
+                embed.set_author(name=ctx.guild.name,
+                                 icon_url=ctx.guild.icon_url)
+                embed.title = f"{row['name']} ({row['id']})"
+                embed.add_field(
+                    name="Info",
+                    value=f"Required Level: {row['level']}\nAttributes:{row['attributes']}"
+                )
+                embed.add_field(
+                    name="Recipe",
+                    value=f"{row['recipe']}"
+                )
+                embed.add_field(
+                    name="Runewords",
+                    value=f"{row['runewords']}"
+                )
+                await ctx.send(embed=embed)
 
             cursor.close()
             db.close()

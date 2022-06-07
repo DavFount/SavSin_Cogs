@@ -34,9 +34,9 @@ class Diablo2Res(commands.Cog):
             else:
                 print(f'{rune} found.')
 
-            for (id, name, level, attributes, recipe, runewords) in result:
+            for row in result:
                 print(
-                    f"Found {name}(#{id}):\nRequired Level: {level}\nAttributes:{attributes}\nRecipe:{recipe}\nRunewords:{runewords}")
+                    f"Found {row['name']}(#{row['id']}):\nRequired Level: {row['level']}\nAttributes:{row['attributes']}\nRecipe:{row['recipe']}\nRunewords:{row['runewords']}")
 
             cursor.close()
             db.close()

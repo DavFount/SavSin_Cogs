@@ -20,19 +20,21 @@ class Diablo2Res(commands.Cog):
 
     # Runes
     @commands.command()
-    async def d2(self, ctx: commands.Context, rune: str):
+    async def rune(self, ctx: commands.Context, rune: str):
         print(f'Searching for {rune}')
         try:
             db = await self.connect_sql()
-            cursor = db.cursor()
+            cursor = db.cursor(dictionary=True)
             sql = """SELECT * FROM runes WHERE name like CONCAT('%', %s, '%') LIMIT 1;"""
             cursor.execute(sql, (rune,))
             result = cursor.fetchall()
             if len(result) < 0:
                 print(f'{rune} was not found.')
                 return
+            else:
+                print(f'{rune} found.')
 
-            for (id, name, level, attributes, recipe, runewords) in cursor:
+            for (id, name, level, attributes, recipe, runewords) in result:
                 print(
                     f"Found {name}(#{id}):\nRequired Level: {level}\nAttributes:{attributes}\nRecipe:{recipe}\nRunewords:{runewords}")
 

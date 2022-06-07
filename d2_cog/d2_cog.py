@@ -23,7 +23,7 @@ class Diablo2Res(commands.Cog):
     async def rune(self, ctx: commands.Context, rune: str):
         try:
             db = await self.connect_sql()
-            cursor = db.cursor
+            cursor = db.cursor()
             sql = """SELECT * FROM runes WHERE name = %s LIMIT 1;"""
             cursor.execute(sql, (rune,))
             if len(cursor) < 0:
